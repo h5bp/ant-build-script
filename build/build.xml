@@ -661,6 +661,17 @@
         replace="&lt;link\1href='\2/${css.sha}.css'\3" flags="m">
           <fileset dir="${dir.intermediate}" includes="${page-files}"/>
       </replaceregexp>
+      
+      <!-- If using LESS CSS remove LESS Script from HTML -->
+      <if>
+            <equals arg1="${build.css.less}" arg2="true"/>
+            <then>
+                <echo message="Removing LESS CSS Script from HTML..."/>
+			    <replaceregexp match="&lt;script src=[&quot;']${dir.js.libs}/less(.*)\.js[&quot;']&gt;&lt;/script&gt;" replace="">
+			        <fileset dir="${dir.intermediate}" includes="${page-files}"/>
+			    </replaceregexp>
+            </then>
+        </if>
 
       <foreach list="${file.stylesheets}" param="css_file" target="-css-remove-concatenated-stylesheets" />
 
@@ -922,6 +933,19 @@
                 </if>
             </sequential>
         </for>
+        
+        <if>
+            <equals arg1="${build.css.less}" arg2="true"/>
+            <then>
+                <echo message="Processing LESS CSS..."/>
+                <lessjs input="${dir.intermediate}/${dir.css}/style-concat.css" output="${dir.intermediate}/${dir.css}/style-concat.css" />
+            </then>
+            <else>
+                <echo message="NOT Processing LESS CSS"/>
+            </else>
+        </if>
+        
+        
         <echo message="Minifying css..."/>
 
         <apply executable="java" parallel="false">
@@ -1089,7 +1113,18 @@
         </apply>
     </target>
 
-
+	<macrodef name="lessjs">
+	    <attribute name="input" />
+	    <attribute name="output" />
+	    <sequential>
+	        <java jar="./${dir.build.tools}/${tool.rhino}" fork="true" output="@{output}">
+	            <arg path="./${dir.build.tools}/${tool.lesscss}" />
+	            <arg path="@{input}" />
+	        </java>
+	        <echo>Lessjs: generated @{output}</echo>
+	    </sequential>
+	</macrodef>
+	
 	<!-- Import project.xml (put any custom build targets in this file so that they aren't overwritten when build.xml is updated) -->
 	<!-- See: https://github.com/h5bp/html5-boilerplate/issues/704 for discussion of the original pull request-->
 	<import file="./project.xml" />
