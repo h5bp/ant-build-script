@@ -667,9 +667,7 @@
             <equals arg1="${build.css.less}" arg2="true"/>
             <then>
                 <echo message="Removing LESS CSS Script from HTML..."/>
-                <var name="lessregex" value="&lt;!-- less script [\d\w\s\W]* end less script --&gt;" />
-                <echo message="${lessregex}"/>
-                <replaceregexp match="${lessregex}" replace="">
+                <replaceregexp match="&lt;!-- less script [\d\w\s\W]* end less script --&gt;" replace="">
 			        <fileset dir="${dir.intermediate}" includes="${page-files}"/>
 			    </replaceregexp>
             </then>
