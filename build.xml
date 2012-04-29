@@ -438,15 +438,11 @@
 
           <mkdir dir="${dir.intermediate}"/>
           <copy todir="${dir.intermediate}" includeEmptyDirs="true">
-              <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
-                  <type type="dir"/>
-              </fileset>
+              <dirset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}"/>
           </copy>
             <mkdir dir="${dir.publish}"/>
             <copy todir="${dir.publish}" includeEmptyDirs="true">
-                <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
-                    <type type="dir"/>
-                </fileset>
+                <dirset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}" includes="*"/>
             </copy>
         </else>
     </if>
@@ -456,7 +452,7 @@
   <!-- This is a private target -->
 
       <echo message="Copying over new files..."/>
-      <copy todir="./${dir.publish}">
+      <copy todir="./${dir.publish}" includeEmptyDirs="false">
           <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
               <!-- exclude files that are superseded by optimized versions with different names -->
               <!-- this is not strictly necessary, but it avoids putting unreferenced files into your server -->
