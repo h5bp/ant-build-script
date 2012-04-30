@@ -21,6 +21,7 @@ Faster page load times and happy end users :)
 * Updates your HTML to use the minified jQuery instead of the development version
 * Remove unneeded references from HTML (like a root folder favicon)
 * Runs your JavaScript through a code quality tool (optional)
+* Optionally precompile LESS formatted CSS 
 
 <img src="http://html5boilerplate.com/img/chart.png">
 
