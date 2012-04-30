@@ -250,7 +250,6 @@
                      -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -copy"/>
 
   <target name="-basics.production"
@@ -260,7 +259,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -copy"/>
 
   <!-- Target: text -->
@@ -275,7 +273,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlclean,
                    -copy"/>
 
@@ -286,7 +283,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlclean,
                    -copy"/>
 
@@ -304,7 +300,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlbuildkit,
                    -imagespng,
                    -imagesjpg,
@@ -317,7 +312,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlbuildkit,
                    -imagespng,
                    -imagesjpg,
@@ -337,7 +331,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlclean,
                    -imagespng,
                    -imagesjpg,
@@ -350,7 +343,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlclean,
                    -imagespng,
                    -imagesjpg,
@@ -370,7 +362,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlcompress,
                    -imagespng,
                    -imagesjpg,
@@ -383,7 +374,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -manifest,
                    -htmlcompress,
                    -imagespng,
                    -imagesjpg,
@@ -459,7 +449,6 @@
               <exclude name="${dir.js}/**/*.js"/>
               <exclude name="${dir.js.modules}"/>
               <exclude name="${dir.css}/**/*.css"/>
-              <exclude name="${file.manifest}"/>
           </fileset>
       </copy>
 
@@ -473,7 +462,7 @@
 
       <copy todir="./${dir.publish}">
           <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
-              <exclude name="${file.manifest}"/>
+              
           </fileset>
       </copy>
 
@@ -677,78 +666,6 @@
 
   </target>
 
-
-  <target name="-manifest" depends="-usemin">
-      <if>
-          <isset property="file.manifest" />
-          <then>
-              <echo message="copying a fresh ${dir.build}/config/${file.manifest} to /${dir.intermediate}"/>
-
-              <delete file="${dir.intermediate}/${file.manifest}"/>
-              <copy file="${dir.build}/config/${file.manifest}" tofile="${dir.intermediate}/${file.manifest}" />
-
-              <echo message="manifest creation" />
-
-              <!-- update version -->
-              <echo message="Updating the site.manifest version date to today, current time"/>
-              <tstamp>
-                  <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss"/>
-              </tstamp>
-              <replaceregexp match="# version .+" replace="# version ${TODAY}" file="${dir.intermediate}/${file.manifest}"/>
-
-              <!-- add html files -->
-              <echo message="Updating the site.manifest with html files: ${page-files}"/>
-              <for list="${page-files}" param="file" delimiter="," trim="true">
-                  <sequential>
-                      <replaceregexp match="# html files" replace="# html files${line.separator}@{file}" file="${dir.intermediate}/${file.manifest}" />
-                  </sequential>
-              </for>
-
-              <!-- add stylesheet files -->
-              <echo message="Updating the site.manifest with the new css filename: ${style.css}"/>
-              <replace token="# css files" value="# css files${line.separator}${style.css}" file="${dir.intermediate}/${file.manifest}" />
-
-              <!-- add javascript files -->
-              <echo message="Updating the site.manifest with the new js filename: ${scripts.js}"/>
-              <for param="file">
-                    <path>
-                        <fileset dir="./${dir.intermediate}/${dir.js.libs}/"
-                            includes="*.min.js"/>
-                    </path>
-                    <sequential>
-                        <basename property="filename.@{file}" file="@{file}" />
-                        <replaceregexp match="# js files" replace="# js files${line.separator}${dir.js.libs}/${filename.@{file}}" file="${dir.intermediate}/${file.manifest}" />
-                    </sequential>
-                </for>
-                <replace token="# js files" value="# js files${line.separator}${scripts.js}" file="${dir.intermediate}/${file.manifest}" />
-
-                <!-- add image files -->
-                <echo message="Updating the site.manifest with the images"/>
-                <for param="file">
-                    <path>
-                        <fileset dir="./${dir.source}/${dir.images}/" includes="**/*"/>
-                    </path>
-                    <sequential>
-                        <basename property="filename.@{file}" file="@{file}" />
-                        <replaceregexp match="# image files" replace="# image files${line.separator}${dir.images}/${filename.@{file}}" file="${dir.intermediate}/${file.manifest}" />
-                    </sequential>
-                </for>
-
-                <echo message="copying ${file.manifest} to /${dir.publish}"/>
-                <copy file="${dir.intermediate}/${file.manifest}" tofile="${dir.publish}/${file.manifest}" />
-
-                <!-- add manifest attribute -->
-                <echo>Add manifest attribute to HTML: </echo>
-                <replaceregexp match="&lt;html (.*?)(?&lt;![?])&gt;" replace='&lt;html \1 manifest="${file.manifest}"&gt;' flags="g">
-                    <fileset dir="./${dir.intermediate}" includes="${page-files}"/>
-                </replaceregexp>
-
-            </then>
-            <else>
-                <echo message="no manifest.appcache generated!" />
-            </else>
-        </if>
-    </target>
 
     <target name="-htmlclean" depends="-usemin">
         <echo message="Run htmlcompressor on the HTML"/>
