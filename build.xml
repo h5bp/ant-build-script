@@ -892,7 +892,12 @@
             <targetfile/>
         </apply>
     </target>
-
+	<!-- bring back the glory of hot pink -->
+	<target name="hawterize">
+	        <replace file="${dir.source}/${dir.css}/${file.root.stylesheet}"
+                        token="#b3d4fc"
+                       value="#fe57a1" />
+	</target>
 
     <!-- IMAGES -->
     <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng">
