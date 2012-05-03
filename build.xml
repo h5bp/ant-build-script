@@ -432,7 +432,7 @@
           </copy>
             <mkdir dir="${dir.publish}"/>
             <copy todir="${dir.publish}" includeEmptyDirs="true">
-                <dirset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}" includes="*"/>
+                <dirset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}" includes="**"/>
             </copy>
         </else>
     </if>
