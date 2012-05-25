@@ -21,15 +21,16 @@ Faster page load times and happy end users :)
 * Updates your HTML to use the minified jQuery instead of the development version
 * Remove unneeded references from HTML (like a root folder favicon)
 * Runs your JavaScript through a code quality tool (optional)
-* Optionally precompile LESS formatted CSS 
+* Optionally precompile LESS formatted CSS
+* Optionally output JSDOC3 documentation
 
 <img src="http://html5boilerplate.com/img/chart.png">
 
 ## Add the build script to your project
 
-Since we split out the build scripts from the main h5bp repo, you now have more options on how to integrate a build script into your project. Beyond the choice of technology, there's also the choice of how to integrate the build script of choice into your h5bp project or local repo. There is nothing stopping you from manually dropping the build script in to your HTML5 Boilerplate project. That works. 
+Since we split out the build scripts from the main h5bp repo, you now have more options on how to integrate a build script into your project. Beyond the choice of technology, there's also the choice of how to integrate the build script of choice into your h5bp project or local repo. There is nothing stopping you from manually dropping the build script in to your HTML5 Boilerplate project. That works.
 
-However, if you'd like to merge it into your main repository and preserve the build script commit history, please follow this workflow: 
+However, if you'd like to merge it into your main repository and preserve the build script commit history, please follow this workflow:
 
 ```
 # Move into your project's git repository
@@ -51,16 +52,16 @@ git pull -s subtree h5bp-ant-bs master
 
 ## Requirements
 
-Out of the box, the build script requires Java 1.6. 
+Out of the box, the build script requires Java 1.6.
 
-Ant itself requires the Java JDK, version 1.4 or later. 1.5 or later is strongly recommended. 
+Ant itself requires the Java JDK, version 1.4 or later. 1.5 or later is strongly recommended.
 
-Closure Compiler, our tool for script minification, requires Java 1.6. 
+Closure Compiler, our tool for script minification, requires Java 1.6.
 
-This means that OS X versions prior to 10.6 are no longer supported out of the box. 
-[SoyLatte][soylatte] provides 10.4 and 10.5 builds of OpenJDK 7 for Intel OS X machines. However, only OS X 10.5 builds of OpenJDK 7 are available for PowerPC based Macs due to a bug in the 10.4 Compiler.  
+This means that OS X versions prior to 10.6 are no longer supported out of the box.
+[SoyLatte][soylatte] provides 10.4 and 10.5 builds of OpenJDK 7 for Intel OS X machines. However, only OS X 10.5 builds of OpenJDK 7 are available for PowerPC based Macs due to a bug in the 10.4 Compiler.
 ( Be sure to read the Download link as the archives are password protected "to provide a click though agreement" of the JDK licensing. )
 
-[soylatte]: http://landonf.bikemonkey.org/static/soylatte/ 
+[soylatte]: http://landonf.bikemonkey.org/static/soylatte/
 
 Alternatively, YUI Compressor, which requires Java > 1.4, could be swapped out for Closure Compiler.

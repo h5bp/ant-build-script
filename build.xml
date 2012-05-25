@@ -250,7 +250,8 @@
                      -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <target name="-basics.production"
           depends="-intro,
@@ -259,7 +260,8 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <!-- Target: text -->
   <target name="-text.dev"
@@ -274,7 +276,8 @@
                    -js.scripts.concat,
                    -css,
                    -htmlclean,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <target name="-text.production"
           depends="-intro,
@@ -284,7 +287,8 @@
                    -js.scripts.concat,
                    -css,
                    -htmlclean,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <!-- Target: buildkit -->
   <target name="-buildkit.dev"
@@ -303,7 +307,8 @@
                    -htmlbuildkit,
                    -imagespng,
                    -imagesjpg,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <target name="-buildkit.production"
           depends="-intro,
@@ -315,7 +320,8 @@
                    -htmlbuildkit,
                    -imagespng,
                    -imagesjpg,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <!-- Target: build -->
   <target name="-build.dev"
@@ -334,7 +340,8 @@
                    -htmlclean,
                    -imagespng,
                    -imagesjpg,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <target name="-build.production"
           depends="-intro,
@@ -346,7 +353,8 @@
                    -htmlclean,
                    -imagespng,
                    -imagesjpg,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <!-- Target: minify -->
   <target name="-minify.dev"
@@ -365,7 +373,8 @@
                    -htmlcompress,
                    -imagespng,
                    -imagesjpg,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <target name="-minify.production"
           depends="-intro,
@@ -377,7 +386,8 @@
                    -htmlcompress,
                    -imagespng,
                    -imagesjpg,
-                   -copy"/>
+                   -copy,
+                   -jsdoc3"/>
 
   <!--
   *************************************************
@@ -462,7 +472,7 @@
 
       <copy todir="./${dir.publish}">
           <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
-              
+
           </fileset>
       </copy>
 
@@ -474,7 +484,7 @@
       <filelist id="file.root" dir="${dir.source}" files="${file.root.page}"/>
       <echo message="Concatenating Main JS scripts based on ${file.root.page}..."/>
 
-      <apply executable="java" parallel="false" 
+      <apply executable="java" parallel="false"
           outputproperty="scripts.ordered">
           <arg value="-cp"/>
           <arg value="./${dir.build.tools}"/>
@@ -501,7 +511,7 @@
       <propertyregex property="scripts.sha" input="${scripts.fullsha}" regexp=".{${hash.length}}" select="\0" />
       <property name="scripts.js" value="${dir.js}/${scripts.sha}.js" />
       <copy file="${dir.intermediate}/${dir.js}/scripts-concat.min.js" tofile="${dir.publish}/${dir.js}/${scripts.sha}.js" />
-  
+
   <!-- cachebust modules directory name -->
       <!-- Concatinate only to generate checksum. Concatinated file not actually published. -->
       <if>
@@ -538,7 +548,7 @@
         <fileset dir="${dir.source}/${dir.js}" excludes="${file.js.bypass}, **/*.min.js" includes="**/*.js">
           <exclude name="${dir.js}/otherscripts-concat.js"/>
           <exclude name="${dir.js}/scripts-concat.js"/>
-        </fileset>          
+        </fileset>
           <arg line="-jar"/>
           <arg path="./${dir.build.tools}/closure-compiler-v1346.jar"/>
           <arg line="--js"/>
@@ -646,7 +656,7 @@
         replace="&lt;link\1href='\2/${css.sha}.css'\3" flags="m">
           <fileset dir="${dir.intermediate}" includes="${page-files}"/>
       </replaceregexp>
-      
+
       <!-- Tidy up HTML when compiling LESS -->
       <if>
             <equals arg1="${build.css.less}" arg2="true"/>
@@ -850,7 +860,7 @@
                 </if>
             </sequential>
         </for>
-        
+
         <if>
             <equals arg1="${build.css.less}" arg2="true"/>
             <then>
@@ -861,8 +871,8 @@
                 <echo message="NOT Processing LESS CSS"/>
             </else>
         </if>
-        
-        
+
+
         <echo message="Minifying css..."/>
 
         <apply executable="java" parallel="false">
@@ -939,7 +949,7 @@
                        Temporarily fixes #39
                        <arg value="${strip-meta-tags}"/>
                     -->
-                    <arg value="-out"/>	
+                    <arg value="-out"/>
 		    <targetfile/>
                     <srcfile/>
                     <mapper type="identity"/>
@@ -1035,6 +1045,38 @@
         </apply>
     </target>
 
+	  <target name="-jsdoc3" description="(PRIVATE) Publishes documentation">
+	  	<!-- Delete any existing docs directory -->
+	  	<echo message="Deleting previous documentation"/>
+      <delete dir="./${dir.docs}/"/>
+
+      <if>
+          <equals arg1="${build.jsdoc3}" arg2="true"/>
+          <then>
+				    <echo message="Building documentation"/>
+				    <apply executable="java" parallel="false" dir="./${dir.jsdoc}">
+				      <!-- Include our JS directory, but exclude libs -->
+				      <dirset dir="${dir.js}" excludes="${slug.libs}"></dirset>
+				      <arg line="-classpath"/>
+				      <arg path="./${dir.jsdoc}/lib/js.jar"/>
+				      <arg value="org.mozilla.javascript.tools.shell.Main"/>
+				      <arg line="-modules" />
+				      <arg value="node_modules"/>
+				      <arg line="-modules" />
+				      <arg value="rhino_modules"/>
+				      <arg path="./${dir.jsdoc}/${tool.jsdoc3}"/>
+				      <arg line="${tool.jsdoc3.opts}" />
+				      <!-- we're in jsdoc here, so back up to the root directory -->
+				      <arg line="--destination"/>
+				      <arg value="../../../${dir.docs}"/>
+				    </apply>
+          </then>
+          <else>
+              <echo message="NOT Building Documentation"/>
+          </else>
+      </if>
+	  </target>
+
 	<macrodef name="lessjs">
 	    <attribute name="input" />
 	    <attribute name="output" />
@@ -1046,7 +1088,7 @@
 	        <echo>Lessjs: generated @{output}</echo>
 	    </sequential>
 	</macrodef>
-	
+
 	<!-- Import project.xml (put any custom build targets in this file so that they aren't overwritten when build.xml is updated) -->
 	<!-- See: https://github.com/h5bp/html5-boilerplate/issues/704 for discussion of the original pull request-->
 	<import file="./project.xml" />
