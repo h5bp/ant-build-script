@@ -10,6 +10,8 @@ Notice
 This is *beta software*! It is available for testing purposes and may not be 
 suitable for production use yet.
 
+### Pull Requesters: Please read HOW_TO_CONTRIBUTE.md 
+
 Installation
 ------------
 
@@ -17,16 +19,19 @@ Download a copy of JSDoc 3 from the official Git Hub repository here:
 <https://github.com/jsdoc3/jsdoc>
 
 To test that jsdoc is working, change your working directory to the jsdoc folder
-and run the following command:
+and run the following command on Windows:
 
-	java -cp lib/js.jar org.mozilla.javascript.tools.shell.Main \
-	-modules node_modules -modules rhino_modules \
-	jsdoc.js -T
-	
-If you are operating on a Mac OSX or *nix platform, you can shorten that command
-to this:
+    jsdoc -T
+
+... or on a Max OSX or *nix platform:
 
     ./jsdoc -T
+
+If you can't get the short-form commands to work, try invoking Java directly:
+
+    java -cp lib/js.jar org.mozilla.javascript.tools.shell.Main \
+    -modules node_modules -modules rhino_modules -modules . \
+    jsdoc.js -T
 
 Usage
 -----
@@ -38,7 +43,7 @@ directory:
 
 For help regarding the supported commandline options use the --help option.
 
-	./jsdoc --help
+    ./jsdoc --help
 
 Generated documentation will appear in the folder specified by the --destination
 option, or in a folder named "out" by default.
@@ -67,11 +72,17 @@ JavaScript. Luckily it comes with a full-on debugger included that can be much
 more useful than a simple stack trace. To invoke JSDoc with the debugger try the
 following command:
 
+    jsdoc --debug
+
+or the long form version:
+
     $ java -classpath lib/js.jar \
     org.mozilla.javascript.tools.debugger.Main -debug \
-    -modules node_modules -modules rhino_modules \
+    -modules node_modules -modules rhino_modules -modules . \
     jsdoc.js \
     your/script.js
+
+Note: ```--debug``` must be the first argument to the short form command
 
 This will open a debugging window. Choose "Break on Exceptions" from the "Debug"
 menu, then press the "Run" button. If there is an error, you should see exactly
