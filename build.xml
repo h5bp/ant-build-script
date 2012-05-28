@@ -872,6 +872,17 @@
             </else>
         </if>
 
+        <if>
+            <equals arg1="${build.css.scss}" arg2="true"/>
+            <then>
+                <echo message="Processing SASS (SCSS) CSS..."/>
+                <copy file="${dir.intermediate}/${dir.css}/style-concat.css" tofile="${dir.intermediate}/${dir.css}/style-concat.scss" />
+                <scss input="${dir.intermediate}/${dir.css}/style-concat.scss" output="${dir.intermediate}/${dir.css}/style-concat.css" />
+            </then>
+            <else>
+                <echo message="NOT Processing SASS (SCSS) CSS"/>
+            </else>
+        </if>
 
         <echo message="Minifying css..."/>
 
@@ -1087,7 +1098,30 @@
 	        </java>
 	        <echo>Lessjs: generated @{output}</echo>
 	    </sequential>
-	</macrodef>
+	</macrodef>	
+	
+    <macrodef name="scss">
+        <attribute name="input"/>
+        <attribute name="output"/>
+        <sequential>
+            <path id="JRuby">
+                <fileset file="./${dir.build.tools}/jruby-complete-1.6.7.2.jar"/>
+                <fileset file="./${dir.build.tools}/gem-sass.jar"/>
+            </path>
+            <property name="scss.src" value="${basedir}/@{input}" />            
+            <property name="scss.dest" value="${basedir}/@{output}" />
+            <script language="ruby" classpathref="JRuby">
+            <![CDATA[
+                require 'rubygems'
+                require 'sass'
+                require 'sass/exec'
+                opts = Sass::Exec::Sass.new([$project.getProperty('scss.src'), $project.getProperty('scss.dest')])
+                opts.parse
+            ]]>
+            </script>
+            <echo>Sass (scss): generated @{output}</echo>            
+        </sequential>
+    </macrodef>    
 
 	<!-- Import project.xml (put any custom build targets in this file so that they aren't overwritten when build.xml is updated) -->
 	<!-- See: https://github.com/h5bp/html5-boilerplate/issues/704 for discussion of the original pull request-->
