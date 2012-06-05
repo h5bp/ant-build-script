@@ -464,7 +464,6 @@
             </first>
         </apply>
         <filelist id="scripts.toconcat" dir="./${dir.intermediate}/" files="${scripts.ordered}">
-            <file name="${dir.js}/plugins.js"/>
         </filelist>
         
         <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
