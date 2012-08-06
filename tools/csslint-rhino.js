@@ -21,8 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 5-July-2011 03:16:53 */
+/* Build time: 14-May-2012 10:24:48 */
 var CSSLint = (function(){
+
 /*!
 Parser-Lib
 Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
@@ -46,9 +47,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 5-July-2011 03:12:40 */
+/* Version v0.1.7, Build time: 4-May-2012 03:57:04 */
 var parserlib = {};
 (function(){
+
 
 /**
  * A generic base to inherit from for any object
@@ -98,11 +100,11 @@ EventTarget.prototype = {
         if (typeof event == "string"){
             event = { type: event };
         }
-        if (!event.target){
+        if (typeof event.target != "undefined"){
             event.target = this;
         }
         
-        if (!event.type){
+        if (typeof event.type == "undefined"){
             throw new Error("Event object missing 'type' property.");
         }
         
@@ -145,7 +147,7 @@ EventTarget.prototype = {
  * @param {String} text The text to read.
  */
 function StringReader(text){
-    
+
     /**
      * The input text with line endings normalized.
      * @property _input
@@ -153,8 +155,8 @@ function StringReader(text){
      * @private
      */
     this._input = text.replace(/\n\r?/g, "\n");
-    
-    
+
+
     /**
      * The row for the character to be read next.
      * @property _line
@@ -162,8 +164,8 @@ function StringReader(text){
      * @private
      */
     this._line = 1;
-    
-    
+
+
     /**
      * The column for the character to be read next.
      * @property _col
@@ -171,13 +173,13 @@ function StringReader(text){
      * @private
      */
     this._col = 1;
-    
+
     /**
      * The index of the character in the input to be read next.
      * @property _cursor
      * @type int
      * @private
-     */    
+     */
     this._cursor = 0;
 }
 
@@ -185,11 +187,11 @@ StringReader.prototype = {
 
     //restore constructor
     constructor: StringReader,
-        
+
     //-------------------------------------------------------------------------
     // Position info
     //-------------------------------------------------------------------------
-    
+
     /**
      * Returns the column of the character to be read next.
      * @return {int} The column of the character to be read next.
@@ -198,29 +200,29 @@ StringReader.prototype = {
     getCol: function(){
         return this._col;
     },
-    
+
     /**
      * Returns the row of the character to be read next.
      * @return {int} The row of the character to be read next.
      * @method getLine
-     */    
+     */
     getLine: function(){
         return this._line ;
     },
-    
+
     /**
      * Determines if you're at the end of the input.
      * @return {Boolean} True if there's no more input, false otherwise.
      * @method eof
-     */    
+     */
     eof: function(){
-        return (this._cursor == this._input.length)
+        return (this._cursor == this._input.length);
     },
-    
+
     //-------------------------------------------------------------------------
     // Basic reading
     //-------------------------------------------------------------------------
-    
+
     /**
      * Reads the next character without advancing the cursor.
      * @param {int} count How many characters to look ahead (default is 1).
@@ -230,17 +232,17 @@ StringReader.prototype = {
     peek: function(count){
         var c = null;
         count = (typeof count == "undefined" ? 1 : count);
-        
+
         //if we're not at the end of the input...
-        if (this._cursor < this._input.length){        
-        
+        if (this._cursor < this._input.length){
+
             //get character and increment cursor and column
             c = this._input.charAt(this._cursor + count - 1);
         }
-        
+
         return c;
-    },        
-       
+    },
+
     /**
      * Reads the next character from the input and adjusts the row and column
      * accordingly.
@@ -249,10 +251,10 @@ StringReader.prototype = {
      */
     read: function(){
         var c = null;
-        
+
         //if we're not at the end of the input...
         if (this._cursor < this._input.length){
-        
+
             //if the last character was a newline, increment row count
             //and reset column count
             if (this._input.charAt(this._cursor) == "\n"){
@@ -261,18 +263,18 @@ StringReader.prototype = {
             } else {
                 this._col++;
             }
-        
+
             //get character and increment cursor and column
             c = this._input.charAt(this._cursor++);
         }
-        
+
         return c;
-    },        
-       
+    },
+
     //-------------------------------------------------------------------------
     // Misc
     //-------------------------------------------------------------------------
-    
+
     /**
      * Saves the current location so it can be returned to later.
      * @method mark
@@ -285,7 +287,7 @@ StringReader.prototype = {
             col:    this._col
         };
     },
-    
+
     reset: function(){
         if (this._bookmark){
             this._cursor = this._bookmark.cursor;
@@ -294,11 +296,11 @@ StringReader.prototype = {
             delete this._bookmark;
         }
     },
-    
+
     //-------------------------------------------------------------------------
     // Advanced reading
     //-------------------------------------------------------------------------
-    
+
     /**
      * Reads up to and including the given string. Throws an error if that
      * string is not found.
@@ -306,9 +308,9 @@ StringReader.prototype = {
      * @return {String} The string when it is found.
      * @throws Error when the string pattern is not found.
      * @method readTo
-     */       
+     */
     readTo: function(pattern){
-    
+
         var buffer = "",
             c;
 
@@ -325,11 +327,11 @@ StringReader.prototype = {
                 throw new Error("Expected \"" + pattern + "\" at line " + this._line  + ", col " + this._col + ".");
             }
         }
-        
+
         return buffer;
-    
+
     },
-    
+
     /**
      * Reads characters while each character causes the given
      * filter function to return true. The function is passed
@@ -339,21 +341,21 @@ StringReader.prototype = {
      * @return {String} The string made up of all characters that passed the
      *      filter check.
      * @method readWhile
-     */           
+     */
     readWhile: function(filter){
-        
+
         var buffer = "",
             c = this.read();
-        
+
         while(c !== null && filter(c)){
             buffer += c;
             c = this.read();
         }
-        
+
         return buffer;
-    
+
     },
-    
+
     /**
      * Reads characters that match either text or a regular expression and
      * returns those characters. If a match is found, the row and column
@@ -365,41 +367,41 @@ StringReader.prototype = {
      * @return {String} The string made up of all characters that matched or
      *      null if there was no match.
      * @method readMatch
-     */               
+     */
     readMatch: function(matcher){
-    
+
         var source = this._input.substring(this._cursor),
             value = null;
-        
+
         //if it's a string, just do a straight match
         if (typeof matcher == "string"){
             if (source.indexOf(matcher) === 0){
-                value = this.readCount(matcher.length); 
+                value = this.readCount(matcher.length);
             }
         } else if (matcher instanceof RegExp){
             if (matcher.test(source)){
                 value = this.readCount(RegExp.lastMatch.length);
             }
         }
-        
-        return value;        
+
+        return value;
     },
-    
-    
+
+
     /**
      * Reads a given number of characters. If the end of the input is reached,
      * it reads only the remaining characters and does not throw an error.
      * @param {int} count The number of characters to read.
      * @return {String} The string made up the read characters.
      * @method readCount
-     */                   
+     */
     readCount: function(count){
         var buffer = "";
-        
+
         while(count--){
             buffer += this.read();
         }
-        
+
         return buffer;
     }
 
@@ -449,7 +451,7 @@ SyntaxError.prototype = new Error();
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SyntaxUnit(text, line, col){
+function SyntaxUnit(text, line, col, type){
 
 
     /**
@@ -473,6 +475,12 @@ function SyntaxUnit(text, line, col){
      */
     this.text = text;
 
+    /**
+     * The type of syntax unit.
+     * @type int
+     * @property type
+     */
+    this.type = type;
 }
 
 /**
@@ -512,6 +520,8 @@ SyntaxUnit.prototype = {
     }
 
 };
+/*global StringReader, SyntaxError*/
+
 /**
  * Generic TokenStream providing base functionality.
  * @class TokenStreamBase
@@ -528,7 +538,6 @@ function TokenStreamBase(input, tokenData){
      * @property _reader
      * @private
      */
-    //this._reader = (typeof input == "string") ? new StringReader(input) : input;
     this._reader = input ? new StringReader(input.toString()) : null;
     
     /**
@@ -577,14 +586,14 @@ function TokenStreamBase(input, tokenData){
  */
 TokenStreamBase.createTokenData = function(tokens){
 
-    var nameMap 	= [],
-        typeMap 	= {},
-		tokenData 	= tokens.concat([]),
-		i			= 0,
-		len			= tokenData.length+1;
+    var nameMap     = [],
+        typeMap     = {},
+        tokenData     = tokens.concat([]),
+        i            = 0,
+        len            = tokenData.length+1;
     
     tokenData.UNKNOWN = -1;
-	tokenData.unshift({name:"EOF"});
+    tokenData.unshift({name:"EOF"});
 
     for (; i < len; i++){
         nameMap.push(tokenData[i].name);
@@ -601,8 +610,8 @@ TokenStreamBase.createTokenData = function(tokens){
     tokenData.type = function(c){
         return typeMap[c];
     };
-	
-	return tokenData;
+    
+    return tokenData;
 };
 
 TokenStreamBase.prototype = {
@@ -663,6 +672,8 @@ TokenStreamBase.prototype = {
      */    
     mustMatch: function(tokenTypes, channel){
 
+        var token;
+
         //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)){
             tokenTypes = [tokenTypes];
@@ -671,7 +682,7 @@ TokenStreamBase.prototype = {
         if (!this.match.apply(this, arguments)){    
             token = this.LT(1);
             throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name + 
-                " at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
+                " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
     
@@ -692,7 +703,7 @@ TokenStreamBase.prototype = {
      */
     advance: function(tokenTypes, channel){
         
-        while(this.LA(0) != 0 && !this.match(tokenTypes, channel)){
+        while(this.LA(0) !== 0 && !this.match(tokenTypes, channel)){
             this.get();
         }
 
@@ -739,7 +750,7 @@ TokenStreamBase.prototype = {
         }
         
         //call token retriever method
-		token = this._getToken();
+        token = this._getToken();
 
         //if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide){
@@ -911,6 +922,8 @@ TokenStreamBase.prototype = {
 };
 
 
+
+
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
@@ -919,6 +932,8 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
+
+
 /* 
 Parser-Lib
 Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
@@ -942,13 +957,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 5-July-2011 03:12:40 */
+/* Version v0.1.7, Build time: 4-May-2012 03:57:04 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
+
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -1018,7 +1034,7 @@ var Colors = {
     lightcoral      :"#f08080",
     lightcyan       :"#e0ffff",
     lightgoldenrodyellow  :"#fafad2",
-    lightgrey       :"#d3d3d3",
+    lightgray       :"#d3d3d3",
     lightgreen      :"#90ee90",
     lightpink       :"#ffb6c1",
     lightsalmon     :"#ffa07a",
@@ -1092,6 +1108,7 @@ var Colors = {
     yellow          :"#ffff00",
     yellowgreen     :"#9acd32"
 };
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
@@ -1104,7 +1121,7 @@ var Colors = {
  */
 function Combinator(text, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
 
     /**
      * The type of modifier.
@@ -1130,181 +1147,7 @@ Combinator.prototype = new SyntaxUnit();
 Combinator.prototype.constructor = Combinator;
 
 
-var Level1Properties = {
-
-    "background": 1,
-    "background-attachment": 1,
-    "background-color": 1,
-    "background-image": 1,
-    "background-position": 1,
-    "background-repeat": 1,
- 
-    "border": 1,
-    "border-bottom": 1,
-    "border-bottom-width": 1,
-    "border-color": 1,
-    "border-left": 1,
-    "border-left-width": 1,
-    "border-right": 1,
-    "border-right-width": 1,
-    "border-style": 1,
-    "border-top": 1,
-    "border-top-width": 1,
-    "border-width": 1,
- 
-    "clear": 1,
-    "color": 1,
-    "display": 1,
-    "float": 1,
- 
-    "font": 1,
-    "font-family": 1,
-    "font-size": 1,
-    "font-style": 1,
-    "font-variant": 1,
-    "font-weight": 1,
- 
-    "height": 1,
-    "letter-spacing": 1,
-    "line-height": 1,
- 
-    "list-style": 1,
-    "list-style-image": 1,
-    "list-style-position": 1,
-    "list-style-type": 1,
- 
-    "margin": 1,
-    "margin-bottom": 1,
-    "margin-left": 1,
-    "margin-right": 1,
-    "margin-top": 1,
- 
-    "padding": 1,
-    "padding-bottom": 1,
-    "padding-left": 1,
-    "padding-right": 1,
-    "padding-top": 1,
- 
-    "text-align": 1,
-    "text-decoration": 1,
-    "text-indent": 1,
-    "text-transform": 1,
- 
-    "vertical-align": 1,
-    "white-space": 1,
-    "width": 1,
-    "word-spacing": 1
-    
-};
-
-var Level2Properties = {
-
-    //Aural
-    "azimuth": 1,
-    "cue-after": 1,
-    "cue-before": 1,
-    "cue": 1,
-    "elevation": 1,
-    "pause-after": 1,
-    "pause-before": 1,
-    "pause": 1,
-    "pitch-range": 1,
-    "pitch": 1,
-    "play-during": 1,
-    "richness": 1,
-    "speak-header": 1,
-    "speak-numeral": 1,
-    "speak-punctuation": 1,
-    "speak": 1,
-    "speech-rate": 1,
-    "stress": 1,
-    "voice-family": 1,
-    "volume": 1,
-    
-    //Paged
-    "orphans": 1,
-    "page-break-after": 1,
-    "page-break-before": 1,
-    "page-break-inside": 1,
-    "widows": 1,
-
-    //Interactive
-    "cursor": 1,
-    "outline-color": 1,
-    "outline-style": 1,
-    "outline-width": 1,
-    "outline": 1,    
-    
-    //Visual
-    "background-attachment": 1,
-    "background-color": 1,
-    "background-image": 1,
-    "background-position": 1,
-    "background-repeat": 1,
-    "background": 1,    
-    "border-collapse": 1,
-    "border-color": 1,
-    "border-spacing": 1,
-    "border-style": 1,
-    "border-top": 1,
-    "border-top-color": 1,
-    "border-top-style": 1,
-    "border-top-width": 1,
-    "border-width": 1,
-    "border": 1,
-    "bottom": 1,    
-    "caption-side": 1,
-    "clear": 1,
-    "clip": 1,
-    "color": 1,
-    "content": 1,
-    "counter-increment": 1,
-    "counter-reset": 1,
-    "direction": 1,
-    "display": 1,
-    "empty-cells": 1,
-    "float": 1,
-    "font-family": 1,
-    "font-size": 1,
-    "font-style": 1,
-    "font-variant": 1,
-    "font-weight": 1,
-    "font": 1,
-    "height": 1,
-    "left": 1,
-    "letter-spacing": 1,
-    "line-height": 1,
-    "list-style-image": 1,
-    "list-style-position": 1,
-    "list-style-type": 1,
-    "list-style": 1,
-    "margin-right": 1,
-    "margin-top": 1,
-    "margin": 1,
-    "max-height": 1,
-    "max-width": 1,
-    "min-height": 1,
-    "min-width": 1,
-    "overflow": 1,
-    "padding-top": 1,
-    "padding": 1,
-    "position": 1,
-    "quotes": 1,
-    "right": 1,
-    "table-layout": 1,
-    "text-align": 1,
-    "text-decoration": 1,
-    "text-indent": 1,
-    "text-transform": 1,
-    "top": 1,
-    "unicode-bidi": 1,
-    "vertical-align": 1,
-    "visibility": 1,
-    "white-space": 1,
-    "width": 1,
-    "word-spacing": 1,
-    "z-index": 1
-};
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a media feature, such as max-width:500.
  * @namespace parserlib.css
@@ -1316,7 +1159,7 @@ var Level2Properties = {
  */
 function MediaFeature(name, value){
     
-    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol);
+    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol, Parser.MEDIA_FEATURE_TYPE);
 
     /**
      * The name of the media feature
@@ -1336,6 +1179,8 @@ function MediaFeature(name, value){
 MediaFeature.prototype = new SyntaxUnit();
 MediaFeature.prototype.constructor = MediaFeature;
 
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents an individual media query.
  * @namespace parserlib.css
@@ -1350,7 +1195,7 @@ MediaFeature.prototype.constructor = MediaFeature;
  */
 function MediaQuery(modifier, mediaType, features, line, col){
     
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 
     /**
      * The media modifier ("not" or "only")
@@ -1378,6 +1223,11 @@ function MediaQuery(modifier, mediaType, features, line, col){
 MediaQuery.prototype = new SyntaxUnit();
 MediaQuery.prototype.constructor = MediaQuery;
 
+
+/*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
+    PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
+    PropertyName, Combinator, MediaFeature, MediaQuery, EventTarget */
+
 /**
  * A CSS3 parser.
  * @namespace parserlib.css
@@ -1401,6 +1251,18 @@ function Parser(options){
     this._tokenStream = null;
 }
 
+//Static constants
+Parser.DEFAULT_TYPE = 0;
+Parser.COMBINATOR_TYPE = 1;
+Parser.MEDIA_FEATURE_TYPE = 2;
+Parser.MEDIA_QUERY_TYPE = 3;
+Parser.PROPERTY_NAME_TYPE = 4;
+Parser.PROPERTY_VALUE_TYPE = 5;
+Parser.PROPERTY_VALUE_PART_TYPE = 6;
+Parser.SELECTOR_TYPE = 7;
+Parser.SELECTOR_PART_TYPE = 8;
+Parser.SELECTOR_SUB_PART_TYPE = 9;
+
 Parser.prototype = function(){
 
     var proto = new EventTarget(),  //new prototype
@@ -1409,6 +1271,18 @@ Parser.prototype = function(){
         
             //restore constructor
             constructor: Parser,
+                        
+            //instance constants - yuck
+            DEFAULT_TYPE : 0,
+            COMBINATOR_TYPE : 1,
+            MEDIA_FEATURE_TYPE : 2,
+            MEDIA_QUERY_TYPE : 3,
+            PROPERTY_NAME_TYPE : 4,
+            PROPERTY_VALUE_TYPE : 5,
+            PROPERTY_VALUE_PART_TYPE : 6,
+            SELECTOR_TYPE : 7,
+            SELECTOR_PART_TYPE : 8,
+            SELECTOR_SUB_PART_TYPE : 9,            
         
             //-----------------------------------------------------------------
             // Grammar
@@ -1421,12 +1295,13 @@ Parser.prototype = function(){
                  *  : [ CHARSET_SYM S* STRING S* ';' ]?
                  *    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
                  *    [ namespace [S|CDO|CDC]* ]*
-                 *    [ [ ruleset | media | page | font_face ] [S|CDO|CDC]* ]*
+                 *    [ [ ruleset | media | page | font_face | keyframes ] [S|CDO|CDC]* ]*
                  *  ;
                  */ 
                
                 var tokenStream = this._tokenStream,
                     charset     = null,
+                    count,
                     token,
                     tt;
                     
@@ -1470,6 +1345,39 @@ Parser.prototype = function(){
                                 this._font_face(); 
                                 this._skipCruft();
                                 break;  
+                            case Tokens.KEYFRAMES_SYM:
+                                this._keyframes(); 
+                                this._skipCruft();
+                                break;                                
+                            case Tokens.UNKNOWN_SYM:  //unknown @ rule
+                                tokenStream.get();
+                                if (!this.options.strict){
+                                
+                                    //fire error event
+                                    this.fire({
+                                        type:       "error",
+                                        error:      null,
+                                        message:    "Unknown @ rule: " + tokenStream.LT(0).value + ".",
+                                        line:       tokenStream.LT(0).startLine,
+                                        col:        tokenStream.LT(0).startCol
+                                    });                          
+                                    
+                                    //skip braces
+                                    count=0;
+                                    while (tokenStream.advance([Tokens.LBRACE, Tokens.RBRACE]) == Tokens.LBRACE){
+                                        count++;    //keep track of nesting depth
+                                    }
+                                    
+                                    while(count){
+                                        tokenStream.advance([Tokens.RBRACE]);
+                                        count--;
+                                    }
+                                    
+                                } else {
+                                    //not a syntax error, rethrow it
+                                    throw new SyntaxError("Unknown @ rule.", tokenStream.LT(0).startLine, tokenStream.LT(0).startCol);
+                                }                                
+                                break;
                             case Tokens.S:
                                 this._readWhitespace();
                                 break;
@@ -2135,7 +2043,7 @@ Parser.prototype = function(){
                  */    
                  
                 var tokenStream = this._tokenStream,
-                tt,
+                    tt,
                     selectors;
 
 
@@ -2647,7 +2555,7 @@ Parser.prototype = function(){
                     
                 while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
                         Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
-                        Tokens.FREQ, Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
                         Tokens.RESOLUTION])){
                     
                     value += tokenStream.token().value;
@@ -2756,7 +2664,10 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     property    = null,
                     expr        = null,
-                    prio        = null;
+                    prio        = null,
+                    error       = null,
+                    invalid     = null,
+                    propertyName= "";
                 
                 property = this._property();
                 if (property !== null){
@@ -2773,13 +2684,32 @@ Parser.prototype = function(){
                     
                     prio = this._prio();
                     
+                    /*
+                     * If hacks should be allowed, then only check the root
+                     * property. If hacks should not be allowed, treat
+                     * _property or *property as invalid properties.
+                     */
+                    propertyName = property.toString();
+                    if (this.options.starHack && property.hack == "*" ||
+                            this.options.underscoreHack && property.hack == "_") {
+                         
+                        propertyName = property.text;
+                    }
+                    
+                    try {
+                        this._validateProperty(propertyName, expr);
+                    } catch (ex) {
+                        invalid = ex;
+                    }
+                    
                     this.fire({
                         type:       "property",
                         property:   property,
                         value:      expr,
                         important:  prio,
                         line:       property.line,
-                        col:        property.col
+                        col:        property.col,
+                        invalid:    invalid
                     });                      
                     
                     return true;
@@ -2847,7 +2777,7 @@ Parser.prototype = function(){
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                 }*/
         
-                return values.length > 0 ? new PropertyValue(values, values[0].startLine, values[0].startCol) : null;
+                return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
             },
             
             _term: function(){                       
@@ -2855,7 +2785,7 @@ Parser.prototype = function(){
                 /*
                  * term
                  *   : unary_operator?
-                 *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
+                 *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | ANGLE S* |
                  *       TIME S* | FREQ S* | function | ie_function ]
                  *   | STRING S* | IDENT S* | URI S* | UNICODERANGE S* | hexcolor
                  *   ;
@@ -2864,6 +2794,7 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     unary       = null,
                     value       = null,
+                    token,
                     line,
                     col;
                     
@@ -2885,7 +2816,7 @@ Parser.prototype = function(){
                 
                 //see if there's a simple match
                 } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
-                        Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.ANGLE, Tokens.TIME,
                         Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])){
                  
                     value = tokenStream.token().value;
@@ -2897,8 +2828,8 @@ Parser.prototype = function(){
                 } else {
                 
                     //see if it's a color
-                    value = this._hexcolor();
-                    if (value === null){
+                    token = this._hexcolor();
+                    if (token === null){
                     
                         //if there's no unary, get the start of the next token for line/col info
                         if (unary === null){
@@ -2926,9 +2857,10 @@ Parser.prototype = function(){
                         }*/
                     
                     } else {
+                        value = token.value;
                         if (unary === null){
-                            line = tokenStream.token().startLine;
-                            col = tokenStream.token().startCol;
+                            line = token.startLine;
+                            col = token.startCol;
                         }                    
                     }
                 
@@ -2950,15 +2882,48 @@ Parser.prototype = function(){
                  
                 var tokenStream = this._tokenStream,
                     functionText = null,
-                    expr        = null;
+                    expr        = null,
+                    lt;
                     
                 if (tokenStream.match(Tokens.FUNCTION)){
                     functionText = tokenStream.token().value;
                     this._readWhitespace();
                     expr = this._expr();
+                    functionText += expr;
+                    
+                    //START: Horrible hack in case it's an IE filter
+                    if (this.options.ieFilters && tokenStream.peek() == Tokens.EQUALS){
+                        do {
+                        
+                            if (this._readWhitespace()){
+                                functionText += tokenStream.token().value;
+                            }
+                            
+                            //might be second time in the loop
+                            if (tokenStream.LA(0) == Tokens.COMMA){
+                                functionText += tokenStream.token().value;
+                            }
+                        
+                            tokenStream.match(Tokens.IDENT);
+                            functionText += tokenStream.token().value;
+                            
+                            tokenStream.match(Tokens.EQUALS);
+                            functionText += tokenStream.token().value;
+                            
+                            //functionText += this._term();
+                            lt = tokenStream.peek();
+                            while(lt != Tokens.COMMA && lt != Tokens.S && lt != Tokens.RPAREN){
+                                tokenStream.get();
+                                functionText += tokenStream.token().value;
+                                lt = tokenStream.peek();
+                            }
+                        } while(tokenStream.match([Tokens.COMMA, Tokens.S]));
+                    }
+
+                    //END: Horrible Hack
                     
                     tokenStream.match(Tokens.RPAREN);    
-                    functionText += expr + ")";
+                    functionText += ")";
                     this._readWhitespace();
                 }                
                 
@@ -3028,9 +2993,9 @@ Parser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    token,
-                    color = null;
-                
+                    token = null,
+                    color;
+                    
                 if(tokenStream.match(Tokens.HASH)){
                 
                     //need to do some validation here
@@ -3038,12 +3003,164 @@ Parser.prototype = function(){
                     token = tokenStream.token();
                     color = token.value;
                     if (!/#[a-f0-9]{3,6}/i.test(color)){
-                        throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
+                        throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
                     }
                     this._readWhitespace();
                 }
                 
-                return color;
+                return token;
+            },
+            
+            //-----------------------------------------------------------------
+            // Animations methods
+            //-----------------------------------------------------------------
+            
+            _keyframes: function(){
+            
+                /*
+                 * keyframes:
+                 *   : KEYFRAMES_SYM S* keyframe_name S* '{' S* keyframe_rule* '}' {
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token,
+                    tt,
+                    name;            
+                    
+                tokenStream.mustMatch(Tokens.KEYFRAMES_SYM);
+                this._readWhitespace();
+                name = this._keyframe_name();
+                
+                this._readWhitespace();
+                tokenStream.mustMatch(Tokens.LBRACE);
+                    
+                this.fire({
+                    type:   "startkeyframes",
+                    name:   name,
+                    line:   name.line,
+                    col:    name.col
+                });                
+                
+                this._readWhitespace();
+                tt = tokenStream.peek();
+                
+                //check for key
+                while(tt == Tokens.IDENT || tt == Tokens.PERCENTAGE) {
+                    this._keyframe_rule();
+                    this._readWhitespace();
+                    tt = tokenStream.peek();
+                }           
+                
+                this.fire({
+                    type:   "endkeyframes",
+                    name:   name,
+                    line:   name.line,
+                    col:    name.col
+                });                      
+                    
+                this._readWhitespace();
+                tokenStream.mustMatch(Tokens.RBRACE);                    
+                
+            },
+            
+            _keyframe_name: function(){
+            
+                /*
+                 * keyframe_name:
+                 *   : IDENT
+                 *   | STRING
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token;
+
+                tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
+                return SyntaxUnit.fromToken(tokenStream.token());            
+            },
+            
+            _keyframe_rule: function(){
+            
+                /*
+                 * keyframe_rule:
+                 *   : key_list S* 
+                 *     '{' S* declaration [ ';' S* declaration ]* '}' S*
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token,
+                    keyList = this._key_list();
+                                    
+                this.fire({
+                    type:   "startkeyframerule",
+                    keys:   keyList,
+                    line:   keyList[0].line,
+                    col:    keyList[0].col
+                });                
+                
+                this._readDeclarations(true);                
+                
+                this.fire({
+                    type:   "endkeyframerule",
+                    keys:   keyList,
+                    line:   keyList[0].line,
+                    col:    keyList[0].col
+                });  
+                
+            },
+            
+            _key_list: function(){
+            
+                /*
+                 * key_list:
+                 *   : key [ S* ',' S* key]*
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token,
+                    key,
+                    keyList = [];
+                    
+                //must be least one key
+                keyList.push(this._key());
+                    
+                this._readWhitespace();
+                    
+                while(tokenStream.match(Tokens.COMMA)){
+                    this._readWhitespace();
+                    keyList.push(this._key());
+                    this._readWhitespace();
+                }
+
+                return keyList;
+            },
+                        
+            _key: function(){
+                /*
+                 * There is a restriction that IDENT can be only "from" or "to".
+                 *
+                 * key
+                 *   : PERCENTAGE
+                 *   | IDENT
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    token;
+                    
+                if (tokenStream.match(Tokens.PERCENTAGE)){
+                    return SyntaxUnit.fromToken(tokenStream.token());
+                } else if (tokenStream.match(Tokens.IDENT)){
+                    token = tokenStream.token();                    
+                    
+                    if (/from|to/i.test(token.value)){
+                        return SyntaxUnit.fromToken(token);
+                    }
+                    
+                    tokenStream.unget();
+                }
+                
+                //if it gets here, there wasn't a valid token, so time to explode
+                this._unexpectedToken(tokenStream.LT(1));
             },
             
             //-----------------------------------------------------------------
@@ -3101,7 +3218,7 @@ Parser.prototype = function(){
                     
                     while(true){
                     
-                        if (readMargins && this._margin()){
+                        if (tokenStream.match(Tokens.SEMICOLON) || (readMargins && this._margin())){
                             //noop
                         } else if (this._declaration()){
                             if (!tokenStream.match(Tokens.SEMICOLON)){
@@ -3136,10 +3253,9 @@ Parser.prototype = function(){
                         tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
                         if (tt == Tokens.SEMICOLON){
                             //if there's a semicolon, then there might be another declaration
-                            this._readDeclarations(false, readMargins);
-                        } else if (tt == Tokens.RBRACE){
+                            this._readDeclarations(false, readMargins);                            
+                        } else if (tt != Tokens.RBRACE){
                             //if there's a right brace, the rule is finished so don't do anything
-                        } else {
                             //otherwise, rethrow the error because it wasn't handled properly
                             throw ex;
                         }                        
@@ -3182,7 +3298,7 @@ Parser.prototype = function(){
              * @private
              */
             _unexpectedToken: function(token){
-                throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".", token.startLine, token.startCol);
+                throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
             },
             
             /**
@@ -3195,6 +3311,13 @@ Parser.prototype = function(){
                 if (this._tokenStream.LA(1) != Tokens.EOF){
                     this._unexpectedToken(this._tokenStream.LT(1));
                 }            
+            },
+            
+            //-----------------------------------------------------------------
+            // Validation methods
+            //-----------------------------------------------------------------
+            _validateProperty: function(property, value){
+                Validation.validate(property, value);
             },
             
             //-----------------------------------------------------------------
@@ -3294,13 +3417,27 @@ Parser.prototype = function(){
                 
                 //otherwise return result
                 return result;
+            },
+
+            /**
+             * Parses an HTML style attribute: a set of CSS declarations 
+             * separated by semicolons.
+             * @param {String} input The text to parse as a style attribute
+             * @return {void} 
+             * @method parseStyleAttribute
+             */
+            parseStyleAttribute: function(input){
+                input += "}"; // for error recovery in _readDeclarations()
+                this._tokenStream = new TokenStream(input, Tokens);
+                this._readDeclarations();
             }
-            
         };
         
     //copy over onto prototype
     for (prop in additions){
-        proto[prop] = additions[prop];
+        if (additions.hasOwnProperty(prop)){
+            proto[prop] = additions[prop];
+        }
     }   
     
     return proto;
@@ -3313,6 +3450,487 @@ nth
          ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
   ;
 */
+/*global Validation, ValidationTypes, ValidationError*/
+var Properties = {
+
+    //A
+    "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
+    "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "animation"                     : 1,
+    "animation-delay"               : { multi: "<time>", comma: true },
+    "animation-direction"           : { multi: "normal | alternate", comma: true },
+    "animation-duration"            : { multi: "<time>", comma: true },
+    "animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "animation-name"                : { multi: "none | <ident>", comma: true },
+    "animation-play-state"          : { multi: "running | paused", comma: true },
+    "animation-timing-function"     : 1,
+    
+    //vendor prefixed
+    "-moz-animation-delay"               : { multi: "<time>", comma: true },
+    "-moz-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-moz-animation-duration"            : { multi: "<time>", comma: true },
+    "-moz-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-moz-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-moz-animation-play-state"          : { multi: "running | paused", comma: true },
+    
+    "-ms-animation-delay"               : { multi: "<time>", comma: true },
+    "-ms-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-ms-animation-duration"            : { multi: "<time>", comma: true },
+    "-ms-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-ms-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-ms-animation-play-state"          : { multi: "running | paused", comma: true },
+    
+    "-webkit-animation-delay"               : { multi: "<time>", comma: true },
+    "-webkit-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-webkit-animation-duration"            : { multi: "<time>", comma: true },
+    "-webkit-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-webkit-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-webkit-animation-play-state"          : { multi: "running | paused", comma: true },
+    
+    "-o-animation-delay"               : { multi: "<time>", comma: true },
+    "-o-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-o-animation-duration"            : { multi: "<time>", comma: true },
+    "-o-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-o-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-o-animation-play-state"          : { multi: "running | paused", comma: true },        
+    
+    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | inherit",
+    "azimuth"                       : function (expression) {
+        var simple      = "<angle> | leftwards | rightwards | inherit",
+            direction   = "left-side | far-left | left | center-left | center | center-right | right | far-right | right-side",
+            behind      = false,
+            valid       = false,
+            part;
+        
+        if (!ValidationTypes.isAny(expression, simple)) {
+            if (ValidationTypes.isAny(expression, "behind")) {
+                behind = true;
+                valid = true;
+            }
+            
+            if (ValidationTypes.isAny(expression, direction)) {
+                valid = true;
+                if (!behind) {
+                    ValidationTypes.isAny(expression, "behind");
+                }
+            }
+        }
+        
+        if (expression.hasNext()) {
+            part = expression.next();
+            if (valid) {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected (<'azimuth'>) but found '" + part + "'.", part.line, part.col);
+            }
+        }        
+    },
+    
+    //B
+    "backface-visibility"           : "visible | hidden",
+    "background"                    : 1,
+    "background-attachment"         : { multi: "<attachment>", comma: true },
+    "background-clip"               : { multi: "<box>", comma: true },
+    "background-color"              : "<color> | inherit",
+    "background-image"              : { multi: "<bg-image>", comma: true },
+    "background-origin"             : { multi: "<box>", comma: true },
+    "background-position"           : { multi: "<bg-position>", comma: true },
+    "background-repeat"             : { multi: "<repeat-style>" },
+    "background-size"               : { multi: "<bg-size>", comma: true },
+    "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
+    "behavior"                      : 1,
+    "binding"                       : 1,
+    "bleed"                         : "<length>",
+    "bookmark-label"                : "<content> | <attr> | <string>",
+    "bookmark-level"                : "none | <integer>",
+    "bookmark-state"                : "open | closed",
+    "bookmark-target"               : "none | <uri> | <attr>",
+    "border"                        : "<border-width> || <border-style> || <color>",
+    "border-bottom"                 : "<border-width> || <border-style> || <color>",
+    "border-bottom-color"           : "<color>",
+    "border-bottom-left-radius"     :  "<x-one-radius>",
+    "border-bottom-right-radius"    :  "<x-one-radius>",
+    "border-bottom-style"           : "<border-style>",
+    "border-bottom-width"           : "<border-width>",
+    "border-collapse"               : "collapse | separate | inherit",
+    "border-color"                  : { multi: "<color> | inherit", max: 4 },
+    "border-image"                  : 1,
+    "border-image-outset"           : { multi: "<length> | <number>", max: 4 },
+    "border-image-repeat"           : { multi: "stretch | repeat | round", max: 2 },
+    "border-image-slice"            : function(expression) {
+        
+        var valid   = false,
+            numeric = "<number> | <percentage>",
+            fill    = false,
+            count   = 0,
+            max     = 4,
+            part;
+        
+        if (ValidationTypes.isAny(expression, "fill")) {
+            fill = true;
+            valid = true;
+        }
+        
+        while (expression.hasNext() && count < max) {
+            valid = ValidationTypes.isAny(expression, numeric);
+            if (!valid) {
+                break;
+            }
+            count++;
+        }
+        
+        
+        if (!fill) {
+            ValidationTypes.isAny(expression, "fill");
+        } else {
+            valid = true;
+        }
+        
+        if (expression.hasNext()) {
+            part = expression.next();
+            if (valid) {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected ([<number> | <percentage>]{1,4} && fill?) but found '" + part + "'.", part.line, part.col);
+            }
+        }         
+    },
+    "border-image-source"           : "<image> | none",
+    "border-image-width"            : { multi: "<length> | <percentage> | <number> | auto", max: 4 },
+    "border-left"                   : "<border-width> || <border-style> || <color>",
+    "border-left-color"             : "<color> | inherit",
+    "border-left-style"             : "<border-style>",
+    "border-left-width"             : "<border-width>",
+    "border-radius"                 : function(expression) {
+        
+        var valid   = false,
+            numeric = "<length> | <percentage>",
+            slash   = false,
+            fill    = false,
+            count   = 0,
+            max     = 8,
+            part;
+
+        while (expression.hasNext() && count < max) {
+            valid = ValidationTypes.isAny(expression, numeric);
+            if (!valid) {
+            
+                if (expression.peek() == "/" && count > 1 && !slash) {
+                    slash = true;
+                    max = count + 5;
+                    expression.next();
+                } else {
+                    break;
+                }
+            }
+            count++;
+        }
+        
+        if (expression.hasNext()) {
+            part = expression.next();
+            if (valid) {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected (<'border-radius'>) but found '" + part + "'.", part.line, part.col);
+            }
+        }         
+    },
+    "border-right"                  : "<border-width> || <border-style> || <color>",
+    "border-right-color"            : "<color> | inherit",
+    "border-right-style"            : "<border-style>",
+    "border-right-width"            : "<border-width>",
+    "border-spacing"                : { multi: "<length> | inherit", max: 2 },
+    "border-style"                  : { multi: "<border-style>", max: 4 },
+    "border-top"                    : "<border-width> || <border-style> || <color>",
+    "border-top-color"              : "<color> | inherit",
+    "border-top-left-radius"        : "<x-one-radius>",
+    "border-top-right-radius"       : "<x-one-radius>",
+    "border-top-style"              : "<border-style>",
+    "border-top-width"              : "<border-width>",
+    "border-width"                  : { multi: "<border-width>", max: 4 },
+    "bottom"                        : "<margin-width> | inherit", 
+    "box-align"                     : "start | end | center | baseline | stretch",        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
+    "box-decoration-break"          : "slice |clone",
+    "box-direction"                 : "normal | reverse | inherit",
+    "box-flex"                      : "<number>",
+    "box-flex-group"                : "<integer>",
+    "box-lines"                     : "single | multiple",
+    "box-ordinal-group"             : "<integer>",
+    "box-orient"                    : "horizontal | vertical | inline-axis | block-axis | inherit",
+    "box-pack"                      : "start | end | center | justify",
+    "box-shadow"                    : function (expression) {
+        var result      = false,
+            part;
+
+        if (!ValidationTypes.isAny(expression, "none")) {
+            Validation.multiProperty("<shadow>", expression, true, Infinity);                       
+        } else {
+            if (expression.hasNext()) {
+                part = expression.next();
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            }   
+        }
+    },
+    "box-sizing"                    : "content-box | border-box | inherit",
+    "break-after"                   : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
+    "break-before"                  : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
+    "break-inside"                  : "auto | avoid | avoid-page | avoid-column",
+    
+    //C
+    "caption-side"                  : "top | bottom | inherit",
+    "clear"                         : "none | right | left | both | inherit",
+    "clip"                          : 1,
+    "color"                         : "<color> | inherit",
+    "color-profile"                 : 1,
+    "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/
+    "column-fill"                   : "auto | balance",
+    "column-gap"                    : "<length> | normal",
+    "column-rule"                   : "<border-width> || <border-style> || <color>",
+    "column-rule-color"             : "<color>",
+    "column-rule-style"             : "<border-style>",
+    "column-rule-width"             : "<border-width>",
+    "column-span"                   : "none | all",
+    "column-width"                  : "<length> | auto",
+    "columns"                       : 1,
+    "content"                       : 1,
+    "counter-increment"             : 1,
+    "counter-reset"                 : 1,
+    "crop"                          : "<shape> | auto",
+    "cue"                           : "cue-after | cue-before | inherit",
+    "cue-after"                     : 1,
+    "cue-before"                    : 1,
+    "cursor"                        : 1,
+    
+    //D
+    "direction"                     : "ltr | rtl | inherit",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit",
+    "dominant-baseline"             : 1,
+    "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
+    "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "drop-initial-before-adjust"    : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
+    "drop-initial-before-align"     : "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "drop-initial-size"             : "auto | line | <length> | <percentage>",
+    "drop-initial-value"            : "initial | <integer>",
+    
+    //E
+    "elevation"                     : "<angle> | below | level | above | higher | lower | inherit",
+    "empty-cells"                   : "show | hide | inherit",
+    
+    //F
+    "filter"                        : 1,
+    "fit"                           : "fill | hidden | meet | slice",
+    "fit-position"                  : 1,
+    "float"                         : "left | right | none | inherit",    
+    "float-offset"                  : 1,
+    "font"                          : 1,
+    "font-family"                   : 1,
+    "font-size"                     : "<absolute-size> | <relative-size> | <length> | <percentage> | inherit",
+    "font-size-adjust"              : "<number> | none | inherit",
+    "font-stretch"                  : "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | inherit",
+    "font-style"                    : "normal | italic | oblique | inherit",
+    "font-variant"                  : "normal | small-caps | inherit",
+    "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
+    
+    //G
+    "grid-cell-stacking"            : "columns | rows | layer",
+    "grid-column"                   : 1,
+    "grid-columns"                  : 1,
+    "grid-column-align"             : "start | end | center | stretch",
+    "grid-column-sizing"            : 1,
+    "grid-column-span"              : "<integer>",
+    "grid-flow"                     : "none | rows | columns",
+    "grid-layer"                    : "<integer>",
+    "grid-row"                      : 1,
+    "grid-rows"                     : 1,
+    "grid-row-align"                : "start | end | center | stretch",
+    "grid-row-span"                 : "<integer>",
+    "grid-row-sizing"               : 1,
+    
+    //H
+    "hanging-punctuation"           : 1,
+    "height"                        : "<margin-width> | inherit",
+    "hyphenate-after"               : "<integer> | auto",
+    "hyphenate-before"              : "<integer> | auto",
+    "hyphenate-character"           : "<string> | auto",
+    "hyphenate-lines"               : "no-limit | <integer>",
+    "hyphenate-resource"            : 1,
+    "hyphens"                       : "none | manual | auto",
+    
+    //I
+    "icon"                          : 1,
+    "image-orientation"             : "angle | auto",
+    "image-rendering"               : 1,
+    "image-resolution"              : 1,
+    "inline-box-align"              : "initial | last | <integer>",
+    
+    //L
+    "left"                          : "<margin-width> | inherit",
+    "letter-spacing"                : "<length> | normal | inherit",
+    "line-height"                   : "<number> | <length> | <percentage> | normal | inherit",
+    "line-break"                    : "auto | loose | normal | strict",
+    "line-stacking"                 : 1,
+    "line-stacking-ruby"            : "exclude-ruby | include-ruby",
+    "line-stacking-shift"           : "consider-shifts | disregard-shifts",
+    "line-stacking-strategy"        : "inline-line-height | block-line-height | max-height | grid-height",
+    "list-style"                    : 1,
+    "list-style-image"              : "<uri> | none | inherit",
+    "list-style-position"           : "inside | outside | inherit",
+    "list-style-type"               : "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit",
+    
+    //M
+    "margin"                        : { multi: "<margin-width> | inherit", max: 4 },
+    "margin-bottom"                 : "<margin-width> | inherit",
+    "margin-left"                   : "<margin-width> | inherit",
+    "margin-right"                  : "<margin-width> | inherit",
+    "margin-top"                    : "<margin-width> | inherit",
+    "mark"                          : 1,
+    "mark-after"                    : 1,
+    "mark-before"                   : 1,
+    "marks"                         : 1,
+    "marquee-direction"             : 1,
+    "marquee-play-count"            : 1,
+    "marquee-speed"                 : 1,
+    "marquee-style"                 : 1,
+    "max-height"                    : "<length> | <percentage> | none | inherit",
+    "max-width"                     : "<length> | <percentage> | none | inherit",
+    "min-height"                    : "<length> | <percentage> | inherit",
+    "min-width"                     : "<length> | <percentage> | inherit",
+    "move-to"                       : 1,
+    
+    //N
+    "nav-down"                      : 1,
+    "nav-index"                     : 1,
+    "nav-left"                      : 1,
+    "nav-right"                     : 1,
+    "nav-up"                        : 1,
+    
+    //O
+    "opacity"                       : "<number> | inherit",
+    "orphans"                       : "<integer> | inherit",
+    "outline"                       : 1,
+    "outline-color"                 : "<color> | invert | inherit",
+    "outline-offset"                : 1,
+    "outline-style"                 : "<border-style> | inherit",
+    "outline-width"                 : "<border-width> | inherit",
+    "overflow"                      : "visible | hidden | scroll | auto | inherit",
+    "overflow-style"                : 1,
+    "overflow-x"                    : 1,
+    "overflow-y"                    : 1,
+    
+    //P
+    "padding"                       : { multi: "<padding-width> | inherit", max: 4 },
+    "padding-bottom"                : "<padding-width> | inherit",
+    "padding-left"                  : "<padding-width> | inherit",
+    "padding-right"                 : "<padding-width> | inherit",
+    "padding-top"                   : "<padding-width> | inherit",
+    "page"                          : 1,
+    "page-break-after"              : "auto | always | avoid | left | right | inherit",
+    "page-break-before"             : "auto | always | avoid | left | right | inherit",
+    "page-break-inside"             : "auto | avoid | inherit",
+    "page-policy"                   : 1,
+    "pause"                         : 1,
+    "pause-after"                   : 1,
+    "pause-before"                  : 1,
+    "perspective"                   : 1,
+    "perspective-origin"            : 1,
+    "phonemes"                      : 1,
+    "pitch"                         : 1,
+    "pitch-range"                   : 1,
+    "play-during"                   : 1,
+    "position"                      : "static | relative | absolute | fixed | inherit",
+    "presentation-level"            : 1,
+    "punctuation-trim"              : 1,
+    
+    //Q
+    "quotes"                        : 1,
+    
+    //R
+    "rendering-intent"              : 1,
+    "resize"                        : 1,
+    "rest"                          : 1,
+    "rest-after"                    : 1,
+    "rest-before"                   : 1,
+    "richness"                      : 1,
+    "right"                         : "<margin-width> | inherit",
+    "rotation"                      : 1,
+    "rotation-point"                : 1,
+    "ruby-align"                    : 1,
+    "ruby-overhang"                 : 1,
+    "ruby-position"                 : 1,
+    "ruby-span"                     : 1,
+    
+    //S
+    "size"                          : 1,
+    "speak"                         : "normal | none | spell-out | inherit",
+    "speak-header"                  : "once | always | inherit",
+    "speak-numeral"                 : "digits | continuous | inherit",
+    "speak-punctuation"             : "code | none | inherit",
+    "speech-rate"                   : 1,
+    "src"                           : 1,
+    "stress"                        : 1,
+    "string-set"                    : 1,
+    
+    "table-layout"                  : "auto | fixed | inherit",
+    "tab-size"                      : "<integer> | <length>",
+    "target"                        : 1,
+    "target-name"                   : 1,
+    "target-new"                    : 1,
+    "target-position"               : 1,
+    "text-align"                    : "left | right | center | justify | inherit" ,
+    "text-align-last"               : 1,
+    "text-decoration"               : 1,
+    "text-emphasis"                 : 1,
+    "text-height"                   : 1,
+    "text-indent"                   : "<length> | <percentage> | inherit",
+    "text-justify"                  : "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida",
+    "text-outline"                  : 1,
+    "text-overflow"                 : 1,
+    "text-rendering"                : "auto | optimizeSpeed | optimizeLegibility | geometricPrecision | inherit",
+    "text-shadow"                   : 1,
+    "text-transform"                : "capitalize | uppercase | lowercase | none | inherit",
+    "text-wrap"                     : "normal | none | avoid",
+    "top"                           : "<margin-width> | inherit",
+    "transform"                     : 1,
+    "transform-origin"              : 1,
+    "transform-style"               : 1,
+    "transition"                    : 1,
+    "transition-delay"              : 1,
+    "transition-duration"           : 1,
+    "transition-property"           : 1,
+    "transition-timing-function"    : 1,
+    
+    //U
+    "unicode-bidi"                  : "normal | embed | bidi-override | inherit",
+    "user-modify"                   : "read-only | read-write | write-only | inherit",
+    "user-select"                   : "none | text | toggle | element | elements | all | inherit",
+    
+    //V
+    "vertical-align"                : "<percentage> | <length> | baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit",
+    "visibility"                    : "visible | hidden | collapse | inherit",
+    "voice-balance"                 : 1,
+    "voice-duration"                : 1,
+    "voice-family"                  : 1,
+    "voice-pitch"                   : 1,
+    "voice-pitch-range"             : 1,
+    "voice-rate"                    : 1,
+    "voice-stress"                  : 1,
+    "voice-volume"                  : 1,
+    "volume"                        : 1,
+    
+    //W
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit",
+    "white-space-collapse"          : 1,
+    "widows"                        : "<integer> | inherit",
+    "width"                         : "<length> | <percentage> | auto | inherit" ,
+    "word-break"                    : "normal | keep-all | break-all",
+    "word-spacing"                  : "<length> | normal | inherit",
+    "word-wrap"                     : 1,
+    
+    //Z
+    "z-index"                       : "<integer> | auto | inherit",
+    "zoom"                          : "<number> | <percentage> | normal"
+};
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
@@ -3326,7 +3944,7 @@ nth
  */
 function PropertyName(text, hack, line, col){
     
-    SyntaxUnit.call(this, (hack||"") + text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_NAME_TYPE);
 
     /**
      * The type of IE hack applied ("*", "_", or null).
@@ -3339,7 +3957,11 @@ function PropertyName(text, hack, line, col){
 
 PropertyName.prototype = new SyntaxUnit();
 PropertyName.prototype.constructor = PropertyName;
+PropertyName.prototype.toString = function(){
+    return (this.hack ? this.hack : "") + this.text;
+};
 
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just everything single part between ":" and ";". If there are multiple values
@@ -3354,7 +3976,7 @@ PropertyName.prototype.constructor = PropertyName;
  */
 function PropertyValue(parts, line, col){
 
-    SyntaxUnit.call(this, parts.join(" "), line, col);
+    SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
     
     /**
      * The parts that make up the selector.
@@ -3368,6 +3990,134 @@ function PropertyValue(parts, line, col){
 PropertyValue.prototype = new SyntaxUnit();
 PropertyValue.prototype.constructor = PropertyValue;
 
+
+/*global SyntaxUnit, Parser*/
+/**
+ * A utility class that allows for easy iteration over the various parts of a
+ * property value.
+ * @param {parserlib.css.PropertyValue} value The property value to iterate over.
+ * @namespace parserlib.css
+ * @class PropertyValueIterator
+ * @constructor
+ */
+function PropertyValueIterator(value){
+
+    /** 
+     * Iterator value
+     * @type int
+     * @property _i
+     * @private
+     */
+    this._i = 0;
+    
+    /**
+     * The parts that make up the value.
+     * @type Array
+     * @property _parts
+     * @private
+     */
+    this._parts = value.parts;
+    
+    /**
+     * Keeps track of bookmarks along the way.
+     * @type Array
+     * @property _marks
+     * @private
+     */
+    this._marks = [];
+    
+    /**
+     * Holds the original property value.
+     * @type parserlib.css.PropertyValue
+     * @property value
+     */
+    this.value = value;
+    
+}
+
+/**
+ * Returns the total number of parts in the value.
+ * @return {int} The total number of parts in the value.
+ * @method count
+ */
+PropertyValueIterator.prototype.count = function(){
+    return this._parts.length;
+};
+
+/**
+ * Indicates if the iterator is positioned at the first item.
+ * @return {Boolean} True if positioned at first item, false if not.
+ * @method isFirst
+ */
+PropertyValueIterator.prototype.isFirst = function(){
+    return this._i === 0;
+};
+
+/**
+ * Indicates if there are more parts of the property value.
+ * @return {Boolean} True if there are more parts, false if not.
+ * @method hasNext
+ */
+PropertyValueIterator.prototype.hasNext = function(){
+    return (this._i < this._parts.length);
+};
+
+/**
+ * Marks the current spot in the iteration so it can be restored to
+ * later on.
+ * @return {void}
+ * @method mark
+ */
+PropertyValueIterator.prototype.mark = function(){
+    this._marks.push(this._i);
+};
+
+/**
+ * Returns the next part of the property value or null if there is no next
+ * part. Does not move the internal counter forward.
+ * @return {parserlib.css.PropertyValuePart} The next part of the property value or null if there is no next
+ * part.
+ * @method peek
+ */
+PropertyValueIterator.prototype.peek = function(count){
+    return this.hasNext() ? this._parts[this._i + (count || 0)] : null;
+};
+
+/**
+ * Returns the next part of the property value or null if there is no next
+ * part.
+ * @return {parserlib.css.PropertyValuePart} The next part of the property value or null if there is no next
+ * part.
+ * @method next
+ */
+PropertyValueIterator.prototype.next = function(){
+    return this.hasNext() ? this._parts[this._i++] : null;
+};
+
+/**
+ * Returns the previous part of the property value or null if there is no
+ * previous part.
+ * @return {parserlib.css.PropertyValuePart} The previous part of the 
+ * property value or null if there is no next part.
+ * @method previous
+ */
+PropertyValueIterator.prototype.previous = function(){
+    return this._i > 0 ? this._parts[--this._i] : null;
+};
+
+/**
+ * Restores the last saved bookmark.
+ * @return {void}
+ * @method restore
+ */
+PropertyValueIterator.prototype.restore = function(){
+    if (this._marks.length){
+        this._i = this._marks.pop();
+    }
+};
+
+
+/*global SyntaxUnit, Parser, Colors*/
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just one part of the data between ":" and ";".
@@ -3381,7 +4131,7 @@ PropertyValue.prototype.constructor = PropertyValue;
  */
 function PropertyValuePart(text, line, col){
 
-    SyntaxUnit.apply(this,arguments);
+    SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_VALUE_PART_TYPE);
     
     /**
      * Indicates the type of value unit.
@@ -3412,6 +4162,7 @@ function PropertyValuePart(text, line, col){
             case "in":
             case "pt":
             case "pc":
+            case "ch":
                 this.type = "length";
                 break;
                 
@@ -3475,9 +4226,36 @@ function PropertyValuePart(text, line, col){
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
         this.blue   = +RegExp.$3 * 255 / 100;
+    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //rgba() color with absolute numbers
+        this.type   = "color";
+        this.red    = +RegExp.$1;
+        this.green  = +RegExp.$2;
+        this.blue   = +RegExp.$3;
+        this.alpha  = +RegExp.$4;
+    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //rgba() color with percentages
+        this.type   = "color";
+        this.red    = +RegExp.$1 * 255 / 100;
+        this.green  = +RegExp.$2 * 255 / 100;
+        this.blue   = +RegExp.$3 * 255 / 100;
+        this.alpha  = +RegExp.$4;        
+    } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //hsl()
+        this.type   = "color";
+        this.hue    = +RegExp.$1;
+        this.saturation = +RegExp.$2 / 100;
+        this.lightness  = +RegExp.$3 / 100;        
+    } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //hsla() color with percentages
+        this.type   = "color";
+        this.hue    = +RegExp.$1;
+        this.saturation = +RegExp.$2 / 100;
+        this.lightness  = +RegExp.$3 / 100;        
+        this.alpha  = +RegExp.$4;        
     } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
         this.type   = "uri";
         this.uri    = RegExp.$1;
+    } else if (/^([^\(]+)\(/i.test(text)){
+        this.type   = "function";
+        this.name   = RegExp.$1;
+        this.value  = text;
     } else if (/^["'][^"']*["']/.test(text)){    //string
         this.type   = "string";
         this.value  = eval(text);
@@ -3498,7 +4276,7 @@ function PropertyValuePart(text, line, col){
 }
 
 PropertyValuePart.prototype = new SyntaxUnit();
-PropertyValuePart.prototype.constructor = PropertyValue;
+PropertyValuePart.prototype.constructor = PropertyValuePart;
 
 /**
  * Create a new syntax unit based solely on the given token.
@@ -3512,6 +4290,20 @@ PropertyValuePart.prototype.constructor = PropertyValue;
 PropertyValuePart.fromToken = function(token){
     return new PropertyValuePart(token.value, token.startLine, token.startCol);
 };
+var Pseudos = {
+    ":first-letter": 1,
+    ":first-line":   1,
+    ":before":       1,
+    ":after":        1
+};
+
+Pseudos.ELEMENT = 1;
+Pseudos.CLASS = 2;
+
+Pseudos.isElement = function(pseudo){
+    return pseudo.indexOf("::") === 0 || Pseudos[pseudo.toLowerCase()] == Pseudos.ELEMENT;
+};
+/*global SyntaxUnit, Parser, Specificity*/
 /**
  * Represents an entire single selector, including all parts but not
  * including multiple selectors (those separated by commas).
@@ -3525,7 +4317,7 @@ PropertyValuePart.fromToken = function(token){
  */
 function Selector(parts, line, col){
     
-    SyntaxUnit.call(this, parts.join(" "), line, col);
+    SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
     
     /**
      * The parts that make up the selector.
@@ -3533,12 +4325,21 @@ function Selector(parts, line, col){
      * @property parts
      */
     this.parts = parts;
+    
+    /**
+     * The specificity of the selector.
+     * @type parserlib.css.Specificity
+     * @property specificity
+     */
+    this.specificity = Specificity.calculate(this);
 
 }
 
 Selector.prototype = new SyntaxUnit();
 Selector.prototype.constructor = Selector;
 
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a selector string, meaning a single set of
  * element name and modifiers. This does not include combinators such as
@@ -3557,7 +4358,7 @@ Selector.prototype.constructor = Selector;
  */
 function SelectorPart(elementName, modifiers, text, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
 
     /**
      * The tag name of the element to which this part
@@ -3580,6 +4381,8 @@ function SelectorPart(elementName, modifiers, text, line, col){
 SelectorPart.prototype = new SyntaxUnit();
 SelectorPart.prototype.constructor = SelectorPart;
 
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a selector modifier string, meaning a class name, element name,
  * element ID, pseudo rule, etc.
@@ -3594,7 +4397,7 @@ SelectorPart.prototype.constructor = SelectorPart;
  */
 function SelectorSubPart(text, type, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
 
     /**
      * The type of modifier.
@@ -3616,7 +4419,132 @@ SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
 
 
- 
+/*global Pseudos, SelectorPart*/
+/**
+ * Represents a selector's specificity.
+ * @namespace parserlib.css
+ * @class Specificity
+ * @constructor
+ * @param {int} a Should be 1 for inline styles, zero for stylesheet styles
+ * @param {int} b Number of ID selectors
+ * @param {int} c Number of classes and pseudo classes
+ * @param {int} d Number of element names and pseudo elements
+ */
+function Specificity(a, b, c, d){
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.d = d;
+}
+
+Specificity.prototype = {
+    constructor: Specificity,
+    
+    /**
+     * Compare this specificity to another.
+     * @param {Specificity} other The other specificity to compare to.
+     * @return {int} -1 if the other specificity is larger, 1 if smaller, 0 if equal.
+     * @method compare
+     */
+    compare: function(other){
+        var comps = ["a", "b", "c", "d"],
+            i, len;
+            
+        for (i=0, len=comps.length; i < len; i++){
+            if (this[comps[i]] < other[comps[i]]){
+                return -1;
+            } else if (this[comps[i]] > other[comps[i]]){
+                return 1;
+            }
+        }
+        
+        return 0;
+    },
+    
+    /**
+     * Creates a numeric value for the specificity.
+     * @return {int} The numeric value for the specificity.
+     * @method valueOf
+     */
+    valueOf: function(){
+        return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
+    },
+    
+    /**
+     * Returns a string representation for specificity.
+     * @return {String} The string representation of specificity.
+     * @method toString
+     */
+    toString: function(){
+        return this.a + "," + this.b + "," + this.c + "," + this.d;
+    }
+
+};
+
+/**
+ * Calculates the specificity of the given selector.
+ * @param {parserlib.css.Selector} The selector to calculate specificity for.
+ * @return {parserlib.css.Specificity} The specificity of the selector.
+ * @static
+ * @method calculate
+ */
+Specificity.calculate = function(selector){
+
+    var i, len,
+        part,
+        b=0, c=0, d=0;
+        
+    function updateValues(part){
+    
+        var i, j, len, num,
+            elementName = part.elementName ? part.elementName.text : "",
+            modifier;
+    
+        if (elementName && elementName.charAt(elementName.length-1) != "*") {
+            d++;
+        }    
+    
+        for (i=0, len=part.modifiers.length; i < len; i++){
+            modifier = part.modifiers[i];
+            switch(modifier.type){
+                case "class":
+                case "attribute":
+                    c++;
+                    break;
+                    
+                case "id":
+                    b++;
+                    break;
+                    
+                case "pseudo":
+                    if (Pseudos.isElement(modifier.text)){
+                        d++;
+                    } else {
+                        c++;
+                    }                    
+                    break;
+                    
+                case "not":
+                    for (j=0, num=modifier.args.length; j < num; j++){
+                        updateValues(modifier.args[j]);
+                    }
+            }    
+         }
+    }
+    
+    for (i=0, len=selector.parts.length; i < len; i++){
+        part = selector.parts[i];
+        
+        if (part instanceof SelectorPart){
+            updateValues(part);                
+        }
+    }
+    
+    return new Specificity(0, b, c, d);
+};
+
+/*global Tokens, TokenStreamBase*/
+
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
     nl = /\n|\r\n|\r|\f/;
@@ -3624,34 +4552,34 @@ var h = /^[0-9a-fA-F]$/,
 //-----------------------------------------------------------------------------
 // Helper functions
 //-----------------------------------------------------------------------------
-    
- 
+
+
 function isHexDigit(c){
-    return c != null && h.test(c);
+    return c !== null && h.test(c);
 }
 
 function isDigit(c){
-    return c != null && /\d/.test(c);
+    return c !== null && /\d/.test(c);
 }
 
 function isWhitespace(c){
-    return c != null && /\s/.test(c);
+    return c !== null && /\s/.test(c);
 }
 
 function isNewLine(c){
-    return c != null && nl.test(c);
+    return c !== null && nl.test(c);
 }
 
 function isNameStart(c){
-    return c != null && (/[a-z_\u0080-\uFFFF\\]/i.test(c));
+    return c !== null && (/[a-z_\u0080-\uFFFF\\]/i.test(c));
 }
 
 function isNameChar(c){
-    return c != null && (isNameStart(c) || /[0-9\-]/.test(c));
+    return c !== null && (isNameStart(c) || /[0-9\-\\]/.test(c));
 }
 
 function isIdentStart(c){
-    return c != null && (isNameStart(c) || c == "-");
+    return c !== null && (isNameStart(c) || /\-\\/.test(c));
 }
 
 function mix(receiver, supplier){
@@ -3691,19 +4619,19 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @private
      */
     _getToken: function(channel){
-    
+
         var c,
             reader = this._reader,
             token   = null,
             startLine   = reader.getLine(),
             startCol    = reader.getCol();
-        
+
         c = reader.read();
-        
+
 
         while(c){
             switch(c){
-            
+
                 /*
                  * Potential tokens:
                  * - COMMENT
@@ -3717,8 +4645,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
-                    break;                    
-                
+                    break;
+
                 /*
                  * Potential tokens:
                  * - DASHMATCH
@@ -3738,8 +4666,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
-                    break;                    
-                
+                    break;
+
                 /*
                  * Potential tokens:
                  * - STRING
@@ -3747,9 +4675,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "\"":
                 case "'":
-                    token = this.stringToken(c, startLine, startCol);                
+                    token = this.stringToken(c, startLine, startCol);
                     break;
-                    
+
                 /*
                  * Potential tokens:
                  * - HASH
@@ -3757,12 +4685,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "#":
                     if (isNameChar(reader.peek())){
-                        token = this.hashToken(c, startLine, startCol);                        
+                        token = this.hashToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
-                    }                
+                    }
                     break;
-                    
+
                 /*
                  * Potential tokens:
                  * - DOT
@@ -3772,12 +4700,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case ".":
                     if (isDigit(reader.peek())){
-                        token = this.numberToken(c, startLine, startCol);                        
+                        token = this.numberToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
-                    break;                    
-                    
+                    break;
+
                 /*
                  * Potential tokens:
                  * - CDC
@@ -3795,7 +4723,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.charToken(c, startLine, startCol);
                     }
                     break;
-                
+
                 /*
                  * Potential tokens:
                  * - IMPORTANT_SYM
@@ -3804,14 +4732,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
                     break;
-                    
+
                 /*
                  * Any at-keyword or CHAR
                  */
                 case "@":
                     token = this.atRuleToken(c, startLine, startCol);
                     break;
-                    
+
                 /*
                  * Potential tokens:
                  * - NOT
@@ -3819,8 +4747,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case ":":
                     token = this.notToken(c, startLine, startCol);
-                    break;         
-           
+                    break;
+
                 /*
                  * Potential tokens:
                  * - CDO
@@ -3828,7 +4756,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "<":
                     token = this.htmlCommentStartToken(c, startLine, startCol);
-                    break;     
+                    break;
 
                 /*
                  * Potential tokens:
@@ -3841,11 +4769,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     if (reader.peek() == "+"){
                         token = this.unicodeRangeToken(c, startLine, startCol);
                         break;
-                    } 
-                    /*falls through*/
-                    
+                    }
+                    /* falls through */
                 default:
-                    
+
                     /*
                      * Potential tokens:
                      * - NUMBER
@@ -3859,58 +4786,56 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                      */
                     if (isDigit(c)){
                         token = this.numberToken(c, startLine, startCol);
-                    } else 
-                
+                    } else
+
                     /*
                      * Potential tokens:
                      * - S
                      */
                     if (isWhitespace(c)){
                         token = this.whitespaceToken(c, startLine, startCol);
-                    } else 
-                    
+                    } else
+
                     /*
                      * Potential tokens:
                      * - IDENT
-                     */                    
+                     */
                     if (isIdentStart(c)){
                         token = this.identOrFunctionToken(c, startLine, startCol);
-                    } else 
-                    
+                    } else
+
                     /*
                      * Potential tokens:
                      * - CHAR
                      * - PLUS
                      */
                     {
-                        token = this.charToken(c, startLine, startCol);                    
+                        token = this.charToken(c, startLine, startCol);
                     }
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
             }
-            
+
             //make sure this token is wanted
             //TODO: check channel
             break;
-            
-            c = reader.read();
         }
-        
-        if (!token && c == null){
+
+        if (!token && c === null){
             token = this.createToken(Tokens.EOF,null,startLine,startCol);
         }
-        
+
         return token;
     },
-    
+
     //-------------------------------------------------------------------------
     // Methods to create tokens
     //-------------------------------------------------------------------------
-    
+
     /**
      * Produces a token based on available data and the current
      * reader position information. This method is called by other
@@ -3925,11 +4850,11 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      *      be hidden.
      * @return {Object} A token object.
      * @method createToken
-     */    
+     */
     createToken: function(tt, value, startLine, startCol, options){
         var reader = this._reader;
         options = options || {};
-        
+
         return {
             value:      value,
             type:       tt,
@@ -3938,14 +4863,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             startLine:  startLine,
             startCol:   startCol,
             endLine:    reader.getLine(),
-            endCol:     reader.getCol()            
-        };    
-    }, 
-    
+            endCol:     reader.getCol()
+        };
+    },
+
     //-------------------------------------------------------------------------
     // Methods to create specific tokens
-    //-------------------------------------------------------------------------    
-    
+    //-------------------------------------------------------------------------
+
     /**
      * Produces a token for any at-rule. If the at-rule is unknown, then
      * the token is for a single "@" character.
@@ -3954,15 +4879,15 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method atRuleToken
-     */    
+     */
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
             reader  = this._reader,
             tt      = Tokens.CHAR,
             valid   = false,
             ident,
-            c;            
-                    
+            c;
+
         /*
          * First, mark where we are. There are only four @ rules,
          * so anything else is really just an invalid token.
@@ -3971,22 +4896,26 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
          * parsing to continue after that point.
          */
         reader.mark();
-        
-        //try to find the at-keyword        
+
+        //try to find the at-keyword
         ident = this.readName();
         rule = first + ident;
         tt = Tokens.type(rule.toLowerCase());
-        
+
         //if it's not valid, use the first character only and reset the reader
         if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
-            tt = Tokens.CHAR;
-            rule = first;
-            reader.reset();
-        }            
-            
-        return this.createToken(tt, rule, startLine, startCol);        
-    },         
-    
+            if (rule.length > 1){
+                tt = Tokens.UNKNOWN_SYM;                
+            } else {
+                tt = Tokens.CHAR;
+                rule = first;
+                reader.reset();
+            }
+        }
+
+        return this.createToken(tt, rule, startLine, startCol);
+    },
+
     /**
      * Produces a character token based on the given character
      * and location in the stream. If there's a special (non-standard)
@@ -4003,10 +4932,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         if (tt == -1){
             tt = Tokens.CHAR;
         }
-        
+
         return this.createToken(tt, c, startLine, startCol);
-    },    
-    
+    },
+
     /**
      * Produces a character token based on the given character
      * and location in the stream. If there's a special (non-standard)
@@ -4016,14 +4945,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method commentToken
-     */    
+     */
     commentToken: function(first, startLine, startCol){
         var reader  = this._reader,
             comment = this.readComment(first);
 
-        return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
-    },    
-    
+        return this.createToken(Tokens.COMMENT, comment, startLine, startCol);
+    },
+
     /**
      * Produces a comparison token based on the given character
      * and location in the stream. The next character must be
@@ -4038,10 +4967,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var reader  = this._reader,
             comparison  = c + reader.read(),
             tt      = Tokens.type(comparison) || Tokens.CHAR;
-            
+
         return this.createToken(tt, comparison, startLine, startCol);
     },
-    
+
     /**
      * Produces a hash token based on the specified information. The
      * first character provided is the pound sign (#) and then this
@@ -4056,9 +4985,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var reader  = this._reader,
             name    = this.readName(first);
 
-        return this.createToken(Tokens.HASH, name, startLine, startCol);    
+        return this.createToken(Tokens.HASH, name, startLine, startCol);
     },
-    
+
     /**
      * Produces a CDO or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
@@ -4068,22 +4997,22 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method htmlCommentStartToken
-     */      
+     */
     htmlCommentStartToken: function(first, startLine, startCol){
         var reader      = this._reader,
             text        = first;
 
-        reader.mark();        
+        reader.mark();
         text += reader.readCount(3);
-            
+
         if (text == "<!--"){
             return this.createToken(Tokens.CDO, text, startLine, startCol);
         } else {
             reader.reset();
             return this.charToken(first, startLine, startCol);
-        }        
-    },    
-    
+        }
+    },
+
     /**
      * Produces a CDC or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
@@ -4093,22 +5022,22 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method htmlCommentEndToken
-     */      
+     */
     htmlCommentEndToken: function(first, startLine, startCol){
         var reader      = this._reader,
             text        = first;
 
-        reader.mark();        
+        reader.mark();
         text += reader.readCount(2);
-            
+
         if (text == "-->"){
             return this.createToken(Tokens.CDC, text, startLine, startCol);
         } else {
             reader.reset();
             return this.charToken(first, startLine, startCol);
-        }        
-    },    
-    
+        }
+    },
+
     /**
      * Produces an IDENT or FUNCTION token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
@@ -4118,7 +5047,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method identOrFunctionToken
-     */    
+     */
     identOrFunctionToken: function(first, startLine, startCol){
         var reader  = this._reader,
             ident   = this.readName(first),
@@ -4130,7 +5059,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             if (ident.toLowerCase() == "url("){
                 tt = Tokens.URI;
                 ident = this.readURI(ident);
-                
+
                 //didn't find a valid URL or there's no closing paren
                 if (ident.toLowerCase() == "url("){
                     tt = Tokens.FUNCTION;
@@ -4139,7 +5068,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 tt = Tokens.FUNCTION;
             }
         } else if (reader.peek() == ":"){  //might be an IE function
-            
+
             //IE-specific functions always being with progid:
             if (ident.toLowerCase() == "progid"){
                 ident += reader.readTo("(");
@@ -4147,9 +5076,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             }
         }
 
-        return this.createToken(tt, ident, startLine, startCol);    
+        return this.createToken(tt, ident, startLine, startCol);
     },
-    
+
     /**
      * Produces an IMPORTANT_SYM or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
@@ -4159,7 +5088,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method importantToken
-     */      
+     */
     importantToken: function(first, startLine, startCol){
         var reader      = this._reader,
             important   = first,
@@ -4169,18 +5098,18 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         reader.mark();
         c = reader.read();
-            
+
         while(c){
-        
+
             //there can be a comment in here
             if (c == "/"){
-            
+
                 //if the next character isn't a star, then this isn't a valid !important token
                 if (reader.peek() != "*"){
                     break;
                 } else {
                     temp = this.readComment(c);
-                    if (temp == ""){    //broken!
+                    if (temp === ""){    //broken!
                         break;
                     }
                 }
@@ -4191,24 +5120,24 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 if (/mportant/i.test(temp)){
                     important += c + temp;
                     tt = Tokens.IMPORTANT_SYM;
-                    
+
                 }
                 break;  //we're done
             } else {
                 break;
             }
-        
+
             c = reader.read();
         }
-        
+
         if (tt == Tokens.CHAR){
             reader.reset();
             return this.charToken(first, startLine, startCol);
         } else {
             return this.createToken(tt, important, startLine, startCol);
         }
-        
-        
+
+
     },
 
     /**
@@ -4220,14 +5149,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method notToken
-     */      
+     */
     notToken: function(first, startLine, startCol){
         var reader      = this._reader,
             text        = first;
 
-        reader.mark();        
+        reader.mark();
         text += reader.readCount(4);
-            
+
         if (text.toLowerCase() == ":not("){
             return this.createToken(Tokens.NOT, text, startLine, startCol);
         } else {
@@ -4246,27 +5175,27 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method numberToken
-     */    
+     */
     numberToken: function(first, startLine, startCol){
         var reader  = this._reader,
             value   = this.readNumber(first),
             ident,
             tt      = Tokens.NUMBER,
             c       = reader.peek();
-            
+
         if (isIdentStart(c)){
             ident = this.readName(reader.read());
-            value += ident;            
+            value += ident;
 
-            if (/em|ex|px|gd|rem|vw|vh|vm|ch|cm|mm|in|pt|pc/i.test(ident)){
+            if (/^em$|^ex$|^px$|^gd$|^rem$|^vw$|^vh$|^vm$|^ch$|^cm$|^mm$|^in$|^pt$|^pc$/i.test(ident)){
                 tt = Tokens.LENGTH;
-            } else if (/deg|rad|grad/i.test(ident)){
+            } else if (/^deg|^rad$|^grad$/i.test(ident)){
                 tt = Tokens.ANGLE;
-            } else if (/ms|s/i.test(ident)){
+            } else if (/^ms$|^s$/i.test(ident)){
                 tt = Tokens.TIME;
-            } else if (/hz|khz/i.test(ident)){
+            } else if (/^hz$|^khz$/i.test(ident)){
                 tt = Tokens.FREQ;
-            } else if (/dpi|dpcm/i.test(ident)){
+            } else if (/^dpi$|^dpcm$/i.test(ident)){
                 tt = Tokens.RESOLUTION;
             } else {
                 tt = Tokens.DIMENSION;
@@ -4276,10 +5205,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             value += reader.read();
             tt = Tokens.PERCENTAGE;
         }
-            
-        return this.createToken(tt, value, startLine, startCol);            
-    },    
-    
+
+        return this.createToken(tt, value, startLine, startCol);
+    },
+
     /**
      * Produces a string token based on the given character
      * and location in the stream. Since strings may be indicated
@@ -4292,7 +5221,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method stringToken
-     */    
+     */
     stringToken: function(first, startLine, startCol){
         var delim   = first,
             string  = first,
@@ -4300,10 +5229,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             prev    = first,
             tt      = Tokens.STRING,
             c       = reader.read();
-            
+
         while(c){
             string += c;
-            
+
             //if the delimiter is found with an escapement, we're done.
             if (c == delim && prev != "\\"){
                 break;
@@ -4314,47 +5243,47 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 tt = Tokens.INVALID;
                 break;
             }
-        
+
             //save previous and get next
             prev = c;
             c = reader.read();
         }
-        
+
         //if c is null, that means we're out of input and the string was never closed
-        if (c == null){
+        if (c === null){
             tt = Tokens.INVALID;
         }
-            
-        return this.createToken(tt, string, startLine, startCol);        
-    },    
-    
+
+        return this.createToken(tt, string, startLine, startCol);
+    },
+
     unicodeRangeToken: function(first, startLine, startCol){
         var reader  = this._reader,
             value   = first,
             temp,
             tt      = Tokens.CHAR;
-         
+
         //then it should be a unicode range
         if (reader.peek() == "+"){
             reader.mark();
             value += reader.read();
             value += this.readUnicodeRangePart(true);
-            
+
             //ensure there's an actual unicode range here
             if (value.length == 2){
                 reader.reset();
             } else {
-                
+
                 tt = Tokens.UNICODE_RANGE;
-            
+
                 //if there's a ? in the first part, there can't be a second part
                 if (value.indexOf("?") == -1){
-                            
+
                     if (reader.peek() == "-"){
                         reader.mark();
                         temp = reader.read();
                         temp += this.readUnicodeRangePart(false);
-                        
+
                         //if there's not another value, back up and just take the first
                         if (temp.length == 1){
                             reader.reset();
@@ -4366,10 +5295,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 }
             }
         }
-    
+
         return this.createToken(tt, value, startLine, startCol);
     },
-    
+
     /**
      * Produces a S token based on the specified information. Since whitespace
      * may have multiple characters, this consumes all whitespace characters
@@ -4379,57 +5308,57 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method whitespaceToken
-     */          
+     */
     whitespaceToken: function(first, startLine, startCol){
         var reader  = this._reader,
             value   = first + this.readWhitespace();
-        return this.createToken(Tokens.S, value, startLine, startCol);            
-    },    
-   
+        return this.createToken(Tokens.S, value, startLine, startCol);
+    },
+
 
 
 
     //-------------------------------------------------------------------------
     // Methods to read values from the string stream
     //-------------------------------------------------------------------------
-    
+
     readUnicodeRangePart: function(allowQuestionMark){
         var reader  = this._reader,
-            part = "",            
+            part = "",
             c       = reader.peek();
-        
+
         //first read hex digits
         while(isHexDigit(c) && part.length < 6){
             reader.read();
             part += c;
-            c = reader.peek();            
+            c = reader.peek();
         }
-        
+
         //then read question marks if allowed
         if (allowQuestionMark){
             while(c == "?" && part.length < 6){
                 reader.read();
                 part += c;
-                c = reader.peek();            
+                c = reader.peek();
             }
         }
 
         //there can't be any other characters after this point
-        
-        return part;    
+
+        return part;
     },
-    
+
     readWhitespace: function(){
         var reader  = this._reader,
             whitespace = "",
             c       = reader.peek();
-        
+
         while(isWhitespace(c)){
             reader.read();
             whitespace += c;
-            c = reader.peek();            
+            c = reader.peek();
         }
-        
+
         return whitespace;
     },
     readNumber: function(first){
@@ -4437,7 +5366,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             number  = first,
             hasDot  = (first == "."),
             c       = reader.peek();
-        
+
 
         while(c){
             if (isDigit(c)){
@@ -4452,23 +5381,23 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             } else {
                 break;
             }
-            
+
             c = reader.peek();
-        }        
-        
+        }
+
         return number;
     },
     readString: function(){
         var reader  = this._reader,
             delim   = reader.read(),
-            string  = delim,            
+            string  = delim,
             prev    = delim,
             c       = reader.peek();
-            
+
         while(c){
             c = reader.read();
             string += c;
-            
+
             //if the delimiter is found with an escapement, we're done.
             if (c == delim && prev != "\\"){
                 break;
@@ -4479,17 +5408,17 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 string = "";
                 break;
             }
-        
+
             //save previous and get next
             prev = c;
             c = reader.peek();
         }
-        
+
         //if c is null, that means we're out of input and the string was never closed
-        if (c == null){
+        if (c === null){
             string = "";
         }
-                
+
         return string;
     },
     readURI: function(first){
@@ -4497,22 +5426,22 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             uri     = first,
             inner   = "",
             c       = reader.peek();
-            
+
         reader.mark();
-        
+
         //skip whitespace before
         while(c && isWhitespace(c)){
             reader.read();
             c = reader.peek();
         }
-            
+
         //it's a string
         if (c == "'" || c == "\""){
             inner = this.readString();
         } else {
             inner = this.readURL();
         }
-        
+
         c = reader.peek();
 
         //skip whitespace after
@@ -4520,73 +5449,100 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             reader.read();
             c = reader.peek();
         }
-            
+
         //if there was no inner value or the next character isn't closing paren, it's not a URI
-        if (inner == "" || c != ")"){
+        if (inner === "" || c != ")"){
             uri = first;
             reader.reset();
         } else {
             uri += inner + reader.read();
         }
-                
+
         return uri;
     },
     readURL: function(){
         var reader  = this._reader,
             url     = "",
             c       = reader.peek();
-    
+
         //TODO: Check for escape and nonascii
         while (/^[!#$%&\\*-~]$/.test(c)){
             url += reader.read();
             c = reader.peek();
         }
-    
+
         return url;
-    
+
     },
     readName: function(first){
         var reader  = this._reader,
             ident   = first || "",
             c       = reader.peek();
-        
 
-        while(c && isNameChar(c)){
-            ident += reader.read();
-            c = reader.peek();
+        while(true){
+            if (c == "\\"){
+                ident += this.readEscape(reader.read());
+                c = reader.peek();
+            } else if(c && isNameChar(c)){
+                ident += reader.read();
+                c = reader.peek();
+            } else {
+                break;
+            }
+        }
+
+        return ident;
+    },
+    
+    readEscape: function(first){
+        var reader  = this._reader,
+            cssEscape = first || "",
+            i       = 0,
+            c       = reader.peek();    
+    
+        if (isHexDigit(c)){
+            do {
+                cssEscape += reader.read();
+                c = reader.peek();
+            } while(c && isHexDigit(c) && ++i < 6);
         }
         
-        return ident;
-    },    
+        if (cssEscape.length == 3 && /\s/.test(c) ||
+            cssEscape.length == 7 || cssEscape.length == 1){
+                reader.read();
+        } else {
+            c = "";
+        }
+        
+        return cssEscape + c;
+    },
+    
     readComment: function(first){
         var reader  = this._reader,
             comment = first || "",
             c       = reader.read();
-        
+
         if (c == "*"){
             while(c){
                 comment += c;
-                
+
                 //look for end of comment
-                if (c == "*" && reader.peek() == "/"){
+                if (comment.length > 2 && c == "*" && reader.peek() == "/"){
                     comment += reader.read();
                     break;
                 }
-                
+
                 c = reader.read();
             }
-            
+
             return comment;
         } else {
             return "";
         }
-    
-    },
-    
 
-
-
+    }
 });
+
 
 var Tokens  = [
 
@@ -4621,14 +5577,16 @@ var Tokens  = [
     { name: "FONT_FACE_SYM", text: "@font-face"},
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
+    { name: "UNKNOWN_SYM" },
     //{ name: "ATKEYWORD"},
+    
+    //CSS3 animations
+    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-ms-keyframes" ] },
 
     //important symbol
     { name: "IMPORTANT_SYM"},
 
     //measurements
-    { name: "EMS"},
-    { name: "EXS"},
     { name: "LENGTH"},
     { name: "ANGLE"},
     { name: "TIME"},
@@ -4771,7 +5729,13 @@ var Tokens  = [
         nameMap.push(Tokens[i].name);
         Tokens[Tokens[i].name] = i;
         if (Tokens[i].text){
-            typeMap[Tokens[i].text] = i;
+            if (Tokens[i].text instanceof Array){
+                for (var j=0; j < Tokens[i].text.length; j++){
+                    typeMap[Tokens[i].text[j]] = i;
+                }
+            } else {
+                typeMap[Tokens[i].text] = i;
+            }
         }
     }
     
@@ -4788,6 +5752,553 @@ var Tokens  = [
 
 
 
+//This file will likely change a lot! Very experimental!
+/*global Properties, ValidationTypes, ValidationError, PropertyValueIterator */
+var Validation = {
+
+    validate: function(property, value){
+    
+        //normalize name
+        var name        = property.toString().toLowerCase(),
+            parts       = value.parts,
+            expression  = new PropertyValueIterator(value),
+            spec        = Properties[name],
+            part,
+            valid,            
+            j, count,
+            msg,
+            types,
+            last,
+            literals,
+            max, multi, group;
+            
+        if (!spec) {
+            if (name.indexOf("-") !== 0){    //vendor prefixed are ok
+                throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
+            }
+        } else if (typeof spec != "number"){
+        
+            //initialization
+            if (typeof spec == "string"){
+                if (spec.indexOf("||") > -1) {
+                    this.groupProperty(spec, expression);
+                } else {
+                    this.singleProperty(spec, expression, 1);
+                }
+
+            } else if (spec.multi) {
+                this.multiProperty(spec.multi, expression, spec.comma, spec.max || Infinity);
+            } else if (typeof spec == "function") {
+                spec(expression);
+            }
+
+        }
+
+    },
+    
+    singleProperty: function(types, expression, max, partial) {
+
+        var result      = false,
+            value       = expression.value,
+            count       = 0,
+            part;
+         
+        while (expression.hasNext() && count < max) {
+            result = ValidationTypes.isAny(expression, types);
+            if (!result) {
+                break;
+            }
+            count++;
+        }
+        
+        if (!result) {
+            if (expression.hasNext() && !expression.isFirst()) {
+                part = expression.peek();
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                 throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
+            }        
+        } else if (expression.hasNext()) {
+            part = expression.next();
+            throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+        }          
+                 
+    },    
+    
+    multiProperty: function (types, expression, comma, max) {
+
+        var result      = false,
+            value       = expression.value,
+            count       = 0,
+            sep         = false,
+            part;
+            
+        while(expression.hasNext() && !result && count < max) {
+            if (ValidationTypes.isAny(expression, types)) {
+                count++;
+                if (!expression.hasNext()) {
+                    result = true;
+
+                } else if (comma) {
+                    if (expression.peek() == ",") {
+                        part = expression.next();
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                break;
+
+            }
+        }
+        
+        if (!result) {
+            if (expression.hasNext() && !expression.isFirst()) {
+                part = expression.peek();
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                part = expression.previous();
+                if (comma && part == ",") {
+                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col); 
+                } else {
+                    throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
+                }
+            }
+        
+        } else if (expression.hasNext()) {
+            part = expression.next();
+            throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+        }  
+
+    },
+    
+    groupProperty: function (types, expression, comma) {
+
+        var result      = false,
+            value       = expression.value,
+            typeCount   = types.split("||").length,
+            groups      = { count: 0 },
+            partial     = false,
+            name,
+            part;
+            
+        while(expression.hasNext() && !result) {
+            name = ValidationTypes.isAnyOfGroup(expression, types);
+            if (name) {
+            
+                //no dupes
+                if (groups[name]) {
+                    break;
+                } else {
+                    groups[name] = 1;
+                    groups.count++;
+                    partial = true;
+                    
+                    if (groups.count == typeCount || !expression.hasNext()) {
+                        result = true;
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+        
+        if (!result) {        
+            if (partial && expression.hasNext()) {
+                    part = expression.peek();
+                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
+            }
+        } else if (expression.hasNext()) {
+            part = expression.next();
+            throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+        }           
+    }
+
+    
+
+};
+/**
+ * Type to use when a validation error occurs.
+ * @class ValidationError
+ * @namespace parserlib.util
+ * @constructor
+ * @param {String} message The error message.
+ * @param {int} line The line at which the error occurred.
+ * @param {int} col The column at which the error occurred.
+ */
+function ValidationError(message, line, col){
+
+    /**
+     * The column at which the error occurred.
+     * @type int
+     * @property col
+     */
+    this.col = col;
+
+    /**
+     * The line at which the error occurred.
+     * @type int
+     * @property line
+     */
+    this.line = line;
+
+    /**
+     * The text representation of the unit.
+     * @type String
+     * @property text
+     */
+    this.message = message;
+
+}
+
+//inherit from Error
+ValidationError.prototype = new Error();
+//This file will likely change a lot! Very experimental!
+/*global Properties, Validation, ValidationError, PropertyValueIterator, console*/
+var ValidationTypes = {
+
+    isLiteral: function (part, literals) {
+        var text = part.text.toString().toLowerCase(),
+            args = literals.split(" | "),
+            i, len, found = false;
+        
+        for (i=0,len=args.length; i < len && !found; i++){
+            if (text == args[i].toLowerCase()){
+                found = true;
+            }
+        }
+        
+        return found;    
+    },
+    
+    isSimple: function(type) {
+        return !!this.simple[type];
+    },
+    
+    isComplex: function(type) {
+        return !!this.complex[type];
+    },
+    
+    /**
+     * Determines if the next part(s) of the given expression
+     * are any of the given types.
+     */
+    isAny: function (expression, types) {
+        var args = types.split(" | "),
+            i, len, found = false;
+        
+        for (i=0,len=args.length; i < len && !found && expression.hasNext(); i++){
+            found = this.isType(expression, args[i]);
+        }
+        
+        return found;    
+    },
+    
+    /**
+     * Determines if the next part(s) of the given expresion
+     * are one of a group.
+     */
+    isAnyOfGroup: function(expression, types) {
+        var args = types.split(" || "),
+            i, len, found = false;
+        
+        for (i=0,len=args.length; i < len && !found; i++){
+            found = this.isType(expression, args[i]);
+        }
+        
+        return found ? args[i-1] : false;
+    },
+    
+    /**
+     * Determines if the next part(s) of the given expression
+     * are of a given type.
+     */
+    isType: function (expression, type) {
+        var part = expression.peek(),
+            result = false;
+            
+        if (type.charAt(0) != "<") {
+            result = this.isLiteral(part, type);
+            if (result) {
+                expression.next();
+            }
+        } else if (this.simple[type]) {
+            result = this.simple[type](part);
+            if (result) {
+                expression.next();
+            }
+        } else {
+            result = this.complex[type](expression);
+        }
+        
+        return result;
+    },
+    
+    
+    
+    simple: {
+
+        "<absolute-size>": function(part){
+            return ValidationTypes.isLiteral(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+        },
+        
+        "<attachment>": function(part){
+            return ValidationTypes.isLiteral(part, "scroll | fixed | local");
+        },
+        
+        "<attr>": function(part){
+            return part.type == "function" && part.name == "attr";
+        },
+                
+        "<bg-image>": function(part){
+            return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
+        },        
+        
+        "<gradient>": function(part) {
+            return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
+        },
+        
+        "<box>": function(part){
+            return ValidationTypes.isLiteral(part, "padding-box | border-box | content-box");
+        },
+        
+        "<content>": function(part){
+            return part.type == "function" && part.name == "content";
+        },        
+        
+        "<relative-size>": function(part){
+            return ValidationTypes.isLiteral(part, "smaller | larger");
+        },
+        
+        //any identifier
+        "<ident>": function(part){
+            return part.type == "identifier";
+        },
+        
+        "<length>": function(part){
+            return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+        },
+        
+        "<color>": function(part){
+            return part.type == "color" || part == "transparent";
+        },
+        
+        "<number>": function(part){
+            return part.type == "number" || this["<integer>"](part);
+        },
+        
+        "<integer>": function(part){
+            return part.type == "integer";
+        },
+        
+        "<line>": function(part){
+            return part.type == "integer";
+        },
+        
+        "<angle>": function(part){
+            return part.type == "angle";
+        },        
+        
+        "<uri>": function(part){
+            return part.type == "uri";
+        },
+        
+        "<image>": function(part){
+            return this["<uri>"](part);
+        },
+        
+        "<percentage>": function(part){
+            return part.type == "percentage" || part == "0";
+        },
+
+        "<border-width>": function(part){
+            return this["<length>"](part) || ValidationTypes.isLiteral(part, "thin | medium | thick");
+        },
+        
+        "<border-style>": function(part){
+            return ValidationTypes.isLiteral(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+        },
+        
+        "<margin-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "auto");
+        },
+        
+        "<padding-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part);
+        },
+        
+        "<shape>": function(part){
+            return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
+        },
+        
+        "<time>": function(part) {
+            return part.type == "time";
+        }
+    },
+    
+    complex: {
+
+        "<bg-position>": function(expression){
+            var types   = this,
+                result  = false,
+                numeric = "<percentage> | <length>",
+                xDir    = "left | center | right",
+                yDir    = "top | center | bottom",
+                part,
+                i, len;
+            
+/*
+<position> = [
+  [ left | center | right | top | bottom | <percentage> | <length> ]
+|
+  [ left | center | right | <percentage> | <length> ]
+  [ top | center | bottom | <percentage> | <length> ]
+|
+  [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
+  [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
+]
+
+*/            
+                
+            if (ValidationTypes.isAny(expression, "top | bottom")) {
+                result = true;
+            } else {
+                
+                //must be two-part
+                if (ValidationTypes.isAny(expression, numeric)){
+                    if (expression.hasNext()){
+                        result = ValidationTypes.isAny(expression, numeric + " | " + yDir);
+                    }
+                } else if (ValidationTypes.isAny(expression, xDir)){
+                    if (expression.hasNext()){
+                        
+                        //two- or three-part
+                        if (ValidationTypes.isAny(expression, yDir)){
+                            result = true;
+                      
+                            ValidationTypes.isAny(expression, numeric);
+                            
+                        } else if (ValidationTypes.isAny(expression, numeric)){
+                        
+                            //could also be two-part, so check the next part
+                            if (ValidationTypes.isAny(expression, yDir)){                                    
+                                ValidationTypes.isAny(expression, numeric);                               
+                            }
+                            
+                            result = true;
+                        }
+                    }
+                }                                 
+            }            
+
+            
+            return result;
+        },
+
+        "<bg-size>": function(expression){
+            //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
+            var types   = this,
+                result  = false,
+                numeric = "<percentage> | <length> | auto",
+                part,
+                i, len;      
+      
+            if (ValidationTypes.isAny(expression, "cover | contain")) {
+                result = true;
+            } else if (ValidationTypes.isAny(expression, numeric)) {
+                result = true;                
+                ValidationTypes.isAny(expression, numeric);
+            }
+            
+            return result;
+        },
+        
+        "<repeat-style>": function(expression){
+            //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
+            var result  = false,
+                values  = "repeat | space | round | no-repeat",
+                part;
+            
+            if (expression.hasNext()){
+                part = expression.next();
+                
+                if (ValidationTypes.isLiteral(part, "repeat-x | repeat-y")) {
+                    result = true;                    
+                } else if (ValidationTypes.isLiteral(part, values)) {
+                    result = true;
+
+                    if (expression.hasNext() && ValidationTypes.isLiteral(expression.peek(), values)) {
+                        expression.next();
+                    }
+                }
+            }
+            
+            return result;
+            
+        },
+        
+        "<shadow>": function(expression) {
+            //inset? && [ <length>{2,4} && <color>? ]
+            var result  = false,
+                count   = 0,
+                inset   = false,
+                color   = false,
+                part;
+                
+            if (expression.hasNext()) {            
+                
+                if (ValidationTypes.isAny(expression, "inset")){
+                    inset = true;
+                }
+                
+                if (ValidationTypes.isAny(expression, "<color>")) {
+                    color = true;
+                }                
+                
+                while (ValidationTypes.isAny(expression, "<length>") && count < 4) {
+                    count++;
+                }
+                
+                
+                if (expression.hasNext()) {
+                    if (!color) {
+                        ValidationTypes.isAny(expression, "<color>");
+                    }
+                    
+                    if (!inset) {
+                        ValidationTypes.isAny(expression, "inset");
+                    }
+
+                }
+                
+                result = (count >= 2 && count <= 4);
+            
+            }
+            
+            return result;
+        },
+        
+        "<x-one-radius>": function(expression) {
+            //[ <length> | <percentage> ] [ <length> | <percentage> ]?
+            var result  = false,
+                count   = 0,
+                numeric = "<length> | <percentage>",
+                part;
+                
+            if (ValidationTypes.isAny(expression, numeric)){
+                result = true;
+                
+                ValidationTypes.isAny(expression, numeric);
+            }                
+            
+            return result;
+        }
+    }
+};
+
+
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -4800,4584 +6311,29 @@ MediaQuery          :MediaQuery,
 Selector            :Selector,
 SelectorPart        :SelectorPart,
 SelectorSubPart     :SelectorSubPart,
+Specificity         :Specificity,
 TokenStream         :TokenStream,
-Tokens              :Tokens
+Tokens              :Tokens,
+ValidationError     :ValidationError
 };
 })();
-/**
- * YUI Test Framework
- * @module yuitest
- */
 
-/**
- * The root namespace for YUI Test.
- * @class YUITest
- * @static
- */
 
-var YUITest = {
-    version: "@VERSION@"
-};
 
-
-/**
- * Simple custom event implementation.
- * @namespace YUITest
- * @class EventTarget
- * @constructor
- */
-YUITest.EventTarget = function(){
-
-    /**
-     * Event handlers for the various events.
-     * @type Object
-     * @private
-     * @property _handlers
-     * @static
-     */
-    this._handlers = {};
-
-};
-
-YUITest.EventTarget.prototype = {
-
-    //restore prototype
-    constructor: YUITest.EventTarget,
-
-    //-------------------------------------------------------------------------
-    // Event Handling
-    //-------------------------------------------------------------------------
-
-    /**
-     * Adds a listener for a given event type.
-     * @param {String} type The type of event to add a listener for.
-     * @param {Function} listener The function to call when the event occurs.
-     * @return {void}
-     * @method attach
-     */
-    attach: function(type, listener){
-        if (typeof this._handlers[type] == "undefined"){
-            this._handlers[type] = [];
-        }
-
-        this._handlers[type].push(listener);
-    },
-
-    /**
-     * Adds a listener for a given event type.
-     * @param {String} type The type of event to add a listener for.
-     * @param {Function} listener The function to call when the event occurs.
-     * @return {void}
-     * @method subscribe
-     * @deprecated
-     */
-    subscribe: function(type, listener){
-        this.attach.apply(this, arguments);
-    },
-
-    /**
-     * Fires an event based on the passed-in object.
-     * @param {Object|String} event An object with at least a 'type' attribute
-     *      or a string indicating the event name.
-     * @return {void}
-     * @method fire
-     */
-    fire: function(event){
-        if (typeof event == "string"){
-            event = { type: event };
-        }
-        if (!event.target){
-            event.target = this;
-        }
-
-        if (!event.type){
-            throw new Error("Event object missing 'type' property.");
-        }
-
-        if (this._handlers[event.type] instanceof Array){
-            var handlers = this._handlers[event.type];
-            for (var i=0, len=handlers.length; i < len; i++){
-                handlers[i].call(this, event);
-            }
-        }
-    },
-
-    /**
-     * Removes a listener for a given event type.
-     * @param {String} type The type of event to remove a listener from.
-     * @param {Function} listener The function to remove from the event.
-     * @return {void}
-     * @method detach
-     */
-    detach: function(type, listener){
-        if (this._handlers[type] instanceof Array){
-            var handlers = this._handlers[type];
-            for (var i=0, len=handlers.length; i < len; i++){
-                if (handlers[i] === listener){
-                    handlers.splice(i, 1);
-                    break;
-                }
-            }
-        }
-    },
-
-    /**
-     * Removes a listener for a given event type.
-     * @param {String} type The type of event to remove a listener from.
-     * @param {Function} listener The function to remove from the event.
-     * @return {void}
-     * @method unsubscribe
-     * @deprecated
-     */
-    unsubscribe: function(type, listener){
-        this.detach.apply(this, arguments);
-    }
-
-};
-
-
-/**
- * Object containing helper methods.
- * @namespace YUITest
- * @class Util
- * @static
- */
-YUITest.Util = {
-
-    /**
-     * Mixes the own properties from the supplier onto the
-     * receiver.
-     * @param {Object} receiver The object to receive the properties.
-     * @param {Object} supplier The object to supply the properties.
-     * @return {Object} The receiver that was passed in.
-     * @method mix
-     * @static
-     */
-    mix: function(receiver, supplier){
-
-        for (var prop in supplier){
-            if (supplier.hasOwnProperty(prop)){
-                receiver[prop] = supplier[prop];
-            }
-        }
-
-        return receiver;
-    },
-
-    /**
-     * Stub for JSON functionality. When the native JSON utility
-     * is available, it will be used. Otherwise, a stub object
-     * is created. Developers should override YUITest.Util.JSON
-     * when attempting to use it in environments where a native
-     * JSON utility is unavailable.
-     * @property JSON
-     * @type JSON
-     * @static
-     */
-    JSON: typeof JSON != "undefined" ? JSON : {
-        stringify: function(){
-            //TODO: Should include code to do this?
-            throw new Error("No JSON utility specified.");
-        }
-    }
-
-};
-
-
-/**
- * Error is thrown whenever an assertion fails. It provides methods
- * to more easily get at error information and also provides a base class
- * from which more specific assertion errors can be derived.
- *
- * @param {String} message The message to display when the error occurs.
- * @namespace YUITest
- * @class AssertionError
- * @constructor
- */
-YUITest.AssertionError = function (message){
-
-    /**
-     * Error message. Must be duplicated to ensure browser receives it.
-     * @type String
-     * @property message
-     */
-    this.message = message;
-
-    /**
-     * The name of the error that occurred.
-     * @type String
-     * @property name
-     */
-    this.name = "Assert Error";
-};
-
-YUITest.AssertionError.prototype = {
-
-    //restore constructor
-    constructor: YUITest.AssertionError,
-
-    /**
-     * Returns a fully formatted error for an assertion failure. This should
-     * be overridden by all subclasses to provide specific information.
-     * @method getMessage
-     * @return {String} A string describing the error.
-     */
-    getMessage : function () {
-        return this.message;
-    },
-
-    /**
-     * Returns a string representation of the error.
-     * @method toString
-     * @return {String} A string representation of the error.
-     */
-    toString : function () {
-        return this.name + ": " + this.getMessage();
-    }
-
-};
-
-/**
- * ComparisonFailure is subclass of Error that is thrown whenever
- * a comparison between two values fails. It provides mechanisms to retrieve
- * both the expected and actual value.
- *
- * @param {String} message The message to display when the error occurs.
- * @param {Object} expected The expected value.
- * @param {Object} actual The actual value that caused the assertion to fail.
- * @namespace YUITest
- * @extends AssertionError
- * @class ComparisonFailure
- * @constructor
- */
-YUITest.ComparisonFailure = function (message, expected, actual){
-
-    //call superclass
-    YUITest.AssertionError.call(this, message);
-
-    /**
-     * The expected value.
-     * @type Object
-     * @property expected
-     */
-    this.expected = expected;
-
-    /**
-     * The actual value.
-     * @type Object
-     * @property actual
-     */
-    this.actual = actual;
-
-    /**
-     * The name of the error that occurred.
-     * @type String
-     * @property name
-     */
-    this.name = "ComparisonFailure";
-
-};
-
-//inherit from YUITest.AssertionError
-YUITest.ComparisonFailure.prototype = new YUITest.AssertionError;
-
-//restore constructor
-YUITest.ComparisonFailure.prototype.constructor = YUITest.ComparisonFailure;
-
-/**
- * Returns a fully formatted error for an assertion failure. This message
- * provides information about the expected and actual values.
- * @method getMessage
- * @return {String} A string describing the error.
- */
-YUITest.ComparisonFailure.prototype.getMessage = function(){
-    return this.message + "\nExpected: " + this.expected + " (" + (typeof this.expected) + ")"  +
-            "\nActual: " + this.actual + " (" + (typeof this.actual) + ")";
-};
-
-/**
- * ShouldError is subclass of Error that is thrown whenever
- * a test is expected to throw an error but doesn't.
- *
- * @param {String} message The message to display when the error occurs.
- * @namespace YUITest
- * @extends AssertionError
- * @class ShouldError
- * @constructor
- */
-YUITest.ShouldError = function (message){
-
-    //call superclass
-    YUITest.AssertionError.call(this, message || "This test should have thrown an error but didn't.");
-
-    /**
-     * The name of the error that occurred.
-     * @type String
-     * @property name
-     */
-    this.name = "ShouldError";
-
-};
-
-//inherit from YUITest.AssertionError
-YUITest.ShouldError.prototype = new YUITest.AssertionError();
-
-//restore constructor
-YUITest.ShouldError.prototype.constructor = YUITest.ShouldError;
-
-/**
- * ShouldFail is subclass of AssertionError that is thrown whenever
- * a test was expected to fail but did not.
- *
- * @param {String} message The message to display when the error occurs.
- * @namespace YUITest
- * @extends YUITest.AssertionError
- * @class ShouldFail
- * @constructor
- */
-YUITest.ShouldFail = function (message){
-
-    //call superclass
-    YUITest.AssertionError.call(this, message || "This test should fail but didn't.");
-
-    /**
-     * The name of the error that occurred.
-     * @type String
-     * @property name
-     */
-    this.name = "ShouldFail";
-
-};
-
-//inherit from YUITest.AssertionError
-YUITest.ShouldFail.prototype = new YUITest.AssertionError();
-
-//restore constructor
-YUITest.ShouldFail.prototype.constructor = YUITest.ShouldFail;
-
-/**
- * UnexpectedError is subclass of AssertionError that is thrown whenever
- * an error occurs within the course of a test and the test was not expected
- * to throw an error.
- *
- * @param {Error} cause The unexpected error that caused this error to be
- *                      thrown.
- * @namespace YUITest
- * @extends YUITest.AssertionError
- * @class UnexpectedError
- * @constructor
- */
-YUITest.UnexpectedError = function (cause){
-
-    //call superclass
-    YUITest.AssertionError.call(this, "Unexpected error: " + cause.message);
-
-    /**
-     * The unexpected error that occurred.
-     * @type Error
-     * @property cause
-     */
-    this.cause = cause;
-
-    /**
-     * The name of the error that occurred.
-     * @type String
-     * @property name
-     */
-    this.name = "UnexpectedError";
-
-    /**
-     * Stack information for the error (if provided).
-     * @type String
-     * @property stack
-     */
-    this.stack = cause.stack;
-
-};
-
-//inherit from YUITest.AssertionError
-YUITest.UnexpectedError.prototype = new YUITest.AssertionError();
-
-//restore constructor
-YUITest.UnexpectedError.prototype.constructor = YUITest.UnexpectedError;
-
-/**
- * UnexpectedValue is subclass of Error that is thrown whenever
- * a value was unexpected in its scope. This typically means that a test
- * was performed to determine that a value was *not* equal to a certain
- * value.
- *
- * @param {String} message The message to display when the error occurs.
- * @param {Object} unexpected The unexpected value.
- * @namespace YUITest
- * @extends AssertionError
- * @class UnexpectedValue
- * @constructor
- */
-YUITest.UnexpectedValue = function (message, unexpected){
-
-    //call superclass
-    YUITest.AssertionError.call(this, message);
-
-    /**
-     * The unexpected value.
-     * @type Object
-     * @property unexpected
-     */
-    this.unexpected = unexpected;
-
-    /**
-     * The name of the error that occurred.
-     * @type String
-     * @property name
-     */
-    this.name = "UnexpectedValue";
-
-};
-
-//inherit from YUITest.AssertionError
-YUITest.UnexpectedValue.prototype = new YUITest.AssertionError();
-
-//restore constructor
-YUITest.UnexpectedValue.prototype.constructor = YUITest.UnexpectedValue;
-
-/**
- * Returns a fully formatted error for an assertion failure. This message
- * provides information about the expected and actual values.
- * @method getMessage
- * @return {String} A string describing the error.
- */
-YUITest.UnexpectedValue.prototype.getMessage = function(){
-    return this.message + "\nUnexpected: " + this.unexpected + " (" + (typeof this.unexpected) + ") ";
-};
-
-
-/**
- * Represents a stoppage in test execution to wait for an amount of time before
- * continuing.
- * @param {Function} segment A function to run when the wait is over.
- * @param {int} delay The number of milliseconds to wait before running the code.
- * @class Wait
- * @namespace Test
- * @constructor
- *
- */
-YUITest.Wait = function (segment, delay) {
-
-    /**
-     * The segment of code to run when the wait is over.
-     * @type Function
-     * @property segment
-     */
-    this.segment = (typeof segment == "function" ? segment : null);
-
-    /**
-     * The delay before running the segment of code.
-     * @type int
-     * @property delay
-     */
-    this.delay = (typeof delay == "number" ? delay : 0);
-};
-
-
-/**
- * The Assert object provides functions to test JavaScript values against
- * known and expected results. Whenever a comparison (assertion) fails,
- * an error is thrown.
- * @namespace YUITest
- * @class Assert
- * @static
- */
-YUITest.Assert = {
-
-    /**
-     * The number of assertions performed.
-     * @property _asserts
-     * @type int
-     * @private
-     */
-    _asserts: 0,
-
-    //-------------------------------------------------------------------------
-    // Helper Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Formats a message so that it can contain the original assertion message
-     * in addition to the custom message.
-     * @param {String} customMessage The message passed in by the developer.
-     * @param {String} defaultMessage The message created by the error by default.
-     * @return {String} The final error message, containing either or both.
-     * @protected
-     * @static
-     * @method _formatMessage
-     */
-    _formatMessage : function (customMessage, defaultMessage) {
-        if (typeof customMessage == "string" && customMessage.length > 0){
-            return customMessage.replace("{message}", defaultMessage);
-        } else {
-            return defaultMessage;
-        }
-    },
-
-    /**
-     * Returns the number of assertions that have been performed.
-     * @method _getCount
-     * @protected
-     * @static
-     */
-    _getCount: function(){
-        return this._asserts;
-    },
-
-    /**
-     * Increments the number of assertions that have been performed.
-     * @method _increment
-     * @protected
-     * @static
-     */
-    _increment: function(){
-        this._asserts++;
-    },
-
-    /**
-     * Resets the number of assertions that have been performed to 0.
-     * @method _reset
-     * @protected
-     * @static
-     */
-    _reset: function(){
-        this._asserts = 0;
-    },
-
-    //-------------------------------------------------------------------------
-    // Generic Assertion Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Forces an assertion error to occur.
-     * @param {String} message (Optional) The message to display with the failure.
-     * @method fail
-     * @static
-     */
-    fail : function (message) {
-        throw new YUITest.AssertionError(YUITest.Assert._formatMessage(message, "Test force-failed."));
-    },
-
-    //-------------------------------------------------------------------------
-    // Equality Assertion Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Asserts that a value is equal to another. This uses the double equals sign
-     * so type cohersion may occur.
-     * @param {Object} expected The expected value.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method areEqual
-     * @static
-     */
-    areEqual : function (expected, actual, message) {
-        YUITest.Assert._increment();
-        if (expected != actual) {
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Values should be equal."), expected, actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is not equal to another. This uses the double equals sign
-     * so type cohersion may occur.
-     * @param {Object} unexpected The unexpected value.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method areNotEqual
-     * @static
-     */
-    areNotEqual : function (unexpected, actual,
-                         message) {
-        YUITest.Assert._increment();
-        if (unexpected == actual) {
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Values should not be equal."), unexpected);
-        }
-    },
-
-    /**
-     * Asserts that a value is not the same as another. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} unexpected The unexpected value.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method areNotSame
-     * @static
-     */
-    areNotSame : function (unexpected, actual, message) {
-        YUITest.Assert._increment();
-        if (unexpected === actual) {
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Values should not be the same."), unexpected);
-        }
-    },
-
-    /**
-     * Asserts that a value is the same as another. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} expected The expected value.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method areSame
-     * @static
-     */
-    areSame : function (expected, actual, message) {
-        YUITest.Assert._increment();
-        if (expected !== actual) {
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Values should be the same."), expected, actual);
-        }
-    },
-
-    //-------------------------------------------------------------------------
-    // Boolean Assertion Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Asserts that a value is false. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isFalse
-     * @static
-     */
-    isFalse : function (actual, message) {
-        YUITest.Assert._increment();
-        if (false !== actual) {
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value should be false."), false, actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is true. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isTrue
-     * @static
-     */
-    isTrue : function (actual, message) {
-        YUITest.Assert._increment();
-        if (true !== actual) {
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value should be true."), true, actual);
-        }
-
-    },
-
-    //-------------------------------------------------------------------------
-    // Special Value Assertion Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Asserts that a value is not a number.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNaN
-     * @static
-     */
-    isNaN : function (actual, message){
-        YUITest.Assert._increment();
-        if (!isNaN(actual)){
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value should be NaN."), NaN, actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is not the special NaN value.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNotNaN
-     * @static
-     */
-    isNotNaN : function (actual, message){
-        YUITest.Assert._increment();
-        if (isNaN(actual)){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Values should not be NaN."), NaN);
-        }
-    },
-
-    /**
-     * Asserts that a value is not null. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNotNull
-     * @static
-     */
-    isNotNull : function (actual, message) {
-        YUITest.Assert._increment();
-        if (actual === null) {
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Values should not be null."), null);
-        }
-    },
-
-    /**
-     * Asserts that a value is not undefined. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNotUndefined
-     * @static
-     */
-    isNotUndefined : function (actual, message) {
-        YUITest.Assert._increment();
-        if (typeof actual == "undefined") {
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should not be undefined."), undefined);
-        }
-    },
-
-    /**
-     * Asserts that a value is null. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNull
-     * @static
-     */
-    isNull : function (actual, message) {
-        YUITest.Assert._increment();
-        if (actual !== null) {
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value should be null."), null, actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is undefined. This uses the triple equals sign
-     * so no type cohersion may occur.
-     * @param {Object} actual The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isUndefined
-     * @static
-     */
-    isUndefined : function (actual, message) {
-        YUITest.Assert._increment();
-        if (typeof actual != "undefined") {
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value should be undefined."), undefined, actual);
-        }
-    },
-
-    //--------------------------------------------------------------------------
-    // Instance Assertion Methods
-    //--------------------------------------------------------------------------
-
-    /**
-     * Asserts that a value is an array.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isArray
-     * @static
-     */
-    isArray : function (actual, message) {
-        YUITest.Assert._increment();
-        var shouldFail = false;
-        if (Array.isArray){
-            shouldFail = !Array.isArray(actual);
-        } else {
-            shouldFail = Object.prototype.toString.call(actual) != "[object Array]";
-        }
-        if (shouldFail){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should be an array."), actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is a Boolean.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isBoolean
-     * @static
-     */
-    isBoolean : function (actual, message) {
-        YUITest.Assert._increment();
-        if (typeof actual != "boolean"){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should be a Boolean."), actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is a function.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isFunction
-     * @static
-     */
-    isFunction : function (actual, message) {
-        YUITest.Assert._increment();
-        if (!(actual instanceof Function)){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should be a function."), actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is an instance of a particular object. This may return
-     * incorrect results when comparing objects from one frame to constructors in
-     * another frame. For best results, don't use in a cross-frame manner.
-     * @param {Function} expected The function that the object should be an instance of.
-     * @param {Object} actual The object to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isInstanceOf
-     * @static
-     */
-    isInstanceOf : function (expected, actual, message) {
-        YUITest.Assert._increment();
-        if (!(actual instanceof expected)){
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value isn't an instance of expected type."), expected, actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is a number.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNumber
-     * @static
-     */
-    isNumber : function (actual, message) {
-        YUITest.Assert._increment();
-        if (typeof actual != "number"){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should be a number."), actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is an object.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isObject
-     * @static
-     */
-    isObject : function (actual, message) {
-        YUITest.Assert._increment();
-        if (!actual || (typeof actual != "object" && typeof actual != "function")){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should be an object."), actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is a string.
-     * @param {Object} actual The value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isString
-     * @static
-     */
-    isString : function (actual, message) {
-        YUITest.Assert._increment();
-        if (typeof actual != "string"){
-            throw new YUITest.UnexpectedValue(YUITest.Assert._formatMessage(message, "Value should be a string."), actual);
-        }
-    },
-
-    /**
-     * Asserts that a value is of a particular type.
-     * @param {String} expectedType The expected type of the variable.
-     * @param {Object} actualValue The actual value to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isTypeOf
-     * @static
-     */
-    isTypeOf : function (expectedType, actualValue, message){
-        YUITest.Assert._increment();
-        if (typeof actualValue != expectedType){
-            throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Value should be of type " + expectedType + "."), expectedType, typeof actualValue);
-        }
-    },
-
-    //--------------------------------------------------------------------------
-    // Error Detection Methods
-    //--------------------------------------------------------------------------
-
-    /**
-     * Asserts that executing a particular method should throw an error of
-     * a specific type. This is a replacement for _should.error.
-     * @param {String|Function|Object} expectedError If a string, this
-     *      is the error message that the error must have; if a function, this
-     *      is the constructor that should have been used to create the thrown
-     *      error; if an object, this is an instance of a particular error type
-     *      with a specific error message (both must match).
-     * @param {Function} method The method to execute that should throw the error.
-     * @param {String} message (Optional) The message to display if the assertion
-     *      fails.
-     * @method throwsError
-     * @return {void}
-     * @static
-     */
-    throwsError: function(expectedError, method, message){
-        YUITest.Assert._increment();
-        var error = false;
-
-        try {
-            method();
-        } catch (thrown) {
-
-            //check to see what type of data we have
-            if (typeof expectedError == "string"){
-
-                //if it's a string, check the error message
-                if (thrown.message != expectedError){
-                    error = true;
-                }
-            } else if (typeof expectedError == "function"){
-
-                //if it's a function, see if the error is an instance of it
-                if (!(thrown instanceof expectedError)){
-                    error = true;
-                }
-
-            } else if (typeof expectedError == "object" && expectedError !== null){
-
-                //if it's an object, check the instance and message
-                if (!(thrown instanceof expectedError.constructor) ||
-                        thrown.message != expectedError.message){
-                    error = true;
-                }
-
-            } else { //if it gets here, the argument could be wrong
-                error = true;
-            }
-
-            if (error){
-                throw new YUITest.UnexpectedError(thrown);
-            } else {
-                return;
-            }
-        }
-
-        //if it reaches here, the error wasn't thrown, which is a bad thing
-        throw new YUITest.AssertionError(YUITest.Assert._formatMessage(message, "Error should have been thrown."));
-    }
-
-};
-
-
-/**
- * The ArrayAssert object provides functions to test JavaScript array objects
- * for a variety of cases.
- * @namespace YUITest
- * @class ArrayAssert
- * @static
- */
-
-YUITest.ArrayAssert = {
-
-    //=========================================================================
-    // Private methods
-    //=========================================================================
-
-    /**
-     * Simple indexOf() implementation for an array. Defers to native
-     * if available.
-     * @param {Array} haystack The array to search.
-     * @param {Variant} needle The value to locate.
-     * @return {int} The index of the needle if found or -1 if not.
-     * @method _indexOf
-     * @private
-     */
-    _indexOf: function(haystack, needle){
-        if (haystack.indexOf){
-            return haystack.indexOf(needle);
-        } else {
-            for (var i=0; i < haystack.length; i++){
-                if (haystack[i] === needle){
-                    return i;
-                }
-            }
-            return -1;
-        }
-    },
-
-    /**
-     * Simple some() implementation for an array. Defers to native
-     * if available.
-     * @param {Array} haystack The array to search.
-     * @param {Function} matcher The function to run on each value.
-     * @return {Boolean} True if any value, when run through the matcher,
-     *      returns true.
-     * @method _some
-     * @private
-     */
-    _some: function(haystack, matcher){
-        if (haystack.some){
-            return haystack.some(matcher);
-        } else {
-            for (var i=0; i < haystack.length; i++){
-                if (matcher(haystack[i])){
-                    return true;
-                }
-            }
-            return false;
-        }
-    },
-
-    /**
-     * Asserts that a value is present in an array. This uses the triple equals
-     * sign so no type cohersion may occur.
-     * @param {Object} needle The value that is expected in the array.
-     * @param {Array} haystack An array of values.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method contains
-     * @static
-     */
-    contains : function (needle, haystack,
-                           message) {
-
-        YUITest.Assert._increment();
-
-        if (this._indexOf(haystack, needle) == -1){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value " + needle + " (" + (typeof needle) + ") not found in array [" + haystack + "]."));
-        }
-    },
-
-    /**
-     * Asserts that a set of values are present in an array. This uses the triple equals
-     * sign so no type cohersion may occur. For this assertion to pass, all values must
-     * be found.
-     * @param {Object[]} needles An array of values that are expected in the array.
-     * @param {Array} haystack An array of values to check.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method containsItems
-     * @static
-     */
-    containsItems : function (needles, haystack,
-                           message) {
-        YUITest.Assert._increment();
-
-        //begin checking values
-        for (var i=0; i < needles.length; i++){
-            if (this._indexOf(haystack, needles[i]) == -1){
-                YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value " + needles[i] + " (" + (typeof needles[i]) + ") not found in array [" + haystack + "]."));
-            }
-        }
-    },
-
-    /**
-     * Asserts that a value matching some condition is present in an array. This uses
-     * a function to determine a match.
-     * @param {Function} matcher A function that returns true if the items matches or false if not.
-     * @param {Array} haystack An array of values.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method containsMatch
-     * @static
-     */
-    containsMatch : function (matcher, haystack,
-                           message) {
-
-        YUITest.Assert._increment();
-        //check for valid matcher
-        if (typeof matcher != "function"){
-            throw new TypeError("ArrayAssert.containsMatch(): First argument must be a function.");
-        }
-
-        if (!this._some(haystack, matcher)){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "No match found in array [" + haystack + "]."));
-        }
-    },
-
-    /**
-     * Asserts that a value is not present in an array. This uses the triple equals
-     * Asserts that a value is not present in an array. This uses the triple equals
-     * sign so no type cohersion may occur.
-     * @param {Object} needle The value that is expected in the array.
-     * @param {Array} haystack An array of values.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method doesNotContain
-     * @static
-     */
-    doesNotContain : function (needle, haystack,
-                           message) {
-
-        YUITest.Assert._increment();
-
-        if (this._indexOf(haystack, needle) > -1){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value found in array [" + haystack + "]."));
-        }
-    },
-
-    /**
-     * Asserts that a set of values are not present in an array. This uses the triple equals
-     * sign so no type cohersion may occur. For this assertion to pass, all values must
-     * not be found.
-     * @param {Object[]} needles An array of values that are not expected in the array.
-     * @param {Array} haystack An array of values to check.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method doesNotContainItems
-     * @static
-     */
-    doesNotContainItems : function (needles, haystack,
-                           message) {
-
-        YUITest.Assert._increment();
-
-        for (var i=0; i < needles.length; i++){
-            if (this._indexOf(haystack, needles[i]) > -1){
-                YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value found in array [" + haystack + "]."));
-            }
-        }
-
-    },
-
-    /**
-     * Asserts that no values matching a condition are present in an array. This uses
-     * a function to determine a match.
-     * @param {Function} matcher A function that returns true if the item matches or false if not.
-     * @param {Array} haystack An array of values.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method doesNotContainMatch
-     * @static
-     */
-    doesNotContainMatch : function (matcher, haystack,
-                           message) {
-
-        YUITest.Assert._increment();
-
-        //check for valid matcher
-        if (typeof matcher != "function"){
-            throw new TypeError("ArrayAssert.doesNotContainMatch(): First argument must be a function.");
-        }
-
-        if (this._some(haystack, matcher)){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value found in array [" + haystack + "]."));
-        }
-    },
-
-    /**
-     * Asserts that the given value is contained in an array at the specified index.
-     * This uses the triple equals sign so no type cohersion will occur.
-     * @param {Object} needle The value to look for.
-     * @param {Array} haystack The array to search in.
-     * @param {int} index The index at which the value should exist.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method indexOf
-     * @static
-     */
-    indexOf : function (needle, haystack, index, message) {
-
-        YUITest.Assert._increment();
-
-        //try to find the value in the array
-        for (var i=0; i < haystack.length; i++){
-            if (haystack[i] === needle){
-                if (index != i){
-                    YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value exists at index " + i + " but should be at index " + index + "."));
-                }
-                return;
-            }
-        }
-
-        //if it makes it here, it wasn't found at all
-        YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value doesn't exist in array [" + haystack + "]."));
-    },
-
-    /**
-     * Asserts that the values in an array are equal, and in the same position,
-     * as values in another array. This uses the double equals sign
-     * so type cohersion may occur. Note that the array objects themselves
-     * need not be the same for this test to pass.
-     * @param {Array} expected An array of the expected values.
-     * @param {Array} actual Any array of the actual values.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method itemsAreEqual
-     * @static
-     */
-    itemsAreEqual : function (expected, actual,
-                           message) {
-
-        YUITest.Assert._increment();
-
-        //first check array length
-        if (expected.length != actual.length){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Array should have a length of " + expected.length + " but has a length of " + actual.length));
-        }
-
-        //begin checking values
-        for (var i=0; i < expected.length; i++){
-            if (expected[i] != actual[i]){
-                throw new YUITest.Assert.ComparisonFailure(YUITest.Assert._formatMessage(message, "Values in position " + i + " are not equal."), expected[i], actual[i]);
-            }
-        }
-    },
-
-    /**
-     * Asserts that the values in an array are equivalent, and in the same position,
-     * as values in another array. This uses a function to determine if the values
-     * are equivalent. Note that the array objects themselves
-     * need not be the same for this test to pass.
-     * @param {Array} expected An array of the expected values.
-     * @param {Array} actual Any array of the actual values.
-     * @param {Function} comparator A function that returns true if the values are equivalent
-     *      or false if not.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @return {Void}
-     * @method itemsAreEquivalent
-     * @static
-     */
-    itemsAreEquivalent : function (expected, actual,
-                           comparator, message) {
-
-        YUITest.Assert._increment();
-
-        //make sure the comparator is valid
-        if (typeof comparator != "function"){
-            throw new TypeError("ArrayAssert.itemsAreEquivalent(): Third argument must be a function.");
-        }
-
-        //first check array length
-        if (expected.length != actual.length){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Array should have a length of " + expected.length + " but has a length of " + actual.length));
-        }
-
-        //begin checking values
-        for (var i=0; i < expected.length; i++){
-            if (!comparator(expected[i], actual[i])){
-                throw new YUITest.Assert.ComparisonFailure(YUITest.Assert._formatMessage(message, "Values in position " + i + " are not equivalent."), expected[i], actual[i]);
-            }
-        }
-    },
-
-    /**
-     * Asserts that an array is empty.
-     * @param {Array} actual The array to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isEmpty
-     * @static
-     */
-    isEmpty : function (actual, message) {
-        YUITest.Assert._increment();
-        if (actual.length > 0){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Array should be empty."));
-        }
-    },
-
-    /**
-     * Asserts that an array is not empty.
-     * @param {Array} actual The array to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method isNotEmpty
-     * @static
-     */
-    isNotEmpty : function (actual, message) {
-        YUITest.Assert._increment();
-        if (actual.length === 0){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Array should not be empty."));
-        }
-    },
-
-    /**
-     * Asserts that the values in an array are the same, and in the same position,
-     * as values in another array. This uses the triple equals sign
-     * so no type cohersion will occur. Note that the array objects themselves
-     * need not be the same for this test to pass.
-     * @param {Array} expected An array of the expected values.
-     * @param {Array} actual Any array of the actual values.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method itemsAreSame
-     * @static
-     */
-    itemsAreSame : function (expected, actual,
-                          message) {
-
-        YUITest.Assert._increment();
-
-        //first check array length
-        if (expected.length != actual.length){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Array should have a length of " + expected.length + " but has a length of " + actual.length));
-        }
-
-        //begin checking values
-        for (var i=0; i < expected.length; i++){
-            if (expected[i] !== actual[i]){
-                throw new YUITest.Assert.ComparisonFailure(YUITest.Assert._formatMessage(message, "Values in position " + i + " are not the same."), expected[i], actual[i]);
-            }
-        }
-    },
-
-    /**
-     * Asserts that the given value is contained in an array at the specified index,
-     * starting from the back of the array.
-     * This uses the triple equals sign so no type cohersion will occur.
-     * @param {Object} needle The value to look for.
-     * @param {Array} haystack The array to search in.
-     * @param {int} index The index at which the value should exist.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method lastIndexOf
-     * @static
-     */
-    lastIndexOf : function (needle, haystack, index, message) {
-
-        //try to find the value in the array
-        for (var i=haystack.length; i >= 0; i--){
-            if (haystack[i] === needle){
-                if (index != i){
-                    YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value exists at index " + i + " but should be at index " + index + "."));
-                }
-                return;
-            }
-        }
-
-        //if it makes it here, it wasn't found at all
-        YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Value doesn't exist in array."));
-    }
-
-};
-
-
-/**
- * The ObjectAssert object provides functions to test JavaScript objects
- * for a variety of cases.
- * @namespace YUITest
- * @class ObjectAssert
- * @static
- */
-YUITest.ObjectAssert = {
-
-    /**
-     * Asserts that an object has all of the same properties
-     * and property values as the other.
-     * @param {Object} expected The object with all expected properties and values.
-     * @param {Object} actual The object to inspect.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method areEqual
-     * @static
-     * @deprecated
-     */
-    areEqual: function(expected, actual, message) {
-        YUITest.Assert._increment();
-
-        for (var name in expected){
-            if (expected.hasOwnProperty(name)){
-                if (expected[name] != actual[name]){
-                    throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, "Values should be equal for property " + name), expected[name], actual[name]);
-                }
-            }
-        }
-    },
-
-    /**
-     * Asserts that an object has a property with the given name.
-     * @param {String} propertyName The name of the property to test.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method hasKey
-     * @static
-     * @deprecated Use ownsOrInheritsKey() instead
-     */
-    hasKey: function (propertyName, object, message) {
-        YUITest.ObjectAssert.ownsOrInheritsKey(propertyName, object, message);
-    },
-
-    /**
-     * Asserts that an object has all properties of a reference object.
-     * @param {Array} properties An array of property names that should be on the object.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method hasKeys
-     * @static
-     * @deprecated Use ownsOrInheritsKeys() instead
-     */
-    hasKeys: function (properties, object, message) {
-        YUITest.ObjectAssert.ownsOrInheritsKeys(properties, objects, message);
-    },
-
-    /**
-     * Asserts that a property with the given name exists on an object's prototype.
-     * @param {String} propertyName The name of the property to test.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method inheritsKey
-     * @static
-     */
-    inheritsKey: function (propertyName, object, message) {
-        YUITest.Assert._increment();
-        if (!(propertyName in object && !object.hasOwnProperty(propertyName))){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Property '" + propertyName + "' not found on object instance."));
-        }
-    },
-
-    /**
-     * Asserts that all properties exist on an object prototype.
-     * @param {Array} properties An array of property names that should be on the object.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method inheritsKeys
-     * @static
-     */
-    inheritsKeys: function (properties, object, message) {
-        YUITest.Assert._increment();
-        for (var i=0; i < properties.length; i++){
-            if (!(propertyName in object && !object.hasOwnProperty(properties[i]))){
-                YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Property '" + properties[i] + "' not found on object instance."));
-            }
-        }
-    },
-
-    /**
-     * Asserts that a property with the given name exists on an object instance (not on its prototype).
-     * @param {String} propertyName The name of the property to test.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method ownsKey
-     * @static
-     */
-    ownsKey: function (propertyName, object, message) {
-        YUITest.Assert._increment();
-        if (!object.hasOwnProperty(propertyName)){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Property '" + propertyName + "' not found on object instance."));
-        }
-    },
-
-    /**
-     * Asserts that all properties exist on an object instance (not on its prototype).
-     * @param {Array} properties An array of property names that should be on the object.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method ownsKeys
-     * @static
-     */
-    ownsKeys: function (properties, object, message) {
-        YUITest.Assert._increment();
-        for (var i=0; i < properties.length; i++){
-            if (!object.hasOwnProperty(properties[i])){
-                YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Property '" + properties[i] + "' not found on object instance."));
-            }
-        }
-    },
-
-    /**
-     * Asserts that an object owns no properties.
-     * @param {Object} object The object to check.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method ownsNoKeys
-     * @static
-     */
-    ownsNoKeys : function (object, message) {
-        YUITest.Assert._increment();
-        var count = 0,
-            name;
-        for (name in object){
-            if (object.hasOwnProperty(name)){
-                count++;
-            }
-        }
-
-        if (count !== 0){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Object owns " + count + " properties but should own none."));
-        }
-
-    },
-
-    /**
-     * Asserts that an object has a property with the given name.
-     * @param {String} propertyName The name of the property to test.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method ownsOrInheritsKey
-     * @static
-     */
-    ownsOrInheritsKey: function (propertyName, object, message) {
-        YUITest.Assert._increment();
-        if (!(propertyName in object)){
-            YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Property '" + propertyName + "' not found on object."));
-        }
-    },
-
-    /**
-     * Asserts that an object has all properties of a reference object.
-     * @param {Array} properties An array of property names that should be on the object.
-     * @param {Object} object The object to search.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method ownsOrInheritsKeys
-     * @static
-     */
-    ownsOrInheritsKeys: function (properties, object, message) {
-        YUITest.Assert._increment();
-        for (var i=0; i < properties.length; i++){
-            if (!(properties[i] in object)){
-                YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Property '" + properties[i] + "' not found on object."));
-            }
-        }
-    }
-};
-
-
-
-/**
- * The DateAssert object provides functions to test JavaScript Date objects
- * for a variety of cases.
- * @namespace  YUITest
- * @class DateAssert
- * @static
- */
-
-YUITest.DateAssert = {
-
-    /**
-     * Asserts that a date's month, day, and year are equal to another date's.
-     * @param {Date} expected The expected date.
-     * @param {Date} actual The actual date to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method datesAreEqual
-     * @static
-     */
-    datesAreEqual : function (expected, actual, message){
-        YUITest.Assert._increment();
-        if (expected instanceof Date && actual instanceof Date){
-            var msg = "";
-
-            //check years first
-            if (expected.getFullYear() != actual.getFullYear()){
-                msg = "Years should be equal.";
-            }
-
-            //now check months
-            if (expected.getMonth() != actual.getMonth()){
-                msg = "Months should be equal.";
-            }
-
-            //last, check the day of the month
-            if (expected.getDate() != actual.getDate()){
-                msg = "Days of month should be equal.";
-            }
-
-            if (msg.length){
-                throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, msg), expected, actual);
-            }
-        } else {
-            throw new TypeError("YUITest.DateAssert.datesAreEqual(): Expected and actual values must be Date objects.");
-        }
-    },
-
-    /**
-     * Asserts that a date's hour, minutes, and seconds are equal to another date's.
-     * @param {Date} expected The expected date.
-     * @param {Date} actual The actual date to test.
-     * @param {String} message (Optional) The message to display if the assertion fails.
-     * @method timesAreEqual
-     * @static
-     */
-    timesAreEqual : function (expected, actual, message){
-        YUITest.Assert._increment();
-        if (expected instanceof Date && actual instanceof Date){
-            var msg = "";
-
-            //check hours first
-            if (expected.getHours() != actual.getHours()){
-                msg = "Hours should be equal.";
-            }
-
-            //now check minutes
-            if (expected.getMinutes() != actual.getMinutes()){
-                msg = "Minutes should be equal.";
-            }
-
-            //last, check the seconds
-            if (expected.getSeconds() != actual.getSeconds()){
-                msg = "Seconds should be equal.";
-            }
-
-            if (msg.length){
-                throw new YUITest.ComparisonFailure(YUITest.Assert._formatMessage(message, msg), expected, actual);
-            }
-        } else {
-            throw new TypeError("YUITest.DateAssert.timesAreEqual(): Expected and actual values must be Date objects.");
-        }
-    }
-
-};
-
-/**
- * Creates a new mock object.
- * @namespace YUITest
- * @class Mock
- * @constructor
- * @param {Object} template (Optional) An object whose methods
- *      should be stubbed out on the mock object.
- */
-YUITest.Mock = function(template){
-
-    //use blank object is nothing is passed in
-    template = template || {};
-
-    var mock,
-        name;
-
-    //try to create mock that keeps prototype chain intact
-    //fails in the case of ActiveX objects
-    try {
-        function f(){}
-        f.prototype = template;
-        mock = new f();
-    } catch (ex) {
-        mock = {};
-    }
-
-    //create stubs for all methods
-    for (name in template){
-        if (template.hasOwnProperty(name)){
-            if (typeof template[name] == "function"){
-                mock[name] = function(name){
-                    return function(){
-                        YUITest.Assert.fail("Method " + name + "() was called but was not expected to be.");
-                    };
-                }(name);
-            }
-        }
-    }
-
-    //return it
-    return mock;
-};
-
-/**
- * Assigns an expectation to a mock object. This is used to create
- * methods and properties on the mock object that are monitored for
- * calls and changes, respectively.
- * @param {Object} mock The object to add the expectation to.
- * @param {Object} expectation An object defining the expectation. For
- *      a method, the keys "method" and "args" are required with
- *      an optional "returns" key available. For properties, the keys
- *      "property" and "value" are required.
- * @return {void}
- * @method expect
- * @static
- */
-YUITest.Mock.expect = function(mock /*:Object*/, expectation /*:Object*/){
-
-    //make sure there's a place to store the expectations
-    if (!mock.__expectations) {
-        mock.__expectations = {};
-    }
-
-    //method expectation
-    if (expectation.method){
-        var name = expectation.method,
-            args = expectation.args || [],
-            result = expectation.returns,
-            callCount = (typeof expectation.callCount == "number") ? expectation.callCount : 1,
-            error = expectation.error,
-            run = expectation.run || function(){},
-            i;
-
-        //save expectations
-        mock.__expectations[name] = expectation;
-        expectation.callCount = callCount;
-        expectation.actualCallCount = 0;
-
-        //process arguments
-        for (i=0; i < args.length; i++){
-             if (!(args[i] instanceof YUITest.Mock.Value)){
-                args[i] = YUITest.Mock.Value(YUITest.Assert.areSame, [args[i]], "Argument " + i + " of " + name + "() is incorrect.");
-            }
-        }
-
-        //if the method is expected to be called
-        if (callCount > 0){
-            mock[name] = function(){
-                try {
-                    expectation.actualCallCount++;
-                    YUITest.Assert.areEqual(args.length, arguments.length, "Method " + name + "() passed incorrect number of arguments.");
-                    for (var i=0, len=args.length; i < len; i++){
-                        args[i].verify(arguments[i]);
-                    }
-
-                    run.apply(this, arguments);
-
-                    if (error){
-                        throw error;
-                    }
-                } catch (ex){
-                    //route through TestRunner for proper handling
-                    YUITest.TestRunner._handleError(ex);
-                }
-
-                return result;
-            };
-        } else {
-
-            //method should fail if called when not expected
-            mock[name] = function(){
-                try {
-                    YUITest.Assert.fail("Method " + name + "() should not have been called.");
-                } catch (ex){
-                    //route through TestRunner for proper handling
-                    YUITest.TestRunner._handleError(ex);
-                }
-            };
-        }
-    } else if (expectation.property){
-        //save expectations
-        mock.__expectations[name] = expectation;
-    }
-};
-
-/**
- * Verifies that all expectations of a mock object have been met and
- * throws an assertion error if not.
- * @param {Object} mock The object to verify..
- * @return {void}
- * @method verify
- * @static
- */
-YUITest.Mock.verify = function(mock){
-    try {
-
-        for (var name in mock.__expectations){
-            if (mock.__expectations.hasOwnProperty(name)){
-                var expectation = mock.__expectations[name];
-                if (expectation.method) {
-                    YUITest.Assert.areEqual(expectation.callCount, expectation.actualCallCount, "Method " + expectation.method + "() wasn't called the expected number of times.");
-                } else if (expectation.property){
-                    YUITest.Assert.areEqual(expectation.value, mock[expectation.property], "Property " + expectation.property + " wasn't set to the correct value.");
-                }
-            }
-        }
-
-    } catch (ex){
-        //route through TestRunner for proper handling
-        YUITest.TestRunner._handleError(ex);
-    }
-};
-
-/**
- * Creates a new value matcher.
- * @param {Function} method The function to call on the value.
- * @param {Array} originalArgs (Optional) Array of arguments to pass to the method.
- * @param {String} message (Optional) Message to display in case of failure.
- * @namespace YUITest.Mock
- * @class Value
- * @constructor
- */
-YUITest.Mock.Value = function(method, originalArgs, message){
-    if (this instanceof YUITest.Mock.Value){
-        this.verify = function(value){
-            var args = [].concat(originalArgs || []);
-            args.push(value);
-            args.push(message);
-            method.apply(null, args);
-        };
-    } else {
-        return new YUITest.Mock.Value(method, originalArgs, message);
-    }
-};
-
-/**
- * Predefined matcher to match any value.
- * @property Any
- * @static
- * @type Function
- */
-YUITest.Mock.Value.Any        = YUITest.Mock.Value(function(){});
-
-/**
- * Predefined matcher to match boolean values.
- * @property Boolean
- * @static
- * @type Function
- */
-YUITest.Mock.Value.Boolean    = YUITest.Mock.Value(YUITest.Assert.isBoolean);
-
-/**
- * Predefined matcher to match number values.
- * @property Number
- * @static
- * @type Function
- */
-YUITest.Mock.Value.Number     = YUITest.Mock.Value(YUITest.Assert.isNumber);
-
-/**
- * Predefined matcher to match string values.
- * @property String
- * @static
- * @type Function
- */
-YUITest.Mock.Value.String     = YUITest.Mock.Value(YUITest.Assert.isString);
-
-/**
- * Predefined matcher to match object values.
- * @property Object
- * @static
- * @type Function
- */
-YUITest.Mock.Value.Object     = YUITest.Mock.Value(YUITest.Assert.isObject);
-
-/**
- * Predefined matcher to match function values.
- * @property Function
- * @static
- * @type Function
- */
-YUITest.Mock.Value.Function   = YUITest.Mock.Value(YUITest.Assert.isFunction);
-
-/**
- * Convenience type for storing and aggregating
- * test result information.
- * @private
- * @namespace YUITest
- * @class Results
- * @constructor
- * @param {String} name The name of the test.
- */
-YUITest.Results = function(name){
-
-    /**
-     * Name of the test, test case, or test suite.
-     * @type String
-     * @property name
-     */
-    this.name = name;
-
-    /**
-     * Number of passed tests.
-     * @type int
-     * @property passed
-     */
-    this.passed = 0;
-
-    /**
-     * Number of failed tests.
-     * @type int
-     * @property failed
-     */
-    this.failed = 0;
-
-    /**
-     * Number of errors that occur in non-test methods.
-     * @type int
-     * @property errors
-     */
-    this.errors = 0;
-
-    /**
-     * Number of ignored tests.
-     * @type int
-     * @property ignored
-     */
-    this.ignored = 0;
-
-    /**
-     * Number of total tests.
-     * @type int
-     * @property total
-     */
-    this.total = 0;
-
-    /**
-     * Amount of time (ms) it took to complete testing.
-     * @type int
-     * @property duration
-     */
-    this.duration = 0;
-};
-
-/**
- * Includes results from another results object into this one.
- * @param {YUITest.Results} result The results object to include.
- * @method include
- * @return {void}
- */
-YUITest.Results.prototype.include = function(results){
-    this.passed += results.passed;
-    this.failed += results.failed;
-    this.ignored += results.ignored;
-    this.total += results.total;
-    this.errors += results.errors;
-};
-
-/**
- * Test case containing various tests to run.
- * @param template An object containing any number of test methods, other methods,
- *                 an optional name, and anything else the test case needs.
- * @class TestCase
- * @namespace YUITest
- * @constructor
- */
-YUITest.TestCase = function (template) {
-
-    /**
-     * Special rules for the test case. Possible subobjects
-     * are fail, for tests that should fail, and error, for
-     * tests that should throw an error.
-     */
-    this._should = {};
-
-    //copy over all properties from the template to this object
-    for (var prop in template) {
-        this[prop] = template[prop];
-    }
-
-    //check for a valid name
-    if (typeof this.name != "string"){
-        this.name = "testCase" + (+new Date());
-    }
-
-};
-
-YUITest.TestCase.prototype = {
-
-    //restore constructor
-    constructor: YUITest.TestCase,
-
-    /**
-     * Method to call from an async init method to
-     * restart the test case. When called, returns a function
-     * that should be called when tests are ready to continue.
-     * @method callback
-     * @return {Function} The function to call as a callback.
-     */
-    callback: function(){
-        return YUITest.TestRunner.callback.apply(YUITest.TestRunner,arguments);
-    },
-
-    /**
-     * Resumes a paused test and runs the given function.
-     * @param {Function} segment (Optional) The function to run.
-     *      If omitted, the test automatically passes.
-     * @return {Void}
-     * @method resume
-     */
-    resume : function (segment) {
-        YUITest.TestRunner.resume(segment);
-    },
-
-    /**
-     * Causes the test case to wait a specified amount of time and then
-     * continue executing the given code.
-     * @param {Function} segment (Optional) The function to run after the delay.
-     *      If omitted, the TestRunner will wait until resume() is called.
-     * @param {int} delay (Optional) The number of milliseconds to wait before running
-     *      the function. If omitted, defaults to zero.
-     * @return {Void}
-     * @method wait
-     */
-    wait : function (segment, delay){
-
-        var actualDelay = (typeof segment == "number" ? segment : delay);
-        actualDelay = (typeof actualDelay == "number" ? actualDelay : 10000);
-
-		if (typeof segment == "function"){
-            throw new YUITest.Wait(segment, actualDelay);
-        } else {
-            throw new YUITest.Wait(function(){
-                YUITest.Assert.fail("Timeout: wait() called but resume() never called.");
-            }, actualDelay);
-        }
-    },
-
-    //-------------------------------------------------------------------------
-    // Assertion Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Asserts that a given condition is true. If not, then a YUITest.AssertionError object is thrown
-     * and the test fails.
-     * @method assert
-     * @param {Boolean} condition The condition to test.
-     * @param {String} message The message to display if the assertion fails.
-     */
-    assert : function (condition, message){
-        YUITest.Assert._increment();
-        if (!condition){
-            throw new YUITest.AssertionError(YUITest.Assert._formatMessage(message, "Assertion failed."));
-        }
-    },
-
-    /**
-     * Forces an assertion error to occur. Shortcut for YUITest.Assert.fail().
-     * @method fail
-     * @param {String} message (Optional) The message to display with the failure.
-     */
-    fail: function (message) {
-        YUITest.Assert.fail(message);
-    },
-
-    //-------------------------------------------------------------------------
-    // Stub Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Function to run once before tests start to run.
-     * This executes before the first call to setUp().
-     */
-    init: function(){
-        //noop
-    },
-
-    /**
-     * Function to run once after tests finish running.
-     * This executes after the last call to tearDown().
-     */
-    destroy: function(){
-        //noop
-    },
-
-    /**
-     * Function to run before each test is executed.
-     * @return {Void}
-     * @method setUp
-     */
-    setUp : function () {
-        //noop
-    },
-
-    /**
-     * Function to run after each test is executed.
-     * @return {Void}
-     * @method tearDown
-     */
-    tearDown: function () {
-        //noop
-    }
-};
-
-
-
-/**
- * A test suite that can contain a collection of TestCase and TestSuite objects.
- * @param {String||Object} data The name of the test suite or an object containing
- *      a name property as well as setUp and tearDown methods.
- * @namespace YUITest
- * @class TestSuite
- * @constructor
- */
-YUITest.TestSuite = function (data) {
-
-    /**
-     * The name of the test suite.
-     * @type String
-     * @property name
-     */
-    this.name = "";
-
-    /**
-     * Array of test suites and test cases.
-     * @type Array
-     * @property items
-     * @private
-     */
-    this.items = [];
-
-    //initialize the properties
-    if (typeof data == "string"){
-        this.name = data;
-    } else if (data instanceof Object){
-        for (var prop in data){
-            if (data.hasOwnProperty(prop)){
-                this[prop] = data[prop];
-            }
-        }
-    }
-
-    //double-check name
-    if (this.name === ""){
-        this.name = "testSuite" + (+new Date());
-    }
-
-};
-
-YUITest.TestSuite.prototype = {
-
-    //restore constructor
-    constructor: YUITest.TestSuite,
-
-    /**
-     * Adds a test suite or test case to the test suite.
-     * @param {YUITest.TestSuite||YUITest.TestCase} testObject The test suite or test case to add.
-     * @return {Void}
-     * @method add
-     */
-    add : function (testObject) {
-        if (testObject instanceof YUITest.TestSuite || testObject instanceof YUITest.TestCase) {
-            this.items.push(testObject);
-        }
-        return this;
-    },
-
-    //-------------------------------------------------------------------------
-    // Stub Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Function to run before each test is executed.
-     * @return {Void}
-     * @method setUp
-     */
-    setUp : function () {
-    },
-
-    /**
-     * Function to run after each test is executed.
-     * @return {Void}
-     * @method tearDown
-     */
-    tearDown: function () {
-    }
-
-};
-
-/**
- * An object object containing test result formatting methods.
- * @namespace YUITest
- * @class TestFormat
- * @static
- */
-YUITest.TestFormat = function(){
-
-    /* (intentionally not documented)
-     * Basic XML escaping method. Replaces quotes, less-than, greater-than,
-     * apostrophe, and ampersand characters with their corresponding entities.
-     * @param {String} text The text to encode.
-     * @return {String} The XML-escaped text.
-     */
-    function xmlEscape(text){
-
-        return text.replace(/[<>"'&]/g, function(value){
-            switch(value){
-                case "<":   return "&lt;";
-                case ">":   return "&gt;";
-                case "\"":  return "&quot;";
-                case "'":   return "&apos;";
-                case "&":   return "&amp;";
-            }
-        });
-
-    }
-
-
-    return {
-
-        /**
-         * Returns test results formatted as a JSON string. Requires JSON utility.
-         * @param {Object} result The results object created by TestRunner.
-         * @return {String} A JSON-formatted string of results.
-         * @method JSON
-         * @static
-         */
-        JSON: function(results) {
-            return YUITest.Util.JSON.stringify(results);
-        },
-
-        /**
-         * Returns test results formatted as an XML string.
-         * @param {Object} result The results object created by TestRunner.
-         * @return {String} An XML-formatted string of results.
-         * @method XML
-         * @static
-         */
-        XML: function(results) {
-
-            function serializeToXML(results){
-                var xml = "<" + results.type + " name=\"" + xmlEscape(results.name) + "\"";
-
-                if (typeof(results.duration)=="number"){
-                    xml += " duration=\"" + results.duration + "\"";
-                }
-
-                if (results.type == "test"){
-                    xml += " result=\"" + results.result + "\" message=\"" + xmlEscape(results.message) + "\">";
-                } else {
-                    xml += " passed=\"" + results.passed + "\" failed=\"" + results.failed + "\" ignored=\"" + results.ignored + "\" total=\"" + results.total + "\">";
-                    for (var prop in results){
-                        if (results.hasOwnProperty(prop)){
-                            if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                xml += serializeToXML(results[prop]);
-                            }
-                        }
-                    }
-                }
-
-                xml += "</" + results.type + ">";
-
-                return xml;
-            }
-
-            return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + serializeToXML(results);
-
-        },
-
-
-        /**
-         * Returns test results formatted in JUnit XML format.
-         * @param {Object} result The results object created by TestRunner.
-         * @return {String} An XML-formatted string of results.
-         * @method JUnitXML
-         * @static
-         */
-        JUnitXML: function(results) {
-
-            function serializeToJUnitXML(results){
-                var xml = "";
-
-                switch (results.type){
-                    //equivalent to testcase in JUnit
-                    case "test":
-                        if (results.result != "ignore"){
-                            xml = "<testcase name=\"" + xmlEscape(results.name) + "\" time=\"" + (results.duration/1000) + "\">";
-                            if (results.result == "fail"){
-                                xml += "<failure message=\"" + xmlEscape(results.message) + "\"><![CDATA[" + results.message + "]]></failure>";
-                            }
-                            xml+= "</testcase>";
-                        }
-                        break;
-
-                    //equivalent to testsuite in JUnit
-                    case "testcase":
-
-                        xml = "<testsuite name=\"" + xmlEscape(results.name) + "\" tests=\"" + results.total + "\" failures=\"" + results.failed + "\" time=\"" + (results.duration/1000) + "\">";
-
-                        for (var prop in results){
-                            if (results.hasOwnProperty(prop)){
-                                if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                    xml += serializeToJUnitXML(results[prop]);
-                                }
-                            }
-                        }
-
-                        xml += "</testsuite>";
-                        break;
-
-                    //no JUnit equivalent, don't output anything
-                    case "testsuite":
-                        for (var prop in results){
-                            if (results.hasOwnProperty(prop)){
-                                if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                    xml += serializeToJUnitXML(results[prop]);
-                                }
-                            }
-                        }
-                        break;
-
-                    //top-level, equivalent to testsuites in JUnit
-                    case "report":
-
-                        xml = "<testsuites>";
-
-                        for (var prop in results){
-                            if (results.hasOwnProperty(prop)){
-                                if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                    xml += serializeToJUnitXML(results[prop]);
-                                }
-                            }
-                        }
-
-                        xml += "</testsuites>";
-
-                    //no default
-                }
-
-                return xml;
-
-            }
-
-            return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + serializeToJUnitXML(results);
-        },
-
-        /**
-         * Returns test results formatted in TAP format.
-         * For more information, see <a href="http://testanything.org/">Test Anything Protocol</a>.
-         * @param {Object} result The results object created by TestRunner.
-         * @return {String} A TAP-formatted string of results.
-         * @method TAP
-         * @static
-         */
-        TAP: function(results) {
-
-            var currentTestNum = 1;
-
-            function serializeToTAP(results){
-                var text = "";
-
-                switch (results.type){
-
-                    case "test":
-                        if (results.result != "ignore"){
-
-                            text = "ok " + (currentTestNum++) + " - " + results.name;
-
-                            if (results.result == "fail"){
-                                text = "not " + text + " - " + results.message;
-                            }
-
-                            text += "\n";
-                        } else {
-                            text = "#Ignored test " + results.name + "\n";
-                        }
-                        break;
-
-                    case "testcase":
-
-                        text = "#Begin testcase " + results.name + "(" + results.failed + " failed of " + results.total + ")\n";
-
-                        for (var prop in results){
-                            if (results.hasOwnProperty(prop)){
-                                if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                    text += serializeToTAP(results[prop]);
-                                }
-                            }
-                        }
-
-                        text += "#End testcase " + results.name + "\n";
-
-
-                        break;
-
-                    case "testsuite":
-
-                        text = "#Begin testsuite " + results.name + "(" + results.failed + " failed of " + results.total + ")\n";
-
-                        for (var prop in results){
-                            if (results.hasOwnProperty(prop)){
-                                if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                    text += serializeToTAP(results[prop]);
-                                }
-                            }
-                        }
-
-                        text += "#End testsuite " + results.name + "\n";
-                        break;
-
-                    case "report":
-
-                        for (var prop in results){
-                            if (results.hasOwnProperty(prop)){
-                                if (results[prop] && typeof results[prop] == "object" && !(results[prop] instanceof Array)){
-                                    text += serializeToTAP(results[prop]);
-                                }
-                            }
-                        }
-
-                    //no default
-                }
-
-                return text;
-
-            }
-
-            return "1.." + results.total + "\n" + serializeToTAP(results);
-        }
-
-    };
-}();
-
-/**
- * An object object containing coverage result formatting methods.
- * @namespace YUITest
- * @class CoverageFormat
- * @static
- */
-YUITest.CoverageFormat = {
-
-    /**
-     * Returns the coverage report in JSON format. This is the straight
-     * JSON representation of the native coverage report.
-     * @param {Object} coverage The coverage report object.
-     * @return {String} A JSON-formatted string of coverage data.
-     * @method JSON
-     * @namespace YUITest.CoverageFormat
-     */
-    JSON: function(coverage){
-        return YUITest.Util.JSON.stringify(coverage);
-    },
-
-    /**
-     * Returns the coverage report in a JSON format compatible with
-     * Xdebug. See <a href="http://www.xdebug.com/docs/code_coverage">Xdebug Documentation</a>
-     * for more information. Note: function coverage is not available
-     * in this format.
-     * @param {Object} coverage The coverage report object.
-     * @return {String} A JSON-formatted string of coverage data.
-     * @method XdebugJSON
-     * @namespace YUITest.CoverageFormat
-     */
-    XdebugJSON: function(coverage){
-
-        var report = {};
-        for (var prop in coverage){
-            if (coverage.hasOwnProperty(prop)){
-                report[prop] = coverage[prop].lines;
-            }
-        }
-
-        return YUITest.Util.JSON.stringify(coverage);
-    }
-
-};
-
-
-/**
- * An object object containing methods to simulate browser events.
- * @namespace YUITest
- * @class Event
- * @static
- */
-YUITest.Event = (function() {
-
-    var
-
-    //mouse events supported
-    mouseEvents = {
-        click:      1,
-        dblclick:   1,
-        mouseover:  1,
-        mouseout:   1,
-        mousedown:  1,
-        mouseup:    1,
-        mousemove:  1
-    },
-
-    //key events supported
-    keyEvents   = {
-        keydown:    1,
-        keyup:      1,
-        keypress:   1
-    },
-
-    //HTML events supported
-    uiEvents  = {
-        blur:       1,
-        change:     1,
-        focus:      1,
-        resize:     1,
-        scroll:     1,
-        select:     1
-    },
-
-    //events that bubble by default
-    bubbleEvents = {
-        scroll:     1,
-        resize:     1,
-        reset:      1,
-        submit:     1,
-        change:     1,
-        select:     1,
-        error:      1,
-        abort:      1,
-
-        //also mouse events
-        click:      1,
-        dblclick:   1,
-        mouseover:  1,
-        mouseout:   1,
-        mousedown:  1,
-        mouseup:    1,
-        mousemove:  1,
-
-        //and keyboard events
-        keydown:    1,
-        keyup:      1,
-        keypress:   1
-
-    },
-
-    //the object to return
-    object,
-
-    //used for property name iteration
-    prop;
-
-    /*
-     * Note: Intentionally not for YUIDoc generation.
-     * Simulates a key event using the given event information to populate
-     * the generated event object. This method does browser-equalizing
-     * calculations to account for differences in the DOM and IE event models
-     * as well as different browser quirks. Note: keydown causes Safari 2.x to
-     * crash.
-     * @method simulateKeyEvent
-     * @private
-     * @static
-     * @param {HTMLElement} target The target of the given event.
-     * @param {String} type The type of event to fire. This can be any one of
-     *      the following: keyup, keydown, and keypress.
-     * @param {Boolean} bubbles (Optional) Indicates if the event can be
-     *      bubbled up. DOM Level 3 specifies that all key events bubble by
-     *      default. The default is true.
-     * @param {Boolean} cancelable (Optional) Indicates if the event can be
-     *      canceled using preventDefault(). DOM Level 3 specifies that all
-     *      key events can be cancelled. The default
-     *      is true.
-     * @param {Window} view (Optional) The view containing the target. This is
-     *      typically the window object. The default is window.
-     * @param {Boolean} ctrlKey (Optional) Indicates if one of the CTRL keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {Boolean} altKey (Optional) Indicates if one of the ALT keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {Boolean} shiftKey (Optional) Indicates if one of the SHIFT keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {Boolean} metaKey (Optional) Indicates if one of the META keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {int} keyCode (Optional) The code for the key that is in use.
-     *      The default is 0.
-     * @param {int} charCode (Optional) The Unicode code for the character
-     *      associated with the key being used. The default is 0.
-     */
-    function simulateKeyEvent(target /*:HTMLElement*/, type /*:String*/,
-                                 bubbles /*:Boolean*/,  cancelable /*:Boolean*/,
-                                 view /*:Window*/,
-                                 ctrlKey /*:Boolean*/,    altKey /*:Boolean*/,
-                                 shiftKey /*:Boolean*/,   metaKey /*:Boolean*/,
-                                 keyCode /*:int*/,        charCode /*:int*/) /*:Void*/
-    {
-        //check target
-        if (!target){
-            throw new Error("simulateKeyEvent(): Invalid target.");
-        }
-
-        //check event type
-        if (typeof type == "string"){
-            type = type.toLowerCase();
-            switch(type){
-                case "textevent": //DOM Level 3
-                    type = "keypress";
-                    break;
-                case "keyup":
-                case "keydown":
-                case "keypress":
-                    break;
-                default:
-                    throw new Error("simulateKeyEvent(): Event type '" + type + "' not supported.");
-            }
-        } else {
-            throw new Error("simulateKeyEvent(): Event type must be a string.");
-        }
-
-        //setup default values
-        if (typeof bubbles != "boolean"){
-            bubbles = true; //all key events bubble
-        }
-        if (typeof cancelable != "boolean"){
-            cancelable = true; //all key events can be cancelled
-        }
-        if (typeof view != "object" || view == null){
-            view = window; //view is typically window
-        }
-        if (typeof ctrlKey != "boolean"){
-            ctrlKey = false;
-        }
-        if (typeof altKey != "boolean"){
-            altKey = false;
-        }
-        if (typeof shiftKey != "boolean"){
-            shiftKey = false;
-        }
-        if (typeof metaKey != "boolean"){
-            metaKey = false;
-        }
-        if (typeof keyCode != "number"){
-            keyCode = 0;
-        }
-        if (typeof charCode != "number"){
-            charCode = 0;
-        }
-
-        //try to create a mouse event
-        var customEvent = null;
-
-        //check for DOM-compliant browsers first
-        if (typeof document.createEvent == "function"){
-
-            try {
-
-                //try to create key event
-                customEvent = document.createEvent("KeyEvents");
-
-                /*
-                 * Interesting problem: Firefox implemented a non-standard
-                 * version of initKeyEvent() based on DOM Level 2 specs.
-                 * Key event was removed from DOM Level 2 and re-introduced
-                 * in DOM Level 3 with a different interface. Firefox is the
-                 * only browser with any implementation of Key Events, so for
-                 * now, assume it's Firefox if the above line doesn't error.
-                 */
-                // @TODO: Decipher between Firefox's implementation and a correct one.
-                customEvent.initKeyEvent(type, bubbles, cancelable, view, ctrlKey,
-                    altKey, shiftKey, metaKey, keyCode, charCode);
-
-            } catch (ex){
-
-                /*
-                 * If it got here, that means key events aren't officially supported.
-                 * Safari/WebKit is a real problem now. WebKit 522 won't let you
-                 * set keyCode, charCode, or other properties if you use a
-                 * UIEvent, so we first must try to create a generic event. The
-                 * fun part is that this will throw an error on Safari 2.x. The
-                 * end result is that we need another try...catch statement just to
-                 * deal with this mess.
-                 */
-                try {
-
-                    //try to create generic event - will fail in Safari 2.x
-                    customEvent = document.createEvent("Events");
-
-                } catch (uierror /*:Error*/){
-
-                    //the above failed, so create a UIEvent for Safari 2.x
-                    customEvent = document.createEvent("UIEvents");
-
-                } finally {
-
-                    customEvent.initEvent(type, bubbles, cancelable);
-
-                    //initialize
-                    customEvent.view = view;
-                    customEvent.altKey = altKey;
-                    customEvent.ctrlKey = ctrlKey;
-                    customEvent.shiftKey = shiftKey;
-                    customEvent.metaKey = metaKey;
-                    customEvent.keyCode = keyCode;
-                    customEvent.charCode = charCode;
-
-                }
-
-            }
-
-            //fire the event
-            target.dispatchEvent(customEvent);
-
-        } else if (typeof document.createEventObject != "undefined"){ //IE
-
-            //create an IE event object
-            customEvent = document.createEventObject();
-
-            //assign available properties
-            customEvent.bubbles = bubbles;
-            customEvent.cancelable = cancelable;
-            customEvent.view = view;
-            customEvent.ctrlKey = ctrlKey;
-            customEvent.altKey = altKey;
-            customEvent.shiftKey = shiftKey;
-            customEvent.metaKey = metaKey;
-
-            /*
-             * IE doesn't support charCode explicitly. CharCode should
-             * take precedence over any keyCode value for accurate
-             * representation.
-             */
-            customEvent.keyCode = (charCode > 0) ? charCode : keyCode;
-
-            //fire the event
-            target.fireEvent("on" + type, customEvent);
-
-        } else {
-            throw new Error("simulateKeyEvent(): No event simulation framework present.");
-        }
-    }
-
-    /*
-     * Note: Intentionally not for YUIDoc generation.
-     * Simulates a mouse event using the given event information to populate
-     * the generated event object. This method does browser-equalizing
-     * calculations to account for differences in the DOM and IE event models
-     * as well as different browser quirks.
-     * @method simulateMouseEvent
-     * @private
-     * @static
-     * @param {HTMLElement} target The target of the given event.
-     * @param {String} type The type of event to fire. This can be any one of
-     *      the following: click, dblclick, mousedown, mouseup, mouseout,
-     *      mouseover, and mousemove.
-     * @param {Boolean} bubbles (Optional) Indicates if the event can be
-     *      bubbled up. DOM Level 2 specifies that all mouse events bubble by
-     *      default. The default is true.
-     * @param {Boolean} cancelable (Optional) Indicates if the event can be
-     *      canceled using preventDefault(). DOM Level 2 specifies that all
-     *      mouse events except mousemove can be cancelled. The default
-     *      is true for all events except mousemove, for which the default
-     *      is false.
-     * @param {Window} view (Optional) The view containing the target. This is
-     *      typically the window object. The default is window.
-     * @param {int} detail (Optional) The number of times the mouse button has
-     *      been used. The default value is 1.
-     * @param {int} screenX (Optional) The x-coordinate on the screen at which
-     *      point the event occured. The default is 0.
-     * @param {int} screenY (Optional) The y-coordinate on the screen at which
-     *      point the event occured. The default is 0.
-     * @param {int} clientX (Optional) The x-coordinate on the client at which
-     *      point the event occured. The default is 0.
-     * @param {int} clientY (Optional) The y-coordinate on the client at which
-     *      point the event occured. The default is 0.
-     * @param {Boolean} ctrlKey (Optional) Indicates if one of the CTRL keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {Boolean} altKey (Optional) Indicates if one of the ALT keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {Boolean} shiftKey (Optional) Indicates if one of the SHIFT keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {Boolean} metaKey (Optional) Indicates if one of the META keys
-     *      is pressed while the event is firing. The default is false.
-     * @param {int} button (Optional) The button being pressed while the event
-     *      is executing. The value should be 0 for the primary mouse button
-     *      (typically the left button), 1 for the terciary mouse button
-     *      (typically the middle button), and 2 for the secondary mouse button
-     *      (typically the right button). The default is 0.
-     * @param {HTMLElement} relatedTarget (Optional) For mouseout events,
-     *      this is the element that the mouse has moved to. For mouseover
-     *      events, this is the element that the mouse has moved from. This
-     *      argument is ignored for all other events. The default is null.
-     */
-    function simulateMouseEvent(target /*:HTMLElement*/, type /*:String*/,
-                                   bubbles /*:Boolean*/,  cancelable /*:Boolean*/,
-                                   view /*:Window*/,        detail /*:int*/,
-                                   screenX /*:int*/,        screenY /*:int*/,
-                                   clientX /*:int*/,        clientY /*:int*/,
-                                   ctrlKey /*:Boolean*/,    altKey /*:Boolean*/,
-                                   shiftKey /*:Boolean*/,   metaKey /*:Boolean*/,
-                                   button /*:int*/,         relatedTarget /*:HTMLElement*/) /*:Void*/
-    {
-
-        //check target
-        if (!target){
-            throw new Error("simulateMouseEvent(): Invalid target.");
-        }
-
-        //check event type
-        if (typeof type == "string"){
-            type = type.toLowerCase();
-
-            //make sure it's a supported mouse event
-            if (!mouseEvents[type]){
-                throw new Error("simulateMouseEvent(): Event type '" + type + "' not supported.");
-            }
-        } else {
-            throw new Error("simulateMouseEvent(): Event type must be a string.");
-        }
-
-        //setup default values
-        if (typeof bubbles != "boolean"){
-            bubbles = true; //all mouse events bubble
-        }
-        if (typeof cancelable != "boolean"){
-            cancelable = (type != "mousemove"); //mousemove is the only one that can't be cancelled
-        }
-        if (typeof view != "object" || view != null){
-            view = window; //view is typically window
-        }
-        if (typeof detail != "number"){
-            detail = 1;  //number of mouse clicks must be at least one
-        }
-        if (typeof screenX != "number"){
-            screenX = 0;
-        }
-        if (typeof screenY != "number"){
-            screenY = 0;
-        }
-        if (typeof clientX != "number"){
-            clientX = 0;
-        }
-        if (typeof clientY != "number"){
-            clientY = 0;
-        }
-        if (typeof ctrlKey != "boolean"){
-            ctrlKey = false;
-        }
-        if (typeof altKey != "boolean"){
-            altKey = false;
-        }
-        if (typeof shiftKey != "boolean"){
-            shiftKey = false;
-        }
-        if (typeof metaKey != "boolean"){
-            metaKey = false;
-        }
-        if (typeof button != "number"){
-            button = 0;
-        }
-
-        if (!relatedTarget){
-            relatedTarget = null;
-        }
-
-        //try to create a mouse event
-        var customEvent /*:MouseEvent*/ = null;
-
-        //check for DOM-compliant browsers first
-        if (typeof document.createEvent == "function"){
-
-            customEvent = document.createEvent("MouseEvents");
-
-            //Safari 2.x (WebKit 418) still doesn't implement initMouseEvent()
-            if (customEvent.initMouseEvent){
-                customEvent.initMouseEvent(type, bubbles, cancelable, view, detail,
-                                     screenX, screenY, clientX, clientY,
-                                     ctrlKey, altKey, shiftKey, metaKey,
-                                     button, relatedTarget);
-            } else { //Safari
-
-                //the closest thing available in Safari 2.x is UIEvents
-                customEvent = document.createEvent("UIEvents");
-                customEvent.initEvent(type, bubbles, cancelable);
-                customEvent.view = view;
-                customEvent.detail = detail;
-                customEvent.screenX = screenX;
-                customEvent.screenY = screenY;
-                customEvent.clientX = clientX;
-                customEvent.clientY = clientY;
-                customEvent.ctrlKey = ctrlKey;
-                customEvent.altKey = altKey;
-                customEvent.metaKey = metaKey;
-                customEvent.shiftKey = shiftKey;
-                customEvent.button = button;
-                customEvent.relatedTarget = relatedTarget;
-            }
-
-            /*
-             * Check to see if relatedTarget has been assigned. Firefox
-             * versions less than 2.0 don't allow it to be assigned via
-             * initMouseEvent() and the property is readonly after event
-             * creation, so in order to keep YAHOO.util.getRelatedTarget()
-             * working, assign to the IE proprietary toElement property
-             * for mouseout event and fromElement property for mouseover
-             * event.
-             */
-            if (relatedTarget && !customEvent.relatedTarget){
-                if (type == "mouseout"){
-                    customEvent.toElement = relatedTarget;
-                } else if (type == "mouseover"){
-                    customEvent.fromElement = relatedTarget;
-                }
-            }
-
-            //fire the event
-            target.dispatchEvent(customEvent);
-
-        } else if (typeof document.createEventObject != "undefined"){ //IE
-
-            //create an IE event object
-            customEvent = document.createEventObject();
-
-            //assign available properties
-            customEvent.bubbles = bubbles;
-            customEvent.cancelable = cancelable;
-            customEvent.view = view;
-            customEvent.detail = detail;
-            customEvent.screenX = screenX;
-            customEvent.screenY = screenY;
-            customEvent.clientX = clientX;
-            customEvent.clientY = clientY;
-            customEvent.ctrlKey = ctrlKey;
-            customEvent.altKey = altKey;
-            customEvent.metaKey = metaKey;
-            customEvent.shiftKey = shiftKey;
-
-            //fix button property for IE's wacky implementation
-            switch(button){
-                case 0:
-                    customEvent.button = 1;
-                    break;
-                case 1:
-                    customEvent.button = 4;
-                    break;
-                case 2:
-                    //leave as is
-                    break;
-                default:
-                    customEvent.button = 0;
-            }
-
-            /*
-             * Have to use relatedTarget because IE won't allow assignment
-             * to toElement or fromElement on generic events. This keeps
-             * YAHOO.util.customEvent.getRelatedTarget() functional.
-             */
-            customEvent.relatedTarget = relatedTarget;
-
-            //fire the event
-            target.fireEvent("on" + type, customEvent);
-
-        } else {
-            throw new Error("simulateMouseEvent(): No event simulation framework present.");
-        }
-    }
-
-    /*
-     * Note: Intentionally not for YUIDoc generation.
-     * Simulates a UI event using the given event information to populate
-     * the generated event object. This method does browser-equalizing
-     * calculations to account for differences in the DOM and IE event models
-     * as well as different browser quirks.
-     * @method simulateHTMLEvent
-     * @private
-     * @static
-     * @param {HTMLElement} target The target of the given event.
-     * @param {String} type The type of event to fire. This can be any one of
-     *      the following: click, dblclick, mousedown, mouseup, mouseout,
-     *      mouseover, and mousemove.
-     * @param {Boolean} bubbles (Optional) Indicates if the event can be
-     *      bubbled up. DOM Level 2 specifies that all mouse events bubble by
-     *      default. The default is true.
-     * @param {Boolean} cancelable (Optional) Indicates if the event can be
-     *      canceled using preventDefault(). DOM Level 2 specifies that all
-     *      mouse events except mousemove can be cancelled. The default
-     *      is true for all events except mousemove, for which the default
-     *      is false.
-     * @param {Window} view (Optional) The view containing the target. This is
-     *      typically the window object. The default is window.
-     * @param {int} detail (Optional) The number of times the mouse button has
-     *      been used. The default value is 1.
-     */
-    function simulateUIEvent(target /*:HTMLElement*/, type /*:String*/,
-                                   bubbles /*:Boolean*/,  cancelable /*:Boolean*/,
-                                   view /*:Window*/,        detail /*:int*/) /*:Void*/
-    {
-
-        //check target
-        if (!target){
-            throw new Error("simulateUIEvent(): Invalid target.");
-        }
-
-        //check event type
-        if (typeof type == "string"){
-            type = type.toLowerCase();
-
-            //make sure it's a supported mouse event
-            if (!uiEvents[type]){
-                throw new Error("simulateUIEvent(): Event type '" + type + "' not supported.");
-            }
-        } else {
-            throw new Error("simulateUIEvent(): Event type must be a string.");
-        }
-
-        //try to create a mouse event
-        var customEvent = null;
-
-
-        //setup default values
-        if (typeof bubbles != "boolean"){
-            bubbles = (type in bubbleEvents);  //not all events bubble
-        }
-        if (typeof cancelable != "boolean"){
-            cancelable = (type == "submit"); //submit is the only one that can be cancelled
-        }
-        if (typeof view != "object" || view != null){
-            view = window; //view is typically window
-        }
-        if (typeof detail != "number"){
-            detail = 1;  //usually not used but defaulted to this
-        }
-
-        //check for DOM-compliant browsers first
-        if (typeof document.createEvent == "function"){
-
-            //just a generic UI Event object is needed
-            customEvent = document.createEvent("UIEvents");
-            customEvent.initUIEvent(type, bubbles, cancelable, view, detail);
-
-            //fire the event
-            target.dispatchEvent(customEvent);
-
-        } else if (typeof document.createEventObject != "undefined"){ //IE
-
-            //create an IE event object
-            customEvent = document.createEventObject();
-
-            //assign available properties
-            customEvent.bubbles = bubbles;
-            customEvent.cancelable = cancelable;
-            customEvent.view = view;
-            customEvent.detail = detail;
-
-            //fire the event
-            target.fireEvent("on" + type, customEvent);
-
-        } else {
-            throw new Error("simulateUIEvent(): No event simulation framework present.");
-        }
-    }
-
-
-    /**
-     * Allows event simulation for browser-based events.
-     * @namespace YUITest
-     * @class Event
-     * @static
-     */
-    object = {
-
-        /**
-         * Simulates the event with the given name on a target.
-         * @param {HTMLElement} target The DOM element that's the target of the event.
-         * @param {String} type The type of event to simulate (i.e., "click").
-         * @param {Object} options (Optional) Extra options to copy onto the event object.
-         * @return {void}
-         * @method simulate
-         * @static
-         * @deprecated
-         */
-        simulate: function(target, type, options){
-
-            options = options || {};
-
-            if (mouseEvents[type]){
-                simulateMouseEvent(target, type, options.bubbles,
-                    options.cancelable, options.view, options.detail, options.screenX,
-                    options.screenY, options.clientX, options.clientY, options.ctrlKey,
-                    options.altKey, options.shiftKey, options.metaKey, options.button,
-                    options.relatedTarget);
-            } else if (keyEvents[type]){
-                simulateKeyEvent(target, type, options.bubbles,
-                    options.cancelable, options.view, options.ctrlKey,
-                    options.altKey, options.shiftKey, options.metaKey,
-                    options.keyCode, options.charCode);
-            } else if (uiEvents[type]){
-                simulateUIEvent(target, type, options.bubbles,
-                    options.cancelable, options.view, options.detail);
-             } else {
-                throw new Error("simulate(): Event '" + type + "' can't be simulated.");
-            }
-        }
-    };
-
-    //create the convenience methods for mouse events
-    for (prop in mouseEvents){
-        if (mouseEvents.hasOwnProperty(prop)){
-            object[prop] = (function(type){
-                return function(target, options){
-                    options = options || {};
-                    simulateMouseEvent(target, type, options.bubbles,
-                        options.cancelable, options.view, options.detail, options.screenX,
-                        options.screenY, options.clientX, options.clientY, options.ctrlKey,
-                        options.altKey, options.shiftKey, options.metaKey, options.button,
-                        options.relatedTarget);
-                };
-            })(prop);
-        }
-    }
-
-    //create the convenience methods for key events
-    for (prop in keyEvents){
-        if (keyEvents.hasOwnProperty(prop)){
-            object[prop] = (function(type){
-                return function(target, options){
-                    options = options || {};
-                    simulateKeyEvent(target, type, options.bubbles,
-                        options.cancelable, options.view, options.ctrlKey,
-                        options.altKey, options.shiftKey, options.metaKey,
-                        options.keyCode, options.charCode);
-                };
-            })(prop);
-        }
-    }
-
-    //create the convenience methods for key events
-    for (prop in uiEvents){
-        if (uiEvents.hasOwnProperty(prop)){
-            object[prop] = (function(type){
-                return function(target, options){
-                    options = options || {};
-                    simulateUIEvent(target, type, options.bubbles,
-                        options.cancelable, options.view, options.detail);
-                };
-            })(prop);
-        }
-    }
-
-    return object;
-
-})();
-
-
-    /**
-     * An object capable of sending test results to a server.
-     * @param {String} url The URL to submit the results to.
-     * @param {Function} format (Optiona) A function that outputs the results in a specific format.
-     *      Default is YUITest.TestFormat.XML.
-     * @constructor
-     * @namespace YUITest
-     * @class Reporter
-     */
-    YUITest.Reporter = function(url, format) {
-
-        /**
-         * The URL to submit the data to.
-         * @type String
-         * @property url
-         */
-        this.url = url;
-
-        /**
-         * The formatting function to call when submitting the data.
-         * @type Function
-         * @property format
-         */
-        this.format = format || YUITest.TestFormat.XML;
-
-        /**
-         * Extra fields to submit with the request.
-         * @type Object
-         * @property _fields
-         * @private
-         */
-        this._fields = new Object();
-
-        /**
-         * The form element used to submit the results.
-         * @type HTMLFormElement
-         * @property _form
-         * @private
-         */
-        this._form = null;
-
-        /**
-         * Iframe used as a target for form submission.
-         * @type HTMLIFrameElement
-         * @property _iframe
-         * @private
-         */
-        this._iframe = null;
-    };
-
-    YUITest.Reporter.prototype = {
-
-        //restore missing constructor
-        constructor: YUITest.Reporter,
-
-        /**
-         * Adds a field to the form that submits the results.
-         * @param {String} name The name of the field.
-         * @param {Variant} value The value of the field.
-         * @return {Void}
-         * @method addField
-         */
-        addField : function (name, value){
-            this._fields[name] = value;
-        },
-
-        /**
-         * Removes all previous defined fields.
-         * @return {Void}
-         * @method addField
-         */
-        clearFields : function(){
-            this._fields = new Object();
-        },
-
-        /**
-         * Cleans up the memory associated with the TestReporter, removing DOM elements
-         * that were created.
-         * @return {Void}
-         * @method destroy
-         */
-        destroy : function() {
-            if (this._form){
-                this._form.parentNode.removeChild(this._form);
-                this._form = null;
-            }
-            if (this._iframe){
-                this._iframe.parentNode.removeChild(this._iframe);
-                this._iframe = null;
-            }
-            this._fields = null;
-        },
-
-        /**
-         * Sends the report to the server.
-         * @param {Object} results The results object created by TestRunner.
-         * @return {Void}
-         * @method report
-         */
-        report : function(results){
-
-            //if the form hasn't been created yet, create it
-            if (!this._form){
-                this._form = document.createElement("form");
-                this._form.method = "post";
-                this._form.style.visibility = "hidden";
-                this._form.style.position = "absolute";
-                this._form.style.top = 0;
-                document.body.appendChild(this._form);
-
-                //IE won't let you assign a name using the DOM, must do it the hacky way
-                try {
-                    this._iframe = document.createElement("<iframe name=\"yuiTestTarget\" />");
-                } catch (ex){
-                    this._iframe = document.createElement("iframe");
-                    this._iframe.name = "yuiTestTarget";
-                }
-
-                this._iframe.src = "javascript:false";
-                this._iframe.style.visibility = "hidden";
-                this._iframe.style.position = "absolute";
-                this._iframe.style.top = 0;
-                document.body.appendChild(this._iframe);
-
-                this._form.target = "yuiTestTarget";
-            }
-
-            //set the form's action
-            this._form.action = this.url;
-
-            //remove any existing fields
-            while(this._form.hasChildNodes()){
-                this._form.removeChild(this._form.lastChild);
-            }
-
-            //create default fields
-            this._fields.results = this.format(results);
-            this._fields.useragent = navigator.userAgent;
-            this._fields.timestamp = (new Date()).toLocaleString();
-
-            //add fields to the form
-            for (var prop in this._fields){
-                var value = this._fields[prop];
-                if (this._fields.hasOwnProperty(prop) && (typeof value != "function")){
-                    var input = document.createElement("input");
-                    input.type = "hidden";
-                    input.name = prop;
-                    input.value = value;
-                    this._form.appendChild(input);
-                }
-            }
-
-            //remove default fields
-            delete this._fields.results;
-            delete this._fields.useragent;
-            delete this._fields.timestamp;
-
-            if (arguments[1] !== false){
-                this._form.submit();
-            }
-
-        }
-
-    };
-
-
-/**
- * Runs pages containing test suite definitions.
- * @namespace YUITest
- * @class PageManager
- * @static
- */
-YUITest.PageManager = YUITest.Util.mix(new YUITest.EventTarget(), {
-
-    /**
-     * Constant for the testpagebegin custom event
-     * @property TEST_PAGE_BEGIN_EVENT
-     * @static
-     * @type string
-     * @final
-     */
-    TEST_PAGE_BEGIN_EVENT /*:String*/ : "testpagebegin",
-
-    /**
-     * Constant for the testpagecomplete custom event
-     * @property TEST_PAGE_COMPLETE_EVENT
-     * @static
-     * @type string
-     * @final
-     */
-    TEST_PAGE_COMPLETE_EVENT /*:String*/ : "testpagecomplete",
-
-    /**
-     * Constant for the testmanagerbegin custom event
-     * @property TEST_MANAGER_BEGIN_EVENT
-     * @static
-     * @type string
-     * @final
-     */
-    TEST_MANAGER_BEGIN_EVENT /*:String*/ : "testmanagerbegin",
-
-    /**
-     * Constant for the testmanagercomplete custom event
-     * @property TEST_MANAGER_COMPLETE_EVENT
-     * @static
-     * @type string
-     * @final
-     */
-    TEST_MANAGER_COMPLETE_EVENT /*:String*/ : "testmanagercomplete",
-
-    //-------------------------------------------------------------------------
-    // Private Properties
-    //-------------------------------------------------------------------------
-
-
-    /**
-     * The URL of the page currently being executed.
-     * @type String
-     * @private
-     * @property _curPage
-     * @static
-     */
-    _curPage: null,
-
-    /**
-     * The frame used to load and run tests.
-     * @type Window
-     * @private
-     * @property _frame
-     * @static
-     */
-    _frame: null,
-
-    /**
-     * The timeout ID for the next iteration through the tests.
-     * @type int
-     * @private
-     * @property _timeoutId
-     * @static
-     */
-    _timeoutId: 0,
-
-    /**
-     * Array of pages to load.
-     * @type String[]
-     * @private
-     * @property _pages
-     * @static
-     */
-    _pages: [],
-
-    /**
-     * Aggregated results
-     * @type Object
-     * @private
-     * @property _results
-     * @static
-     */
-    _results: null,
-
-    //-------------------------------------------------------------------------
-    // Private Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Handles TestRunner.COMPLETE_EVENT, storing the results and beginning
-     * the loop again.
-     * @param {Object} data Data about the event.
-     * @return {Void}
-     * @method _handleTestRunnerComplete
-     * @private
-     * @static
-     */
-    _handleTestRunnerComplete : function (data /*:Object*/) /*:Void*/ {
-
-        this.fire(this.TEST_PAGE_COMPLETE_EVENT, {
-            page: this._curPage,
-            results: data.results
-        });
-
-        //save results
-        //this._results[this.curPage] = data.results;
-
-        //process 'em
-        this._processResults(this._curPage, data.results);
-
-
-        //if there's more to do, set a timeout to begin again
-        if (this._pages.length){
-            this._timeoutId = setTimeout(function(){
-                YUITest.TestManager._run();
-            }, 1000);
-        } else {
-            this.fire(this.TEST_MANAGER_COMPLETE_EVENT, this._results);
-        }
-    },
-
-    /**
-     * Processes the results of a test page run, outputting log messages
-     * for failed tests.
-     * @return {Void}
-     * @method _processResults
-     * @private
-     * @static
-     */
-    _processResults : function (page, results){
-
-        var r = this._results;
-
-        r.passed += results.passed;
-        r.failed += results.failed;
-        r.ignored += results.ignored;
-        r.total += results.total;
-        r.duration += results.duration;
-
-        if (results.failed){
-            r.failedPages.push(page);
-        } else {
-            r.passedPages.push(page);
-        }
-
-        results.name = page;
-        results.type = "page";
-
-        r[page] = results;
-    },
-
-    /**
-     * Loads the next test page into the iframe.
-     * @return {Void}
-     * @method _run
-     * @static
-     * @private
-     */
-    _run : function () /*:Void*/ {
-
-        //set the current page
-        this._curPage = this._pages.shift();
-
-        this.fire(this.TEST_PAGE_BEGIN_EVENT, this._curPage);
-
-        //load the frame - destroy history in case there are other iframes that
-        //need testing
-        this._frame.location.replace(this._curPage);
-
-    },
-
-    //-------------------------------------------------------------------------
-    // Public Methods
-    //-------------------------------------------------------------------------
-
-    /**
-     * Signals that a test page has been loaded. This should be called from
-     * within the test page itself to notify the TestManager that it is ready.
-     * @return {Void}
-     * @method load
-     * @static
-     */
-    load : function () /*:Void*/ {
-        if (parent.YUITest.PageManager !== this){
-            parent.YUITest.PageManager.load();
-        } else {
-
-            if (this._frame) {
-                //assign event handling
-                var TestRunner = this._frame.YUITest.TestRunner;
-
-                TestRunner.subscribe(TestRunner.COMPLETE_EVENT, this._handleTestRunnerComplete, this, true);
-
-                //run it
-                TestRunner.run();
-            }
-        }
-    },
-
-    /**
-     * Sets the pages to be loaded.
-     * @param {String[]} pages An array of URLs to load.
-     * @return {Void}
-     * @method setPages
-     * @static
-     */
-    setPages : function (pages /*:String[]*/) /*:Void*/ {
-        this._pages = pages;
-    },
-
-    /**
-     * Begins the process of running the tests.
-     * @return {Void}
-     * @method start
-     * @static
-     */
-    start : function () /*:Void*/ {
-
-        if (!this._initialized) {
-
-            /**
-             * Fires when loading a test page
-             * @event testpagebegin
-             * @param curPage {string} the page being loaded
-             * @static
-             */
-
-            /**
-             * Fires when a test page is complete
-             * @event testpagecomplete
-             * @param obj {page: string, results: object} the name of the
-             * page that was loaded, and the test suite results
-             * @static
-             */
-
-            /**
-             * Fires when the test manager starts running all test pages
-             * @event testmanagerbegin
-             * @static
-             */
-
-            /**
-             * Fires when the test manager finishes running all test pages.  External
-             * test runners should subscribe to this event in order to get the
-             * aggregated test results.
-             * @event testmanagercomplete
-             * @param obj { pages_passed: int, pages_failed: int, tests_passed: int
-             *              tests_failed: int, passed: string[], failed: string[],
-             *              page_results: {} }
-             * @static
-             */
-
-            //create iframe if not already available
-            if (!this._frame){
-                var frame /*:HTMLElement*/ = document.createElement("iframe");
-                frame.style.visibility = "hidden";
-                frame.style.position = "absolute";
-                document.body.appendChild(frame);
-                this._frame = frame.contentWindow || frame.contentDocument.parentWindow;
-            }
-
-            this._initialized = true;
-        }
-
-
-        // reset the results cache
-        this._results = {
-
-            passed: 0,
-            failed: 0,
-            ignored: 0,
-            total: 0,
-            type: "report",
-            name: "YUI Test Results",
-            duration: 0,
-            failedPages:[],
-            passedPages:[]
-            /*
-            // number of pages that pass
-            pages_passed: 0,
-            // number of pages that fail
-            pages_failed: 0,
-            // total number of tests passed
-            tests_passed: 0,
-            // total number of tests failed
-            tests_failed: 0,
-            // array of pages that passed
-            passed: [],
-            // array of pages that failed
-            failed: [],
-            // map of full results for each page
-            page_results: {}*/
-        };
-
-        this.fire(this.TEST_MANAGER_BEGIN_EVENT, null);
-        this._run();
-
-    },
-
-    /**
-     * Stops the execution of tests.
-     * @return {Void}
-     * @method stop
-     * @static
-     */
-    stop : function () /*:Void*/ {
-        clearTimeout(this._timeoutId);
-    }
-
-});
-
-
-    /**
-     * Runs test suites and test cases, providing events to allowing for the
-     * interpretation of test results.
-     * @namespace YUITest
-     * @class TestRunner
-     * @static
-     */
-    YUITest.TestRunner = function(){
-
-        /*(intentionally not documented)
-         * Determines if any of the array of test groups appears
-         * in the given TestRunner filter.
-         * @param {Array} testGroups The array of test groups to
-         *      search for.
-         * @param {String} filter The TestRunner groups filter.
-         */
-        function inGroups(testGroups, filter){
-            if (!filter.length){
-                return true;
-            } else {
-                if (testGroups){
-                    for (var i=0, len=testGroups.length; i < len; i++){
-                        if (filter.indexOf("," + testGroups[i] + ",") > -1){
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        }
-
-        /**
-         * A node in the test tree structure. May represent a TestSuite, TestCase, or
-         * test function.
-         * @param {Variant} testObject A TestSuite, TestCase, or the name of a test function.
-         * @class TestNode
-         * @constructor
-         * @private
-         */
-        function TestNode(testObject){
-
-            /**
-             * The TestSuite, TestCase, or test function represented by this node.
-             * @type Variant
-             * @property testObject
-             */
-            this.testObject = testObject;
-
-            /**
-             * Pointer to this node's first child.
-             * @type TestNode
-             * @property firstChild
-             */
-            this.firstChild = null;
-
-            /**
-             * Pointer to this node's last child.
-             * @type TestNode
-             * @property lastChild
-             */
-            this.lastChild = null;
-
-            /**
-             * Pointer to this node's parent.
-             * @type TestNode
-             * @property parent
-             */
-            this.parent = null;
-
-            /**
-             * Pointer to this node's next sibling.
-             * @type TestNode
-             * @property next
-             */
-            this.next = null;
-
-            /**
-             * Test results for this test object.
-             * @type object
-             * @property results
-             */
-            this.results = new YUITest.Results();
-
-            //initialize results
-            if (testObject instanceof YUITest.TestSuite){
-                this.results.type = "testsuite";
-                this.results.name = testObject.name;
-            } else if (testObject instanceof YUITest.TestCase){
-                this.results.type = "testcase";
-                this.results.name = testObject.name;
-            }
-
-        }
-
-        TestNode.prototype = {
-
-            /**
-             * Appends a new test object (TestSuite, TestCase, or test function name) as a child
-             * of this node.
-             * @param {Variant} testObject A TestSuite, TestCase, or the name of a test function.
-             * @return {Void}
-             */
-            appendChild : function (testObject){
-                var node = new TestNode(testObject);
-                if (this.firstChild === null){
-                    this.firstChild = this.lastChild = node;
-                } else {
-                    this.lastChild.next = node;
-                    this.lastChild = node;
-                }
-                node.parent = this;
-                return node;
-            }
-        };
-
-        /**
-         * Runs test suites and test cases, providing events to allowing for the
-         * interpretation of test results.
-         * @namespace Test
-         * @class Runner
-         * @static
-         */
-        function TestRunner(){
-
-            //inherit from EventTarget
-            YUITest.EventTarget.call(this);
-
-            /**
-             * Suite on which to attach all TestSuites and TestCases to be run.
-             * @type YUITest.TestSuite
-             * @property masterSuite
-             * @static
-             * @private
-             */
-            this.masterSuite = new YUITest.TestSuite("yuitests" + (new Date()).getTime());
-
-            /**
-             * Pointer to the current node in the test tree.
-             * @type TestNode
-             * @private
-             * @property _cur
-             * @static
-             */
-            this._cur = null;
-
-            /**
-             * Pointer to the root node in the test tree.
-             * @type TestNode
-             * @private
-             * @property _root
-             * @static
-             */
-            this._root = null;
-
-            /**
-             * Indicates if the TestRunner will log events or not.
-             * @type Boolean
-             * @property _log
-             * @private
-             * @static
-             */
-            this._log = true;
-
-            /**
-             * Indicates if the TestRunner is waiting as a result of
-             * wait() being called.
-             * @type Boolean
-             * @property _waiting
-             * @private
-             * @static
-             */
-            this._waiting = false;
-
-            /**
-             * Indicates if the TestRunner is currently running tests.
-             * @type Boolean
-             * @private
-             * @property _running
-             * @static
-             */
-            this._running = false;
-
-            /**
-             * Holds copy of the results object generated when all tests are
-             * complete.
-             * @type Object
-             * @private
-             * @property _lastResults
-             * @static
-             */
-            this._lastResults = null;
-
-            /**
-             * Data object that is passed around from method to method.
-             * @type Object
-             * @private
-             * @property _data
-             * @static
-             */
-            this._context = null;
-
-            /**
-             * The list of test groups to run. The list is represented
-             * by a comma delimited string with commas at the start and
-             * end.
-             * @type String
-             * @private
-             * @property _groups
-             * @static
-             */
-            this._groups = "";
-        }
-
-        TestRunner.prototype = YUITest.Util.mix(new YUITest.EventTarget(), {
-
-            //restore prototype
-            constructor: YUITest.TestRunner,
-
-            //-------------------------------------------------------------------------
-            // Constants
-            //-------------------------------------------------------------------------
-
-            /**
-             * Fires when a test case is opened but before the first
-             * test is executed.
-             * @event testcasebegin
-             * @static
-             */
-            TEST_CASE_BEGIN_EVENT : "testcasebegin",
-
-            /**
-             * Fires when all tests in a test case have been executed.
-             * @event testcasecomplete
-             * @static
-             */
-            TEST_CASE_COMPLETE_EVENT : "testcasecomplete",
-
-            /**
-             * Fires when a test suite is opened but before the first
-             * test is executed.
-             * @event testsuitebegin
-             * @static
-             */
-            TEST_SUITE_BEGIN_EVENT : "testsuitebegin",
-
-            /**
-             * Fires when all test cases in a test suite have been
-             * completed.
-             * @event testsuitecomplete
-             * @static
-             */
-            TEST_SUITE_COMPLETE_EVENT : "testsuitecomplete",
-
-            /**
-             * Fires when a test has passed.
-             * @event pass
-             * @static
-             */
-            TEST_PASS_EVENT : "pass",
-
-            /**
-             * Fires when a test has failed.
-             * @event fail
-             * @static
-             */
-            TEST_FAIL_EVENT : "fail",
-
-            /**
-             * Fires when a non-test method has an error.
-             * @event error
-             * @static
-             */
-            ERROR_EVENT : "error",
-
-            /**
-             * Fires when a test has been ignored.
-             * @event ignore
-             * @static
-             */
-            TEST_IGNORE_EVENT : "ignore",
-
-            /**
-             * Fires when all test suites and test cases have been completed.
-             * @event complete
-             * @static
-             */
-            COMPLETE_EVENT : "complete",
-
-            /**
-             * Fires when the run() method is called.
-             * @event begin
-             * @static
-             */
-            BEGIN_EVENT : "begin",
-
-            //-------------------------------------------------------------------------
-            // Test Tree-Related Methods
-            //-------------------------------------------------------------------------
-
-            /**
-             * Adds a test case to the test tree as a child of the specified node.
-             * @param {TestNode} parentNode The node to add the test case to as a child.
-             * @param {YUITest.TestCase} testCase The test case to add.
-             * @return {Void}
-             * @static
-             * @private
-             * @method _addTestCaseToTestTree
-             */
-           _addTestCaseToTestTree : function (parentNode, testCase){
-
-                //add the test suite
-                var node = parentNode.appendChild(testCase),
-                    prop,
-                    testName;
-
-                //iterate over the items in the test case
-                for (prop in testCase){
-                    if ((prop.indexOf("test") === 0 || prop.indexOf(" ") > -1) && typeof testCase[prop] == "function"){
-                        node.appendChild(prop);
-                    }
-                }
-
-            },
-
-            /**
-             * Adds a test suite to the test tree as a child of the specified node.
-             * @param {TestNode} parentNode The node to add the test suite to as a child.
-             * @param {YUITest.TestSuite} testSuite The test suite to add.
-             * @return {Void}
-             * @static
-             * @private
-             * @method _addTestSuiteToTestTree
-             */
-            _addTestSuiteToTestTree : function (parentNode, testSuite) {
-
-                //add the test suite
-                var node = parentNode.appendChild(testSuite);
-
-                //iterate over the items in the master suite
-                for (var i=0; i < testSuite.items.length; i++){
-                    if (testSuite.items[i] instanceof YUITest.TestSuite) {
-                        this._addTestSuiteToTestTree(node, testSuite.items[i]);
-                    } else if (testSuite.items[i] instanceof YUITest.TestCase) {
-                        this._addTestCaseToTestTree(node, testSuite.items[i]);
-                    }
-                }
-            },
-
-            /**
-             * Builds the test tree based on items in the master suite. The tree is a hierarchical
-             * representation of the test suites, test cases, and test functions. The resulting tree
-             * is stored in _root and the pointer _cur is set to the root initially.
-             * @return {Void}
-             * @static
-             * @private
-             * @method _buildTestTree
-             */
-            _buildTestTree : function () {
-
-                this._root = new TestNode(this.masterSuite);
-                //this._cur = this._root;
-
-                //iterate over the items in the master suite
-                for (var i=0; i < this.masterSuite.items.length; i++){
-                    if (this.masterSuite.items[i] instanceof YUITest.TestSuite) {
-                        this._addTestSuiteToTestTree(this._root, this.masterSuite.items[i]);
-                    } else if (this.masterSuite.items[i] instanceof YUITest.TestCase) {
-                        this._addTestCaseToTestTree(this._root, this.masterSuite.items[i]);
-                    }
-                }
-
-            },
-
-            //-------------------------------------------------------------------------
-            // Private Methods
-            //-------------------------------------------------------------------------
-
-            /**
-             * Handles the completion of a test object's tests. Tallies test results
-             * from one level up to the next.
-             * @param {TestNode} node The TestNode representing the test object.
-             * @return {Void}
-             * @method _handleTestObjectComplete
-             * @private
-             */
-            _handleTestObjectComplete : function (node) {
-                var parentNode;
-
-                if (typeof node.testObject == "object" && node !== null){
-                    parentNode = node.parent;
-
-                    if (parentNode){
-                        parentNode.results.include(node.results);
-                        parentNode.results[node.testObject.name] = node.results;
-                    }
-
-                    if (node.testObject instanceof YUITest.TestSuite){
-                        this._execNonTestMethod(node, "tearDown", false);
-                        node.results.duration = (new Date()) - node._start;
-                        this.fire({ type: this.TEST_SUITE_COMPLETE_EVENT, testSuite: node.testObject, results: node.results});
-                    } else if (node.testObject instanceof YUITest.TestCase){
-                        this._execNonTestMethod(node, "destroy", false);
-                        node.results.duration = (new Date()) - node._start;
-                        this.fire({ type: this.TEST_CASE_COMPLETE_EVENT, testCase: node.testObject, results: node.results});
-                    }
-                }
-            },
-
-            //-------------------------------------------------------------------------
-            // Navigation Methods
-            //-------------------------------------------------------------------------
-
-            /**
-             * Retrieves the next node in the test tree.
-             * @return {TestNode} The next node in the test tree or null if the end is reached.
-             * @private
-             * @static
-             * @method _next
-             */
-            _next : function () {
-
-                if (this._cur === null){
-                    this._cur = this._root;
-                } else if (this._cur.firstChild) {
-                    this._cur = this._cur.firstChild;
-                } else if (this._cur.next) {
-                    this._cur = this._cur.next;
-                } else {
-                    while (this._cur && !this._cur.next && this._cur !== this._root){
-                        this._handleTestObjectComplete(this._cur);
-                        this._cur = this._cur.parent;
-                    }
-
-                    this._handleTestObjectComplete(this._cur);
-
-                    if (this._cur == this._root){
-                        this._cur.results.type = "report";
-                        this._cur.results.timestamp = (new Date()).toLocaleString();
-                        this._cur.results.duration = (new Date()) - this._cur._start;
-                        this._lastResults = this._cur.results;
-                        this._running = false;
-                        this.fire({ type: this.COMPLETE_EVENT, results: this._lastResults});
-                        this._cur = null;
-                    } else {
-                        this._cur = this._cur.next;
-                    }
-                }
-
-                return this._cur;
-            },
-
-            /**
-             * Executes a non-test method (init, setUp, tearDown, destroy)
-             * and traps an errors. If an error occurs, an error event is
-             * fired.
-             * @param {Object} node The test node in the testing tree.
-             * @param {String} methodName The name of the method to execute.
-             * @param {Boolean} allowAsync Determines if the method can be called asynchronously.
-             * @return {Boolean} True if an async method was called, false if not.
-             * @method _execNonTestMethod
-             * @private
-             */
-            _execNonTestMethod: function(node, methodName, allowAsync){
-                var testObject = node.testObject,
-                    event = { type: this.ERROR_EVENT };
-                try {
-                    if (allowAsync && testObject["async:" + methodName]){
-                        testObject["async:" + methodName](this._context);
-                        return true;
-                    } else {
-                        testObject[methodName](this._context);
-                    }
-                } catch (ex){
-                    node.results.errors++;
-                    event.error = ex;
-                    event.methodName = methodName;
-                    if (testObject instanceof YUITest.TestCase){
-                        event.testCase = testObject;
-                    } else {
-                        event.testSuite = testSuite;
-                    }
-
-                    this.fire(event);
-                }
-
-                return false;
-            },
-
-            /**
-             * Runs a test case or test suite, returning the results.
-             * @param {YUITest.TestCase|YUITest.TestSuite} testObject The test case or test suite to run.
-             * @return {Object} Results of the execution with properties passed, failed, and total.
-             * @private
-             * @method _run
-             * @static
-             */
-            _run : function () {
-
-                //flag to indicate if the TestRunner should wait before continuing
-                var shouldWait = false;
-
-                //get the next test node
-                var node = this._next();
-
-                if (node !== null) {
-
-                    //set flag to say the testrunner is running
-                    this._running = true;
-
-                    //eliminate last results
-                    this._lastResult = null;
-
-                    var testObject = node.testObject;
-
-                    //figure out what to do
-                    if (typeof testObject == "object" && testObject !== null){
-                        if (testObject instanceof YUITest.TestSuite){
-                            this.fire({ type: this.TEST_SUITE_BEGIN_EVENT, testSuite: testObject });
-                            node._start = new Date();
-                            this._execNonTestMethod(node, "setUp" ,false);
-                        } else if (testObject instanceof YUITest.TestCase){
-                            this.fire({ type: this.TEST_CASE_BEGIN_EVENT, testCase: testObject });
-                            node._start = new Date();
-
-                            //regular or async init
-                            /*try {
-                                if (testObject["async:init"]){
-                                    testObject["async:init"](this._context);
-                                    return;
-                                } else {
-                                    testObject.init(this._context);
-                                }
-                            } catch (ex){
-                                node.results.errors++;
-                                this.fire({ type: this.ERROR_EVENT, error: ex, testCase: testObject, methodName: "init" });
-                            }*/
-                            if(this._execNonTestMethod(node, "init", true)){
-                                return;
-                            }
-                        }
-
-                        //some environments don't support setTimeout
-                        if (typeof setTimeout != "undefined"){
-                            setTimeout(function(){
-                                YUITest.TestRunner._run();
-                            }, 0);
-                        } else {
-                            this._run();
-                        }
-                    } else {
-                        this._runTest(node);
-                    }
-
-                }
-            },
-
-            _resumeTest : function (segment) {
-
-                //get relevant information
-                var node = this._cur;
-
-                //we know there's no more waiting now
-                this._waiting = false;
-
-                //if there's no node, it probably means a wait() was called after resume()
-                if (!node){
-                    //TODO: Handle in some way?
-                    //console.log("wait() called after resume()");
-                    //this.fire("error", { testCase: "(unknown)", test: "(unknown)", error: new Error("wait() called after resume()")} );
-                    return;
-                }
-
-                var testName = node.testObject;
-                var testCase = node.parent.testObject;
-
-                //cancel other waits if available
-                if (testCase.__yui_wait){
-                    clearTimeout(testCase.__yui_wait);
-                    delete testCase.__yui_wait;
-                }
-
-                //get the "should" test cases
-                var shouldFail = testName.indexOf("fail:") === 0 ||
-                                    (testCase._should.fail || {})[testName];
-                var shouldError = (testCase._should.error || {})[testName];
-
-                //variable to hold whether or not the test failed
-                var failed = false;
-                var error = null;
-
-                //try the test
-                try {
-
-                    //run the test
-                    segment.call(testCase, this._context);
-
-                    //if the test hasn't already failed and doesn't have any asserts...
-                    if(YUITest.Assert._getCount() == 0){
-                        throw new YUITest.AssertionError("Test has no asserts.");
-                    }
-                    //if it should fail, and it got here, then it's a fail because it didn't
-                     else if (shouldFail){
-                        error = new YUITest.ShouldFail();
-                        failed = true;
-                    } else if (shouldError){
-                        error = new YUITest.ShouldError();
-                        failed = true;
-                    }
-
-                } catch (thrown){
-
-                    //cancel any pending waits, the test already failed
-                    if (testCase.__yui_wait){
-                        clearTimeout(testCase.__yui_wait);
-                        delete testCase.__yui_wait;
-                    }
-
-                    //figure out what type of error it was
-                    if (thrown instanceof YUITest.AssertionError) {
-                        if (!shouldFail){
-                            error = thrown;
-                            failed = true;
-                        }
-                    } else if (thrown instanceof YUITest.Wait){
-
-                        if (typeof thrown.segment == "function"){
-                            if (typeof thrown.delay == "number"){
-
-                                //some environments don't support setTimeout
-                                if (typeof setTimeout != "undefined"){
-                                    testCase.__yui_wait = setTimeout(function(){
-                                        YUITest.TestRunner._resumeTest(thrown.segment);
-                                    }, thrown.delay);
-                                    this._waiting = true;
-                                } else {
-                                    throw new Error("Asynchronous tests not supported in this environment.");
-                                }
-                            }
-                        }
-
-                        return;
-
-                    } else {
-                        //first check to see if it should error
-                        if (!shouldError) {
-                            error = new YUITest.UnexpectedError(thrown);
-                            failed = true;
-                        } else {
-                            //check to see what type of data we have
-                            if (typeof shouldError == "string"){
-
-                                //if it's a string, check the error message
-                                if (thrown.message != shouldError){
-                                    error = new YUITest.UnexpectedError(thrown);
-                                    failed = true;
-                                }
-                            } else if (typeof shouldError == "function"){
-
-                                //if it's a function, see if the error is an instance of it
-                                if (!(thrown instanceof shouldError)){
-                                    error = new YUITest.UnexpectedError(thrown);
-                                    failed = true;
-                                }
-
-                            } else if (typeof shouldError == "object" && shouldError !== null){
-
-                                //if it's an object, check the instance and message
-                                if (!(thrown instanceof shouldError.constructor) ||
-                                        thrown.message != shouldError.message){
-                                    error = new YUITest.UnexpectedError(thrown);
-                                    failed = true;
-                                }
-
-                            }
-
-                        }
-                    }
-
-                }
-
-                //fire appropriate event
-                if (failed) {
-                    this.fire({ type: this.TEST_FAIL_EVENT, testCase: testCase, testName: testName, error: error });
-                } else {
-                    this.fire({ type: this.TEST_PASS_EVENT, testCase: testCase, testName: testName });
-                }
-
-                //run the tear down
-                this._execNonTestMethod(node.parent, "tearDown", false);
-
-                //reset the assert count
-                YUITest.Assert._reset();
-
-                //calculate duration
-                var duration = (new Date()) - node._start;
-
-                //update results
-                node.parent.results[testName] = {
-                    result: failed ? "fail" : "pass",
-                    message: error ? error.getMessage() : "Test passed",
-                    type: "test",
-                    name: testName,
-                    duration: duration
-                };
-
-                if (failed){
-                    node.parent.results.failed++;
-                } else {
-                    node.parent.results.passed++;
-                }
-                node.parent.results.total++;
-
-                //set timeout not supported in all environments
-                if (typeof setTimeout != "undefined"){
-                    setTimeout(function(){
-                        YUITest.TestRunner._run();
-                    }, 0);
-                } else {
-                    this._run();
-                }
-
-            },
-
-            /**
-             * Handles an error as if it occurred within the currently executing
-             * test. This is for mock methods that may be called asynchronously
-             * and therefore out of the scope of the TestRunner. Previously, this
-             * error would bubble up to the browser. Now, this method is used
-             * to tell TestRunner about the error. This should never be called
-             * by anyplace other than the Mock object.
-             * @param {Error} error The error object.
-             * @return {Void}
-             * @method _handleError
-             * @private
-             * @static
-             */
-            _handleError: function(error){
-
-                if (this._waiting){
-                    this._resumeTest(function(){
-                        throw error;
-                    });
-                } else {
-                    throw error;
-                }
-
-            },
-
-            /**
-             * Runs a single test based on the data provided in the node.
-             * @param {TestNode} node The TestNode representing the test to run.
-             * @return {Void}
-             * @static
-             * @private
-             * @name _runTest
-             */
-            _runTest : function (node) {
-
-                //get relevant information
-                var testName = node.testObject,
-                    testCase = node.parent.testObject,
-                    test = testCase[testName],
-
-                    //get the "should" test cases
-                    shouldIgnore = testName.indexOf("ignore:") === 0 ||
-                                    !inGroups(testCase.groups, this._groups) ||
-                                    (testCase._should.ignore || {})[testName];   //deprecated
-
-                //figure out if the test should be ignored or not
-                if (shouldIgnore){
-
-                    //update results
-                    node.parent.results[testName] = {
-                        result: "ignore",
-                        message: "Test ignored",
-                        type: "test",
-                        name: testName.indexOf("ignore:") === 0 ? testName.substring(7) : testName
-                    };
-
-                    node.parent.results.ignored++;
-                    node.parent.results.total++;
-
-                    this.fire({ type: this.TEST_IGNORE_EVENT,  testCase: testCase, testName: testName });
-
-                    //some environments don't support setTimeout
-                    if (typeof setTimeout != "undefined"){
-                        setTimeout(function(){
-                            YUITest.TestRunner._run();
-                        }, 0);
-                    } else {
-                        this._run();
-                    }
-
-                } else {
-
-                    //mark the start time
-                    node._start = new Date();
-
-                    //run the setup
-                    this._execNonTestMethod(node.parent, "setUp", false);
-
-                    //now call the body of the test
-                    this._resumeTest(test);
-                }
-
-            },
-
-            //-------------------------------------------------------------------------
-            // Misc Methods
-            //-------------------------------------------------------------------------
-
-            /**
-             * Retrieves the name of the current result set.
-             * @return {String} The name of the result set.
-             * @method getName
-             */
-            getName: function(){
-                return this.masterSuite.name;
-            },
-
-            /**
-             * The name assigned to the master suite of the TestRunner. This is the name
-             * that is output as the root's name when results are retrieved.
-             * @param {String} name The name of the result set.
-             * @return {Void}
-             * @method setName
-             */
-            setName: function(name){
-                this.masterSuite.name = name;
-            },
-
-            //-------------------------------------------------------------------------
-            // Public Methods
-            //-------------------------------------------------------------------------
-
-            /**
-             * Adds a test suite or test case to the list of test objects to run.
-             * @param testObject Either a TestCase or a TestSuite that should be run.
-             * @return {Void}
-             * @method add
-             * @static
-             */
-            add : function (testObject) {
-                this.masterSuite.add(testObject);
-                return this;
-            },
-
-            /**
-             * Removes all test objects from the runner.
-             * @return {Void}
-             * @method clear
-             * @static
-             */
-            clear : function () {
-                this.masterSuite = new YUITest.TestSuite("yuitests" + (new Date()).getTime());
-            },
-
-            /**
-             * Indicates if the TestRunner is waiting for a test to resume
-             * @return {Boolean} True if the TestRunner is waiting, false if not.
-             * @method isWaiting
-             * @static
-             */
-            isWaiting: function() {
-                return this._waiting;
-            },
-
-            /**
-             * Indicates that the TestRunner is busy running tests and therefore can't
-             * be stopped and results cannot be gathered.
-             * @return {Boolean} True if the TestRunner is running, false if not.
-             * @method isRunning
-             */
-            isRunning: function(){
-                return this._running;
-            },
-
-            /**
-             * Returns the last complete results set from the TestRunner. Null is returned
-             * if the TestRunner is running or no tests have been run.
-             * @param {Function} format (Optional) A test format to return the results in.
-             * @return {Object|String} Either the results object or, if a test format is
-             *      passed as the argument, a string representing the results in a specific
-             *      format.
-             * @method getResults
-             */
-            getResults: function(format){
-                if (!this._running && this._lastResults){
-                    if (typeof format == "function"){
-                        return format(this._lastResults);
-                    } else {
-                        return this._lastResults;
-                    }
-                } else {
-                    return null;
-                }
-            },
-
-            /**
-             * Returns the coverage report for the files that have been executed.
-             * This returns only coverage information for files that have been
-             * instrumented using YUI Test Coverage and only those that were run
-             * in the same pass.
-             * @param {Function} format (Optional) A coverage format to return results in.
-             * @return {Object|String} Either the coverage object or, if a coverage
-             *      format is specified, a string representing the results in that format.
-             * @method getCoverage
-             */
-            getCoverage: function(format){
-                if (!this._running && typeof _yuitest_coverage == "object"){
-                    if (typeof format == "function"){
-                        return format(_yuitest_coverage);
-                    } else {
-                        return _yuitest_coverage;
-                    }
-                } else {
-                    return null;
-                }
-            },
-
-            /**
-             * Used to continue processing when a method marked with
-             * "async:" is executed. This should not be used in test
-             * methods, only in init(). Each argument is a string, and
-             * when the returned function is executed, the arguments
-             * are assigned to the context data object using the string
-             * as the key name (value is the argument itself).
-             * @private
-             * @return {Function} A callback function.
-             */
-            callback: function(){
-                var names   = arguments,
-                    data    = this._context,
-                    that    = this;
-
-                return function(){
-                    for (var i=0; i < arguments.length; i++){
-                        data[names[i]] = arguments[i];
-                    }
-                    that._run();
-                };
-            },
-
-            /**
-             * Resumes the TestRunner after wait() was called.
-             * @param {Function} segment The function to run as the rest
-             *      of the haulted test.
-             * @return {Void}
-             * @method resume
-             * @static
-             */
-            resume : function (segment) {
-                if (this._waiting){
-                    this._resumeTest(segment || function(){});
-                } else {
-                    throw new Error("resume() called without wait().");
-                }
-            },
-
-            /**
-             * Runs the test suite.
-             * @param {Object|Boolean} options (Optional) Options for the runner:
-             *      <code>oldMode</code> indicates the TestRunner should work in the YUI <= 2.8 way
-             *      of internally managing test suites. <code>groups</code> is an array
-             *      of test groups indicating which tests to run.
-             * @return {Void}
-             * @method run
-             * @static
-             */
-            run : function (options) {
-
-                options = options || {};
-
-                //pointer to runner to avoid scope issues
-                var runner  = YUITest.TestRunner,
-                    oldMode = options.oldMode;
-
-
-                //if there's only one suite on the masterSuite, move it up
-                if (!oldMode && this.masterSuite.items.length == 1 && this.masterSuite.items[0] instanceof YUITest.TestSuite){
-                    this.masterSuite = this.masterSuite.items[0];
-                }
-
-                //determine if there are any groups to filter on
-                runner._groups = (options.groups instanceof Array) ? "," + options.groups.join(",") + "," : "";
-
-                //initialize the runner
-                runner._buildTestTree();
-                runner._context = {};
-                runner._root._start = new Date();
-
-                //fire the begin event
-                runner.fire(runner.BEGIN_EVENT);
-
-                //begin the testing
-                runner._run();
-            }
-        });
-
-        return new TestRunner();
-
-    }();
 /**
  * Main CSSLint object.
  * @class CSSLint
  * @static
  * @extends parserlib.util.EventTarget
  */
+/*global parserlib, Reporter*/
 var CSSLint = (function(){
 
     var rules      = [],
         formatters = [],
         api        = new parserlib.util.EventTarget();
         
-    api.version = "@VERSION@";
+    api.version = "0.9.8";
 
     //-------------------------------------------------------------------------
     // Rule Management
@@ -9399,6 +6355,17 @@ var CSSLint = (function(){
      */
     api.clearRules = function(){
         rules = [];
+    };
+    
+    /**
+     * Returns the rule objects.
+     * @return An array of rule objects.
+     * @method getRules
+     */
+    api.getRules = function(){
+        return [].concat(rules).sort(function(a,b){ 
+            return a.id > b.id ? 1 : 0;
+        });
     };
 
     //-------------------------------------------------------------------------
@@ -9430,21 +6397,22 @@ var CSSLint = (function(){
      * @param {Object} result The results returned from CSSLint.verify().
      * @param {String} filename The filename for which the results apply.
      * @param {String} formatId The name of the formatter to use.
+     * @param {Object} options (Optional) for special output handling.
      * @return {String} A formatted string for the results.
      * @method format
      */
-    api.format = function(results, filename, formatId) {
+    api.format = function(results, filename, formatId, options) {
         var formatter = this.getFormatter(formatId),
             result = null;
             
         if (formatter){
             result = formatter.startFormat();
-            result += formatter.formatResults(results, filename);
+            result += formatter.formatResults(results, filename, options || {});
             result += formatter.endFormat();
         }
         
         return result;
-    }    
+    };
     
     /**
      * Indicates if the given format is supported.
@@ -9464,7 +6432,8 @@ var CSSLint = (function(){
      * Starts the verification process for the given CSS text.
      * @param {String} text The CSS text to verify.
      * @param {Object} ruleset (Optional) List of rules to apply. If null, then
-     *      all rules are used.
+     *      all rules are used. If a rule has a value of 1 then it's a warning,
+     *      a value of 2 means it's an error.
      * @return {Object} Results of the verification.
      * @method verify
      */
@@ -9474,38 +6443,55 @@ var CSSLint = (function(){
             len     = rules.length,
             reporter,
             lines,
+            report,
             parser = new parserlib.css.Parser({ starHack: true, ieFilters: true,
                                                 underscoreHack: true, strict: false });
 
-        lines = text.split(/\n\r?/g);
-        reporter = new Reporter(lines);
-
+        lines = text.replace(/\n\r?/g, "$split$").split('$split$');
+        
         if (!ruleset){
+            ruleset = {};
             while (i < len){
-                rules[i++].init(parser, reporter);
+                ruleset[rules[i++].id] = 1;    //by default, everything is a warning
             }
-        } else {
-            ruleset.errors = 1;       //always report parsing errors
-            for (i in ruleset){
-                if(ruleset.hasOwnProperty(i)){
-                    if (rules[i]){
-                        rules[i].init(parser, reporter);
-                    }
+        }
+        
+        reporter = new Reporter(lines, ruleset);
+        
+        ruleset.errors = 2;       //always report parsing errors as errors
+        for (i in ruleset){
+            if(ruleset.hasOwnProperty(i)){
+                if (rules[i]){
+                    rules[i].init(parser, reporter);
                 }
             }
         }
+
 
         //capture most horrible error type
         try {
             parser.parse(text);
         } catch (ex) {
-            reporter.error("Fatal error, cannot continue: " + ex.message, ex.line, ex.col);
+            reporter.error("Fatal error, cannot continue: " + ex.message, ex.line, ex.col, {});
         }
 
-        return {
+        report = {
             messages    : reporter.messages,
             stats       : reporter.stats
         };
+        
+        //sort by line numbers, rollups at the bottom
+        report.messages.sort(function (a, b){
+            if (a.rollup && !b.rollup){
+                return 1;
+            } else if (!a.rollup && b.rollup){
+                return -1;
+            } else {
+                return a.line - b.line;
+            }
+        });        
+        
+        return report;
     };
 
     //-------------------------------------------------------------------------
@@ -9515,14 +6501,18 @@ var CSSLint = (function(){
     return api;
 
 })();
+
+/*global CSSLint*/
 /**
  * An instance of Report is used to report results of the
  * verification back to the main API.
  * @class Reporter
  * @constructor
  * @param {String[]} lines The text lines of the source.
+ * @param {Object} ruleset The set of rules to work with, including if
+ *      they are errors or warnings.
  */
-function Reporter(lines){
+function Reporter(lines, ruleset){
 
     /**
      * List of messages being reported.
@@ -9545,6 +6535,14 @@ function Reporter(lines){
      * @type String[]
      */
     this.lines = lines;
+    
+    /**
+     * Information about the rules. Used to determine whether an issue is an
+     * error or warning.
+     * @property ruleset
+     * @type Object
+     */
+    this.ruleset = ruleset;
 }
 
 Reporter.prototype = {
@@ -9567,7 +6565,7 @@ Reporter.prototype = {
             col     : col,
             message : message,
             evidence: this.lines[line-1],
-            rule    : rule
+            rule    : rule || {}
         });
     },
 
@@ -9578,10 +6576,23 @@ Reporter.prototype = {
      * @param {int} col The column number.
      * @param {Object} rule The rule this message relates to.
      * @method warn
+     * @deprecated Use report instead.
      */
     warn: function(message, line, col, rule){
+        this.report(message, line, col, rule);
+    },
+
+    /**
+     * Report an issue.
+     * @param {String} message The message to store.
+     * @param {int} line The line number.
+     * @param {int} col The column number.
+     * @param {Object} rule The rule this message relates to.
+     * @method report
+     */
+    report: function(message, line, col, rule){
         this.messages.push({
-            type    : "warning",
+            type    : this.ruleset[rule.id] == 2 ? "error" : "warning",
             line    : line,
             col     : col,
             message : message,
@@ -9649,48 +6660,72 @@ Reporter.prototype = {
         this.stats[name] = value;
     }
 };
+
+//expose for testing purposes
+CSSLint._Reporter = Reporter;
+
+/*global CSSLint*/
+
 /*
  * Utility functions that make life easier.
  */
+CSSLint.Util = {
+    /*
+     * Adds all properties from supplier onto receiver,
+     * overwriting if the same name already exists on
+     * reciever.
+     * @param {Object} The object to receive the properties.
+     * @param {Object} The object to provide the properties.
+     * @return {Object} The receiver
+     */
+    mix: function(receiver, supplier){
+        var prop;
 
-/*
- * Adds all properties from supplier onto receiver,
- * overwriting if the same name already exists on
- * reciever.
- * @param {Object} The object to receive the properties.
- * @param {Object} The object to provide the properties.
- * @return {Object} The receiver
- */
-function mix(reciever, supplier){
-    var prop;
-
-    for (prop in supplier){
-        if (supplier.hasOwnProperty(prop)){
-            receiver[prop] = supplier[prop];
-        }
-    }
-
-    return prop;
-}
-
-/*
- * Polyfill for array indexOf() method.
- * @param {Array} values The array to search.
- * @param {Variant} value The value to search for.
- * @return {int} The index of the value if found, -1 if not.
- */
-function indexOf(values, value){
-    if (values.indexOf){
-        return values.indexOf(value);
-    } else {
-        for (var i=0, len=values.length; i < len; i++){
-            if (values[i] === value){
-                return i;
+        for (prop in supplier){
+            if (supplier.hasOwnProperty(prop)){
+                receiver[prop] = supplier[prop];
             }
         }
-        return -1;
+
+        return prop;
+    },
+
+    /*
+     * Polyfill for array indexOf() method.
+     * @param {Array} values The array to search.
+     * @param {Variant} value The value to search for.
+     * @return {int} The index of the value if found, -1 if not.
+     */
+    indexOf: function(values, value){
+        if (values.indexOf){
+            return values.indexOf(value);
+        } else {
+            for (var i=0, len=values.length; i < len; i++){
+                if (values[i] === value){
+                    return i;
+                }
+            }
+            return -1;
+        }
+    },
+
+    /*
+     * Polyfill for array forEach() method.
+     * @param {Array} values The array to operate on.
+     * @param {Function} func The function to call on each item.
+     * @return {void}
+     */
+    forEach: function(values, func) {
+        if (values.forEach){
+            return values.forEach(func);
+        } else {
+            for (var i=0, len=values.length; i < len; i++){
+                func(values[i], i, values);
+            }
+        }
     }
-}
+};
+/*global CSSLint*/
 /*
  * Rule: Don't use adjoining classes (.foo.bar).
  */
@@ -9698,7 +6733,7 @@ CSSLint.addRule({
 
     //rule information
     id: "adjoining-classes",
-    name: "Adjoining Classes",
+    name: "Disallow adjoining classes",
     desc: "Don't use adjoining classes.",
     browsers: "IE6",
 
@@ -9717,7 +6752,7 @@ CSSLint.addRule({
                 selector = selectors[i];
                 for (j=0; j < selector.parts.length; j++){
                     part = selector.parts[j];
-                    if (part instanceof parserlib.css.SelectorPart){
+                    if (part.type == parser.SELECTOR_PART_TYPE){
                         classCount = 0;
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
@@ -9725,7 +6760,7 @@ CSSLint.addRule({
                                 classCount++;
                             }
                             if (classCount > 1){
-                                reporter.warn("Don't use adjoining classes.", part.line, part.col, rule);
+                                reporter.report("Don't use adjoining classes.", part.line, part.col, rule);
                             }
                         }
                     }
@@ -9735,6 +6770,8 @@ CSSLint.addRule({
     }
 
 });
+/*global CSSLint*/
+
 /*
  * Rule: Don't use width or height when using padding or border. 
  */
@@ -9742,7 +6779,7 @@ CSSLint.addRule({
 
     //rule information
     id: "box-model",
-    name: "Box Model",
+    name: "Beware of broken box size",
     desc: "Don't use width or height when using padding or border.",
     browsers: "All",
 
@@ -9767,17 +6804,48 @@ CSSLint.addRule({
             },
             properties;
 
-        parser.addListener("startrule", function(){
-            properties = {
-            };
-        });
+        function startRule(){
+            properties = {};
+        }
+
+        function endRule(){
+            var prop;
+            if (properties.height){
+                for (prop in heightProperties){
+                    if (heightProperties.hasOwnProperty(prop) && properties[prop]){
+                    
+                        //special case for padding
+                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[0].value === 0)){
+                            reporter.report("Using height with " + prop + " can sometimes make elements larger than you expect.", properties[prop].line, properties[prop].col, rule);
+                        }
+                    }
+                }
+            }
+
+            if (properties.width){
+                for (prop in widthProperties){
+                    if (widthProperties.hasOwnProperty(prop) && properties[prop]){
+
+                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[1].value === 0)){
+                            reporter.report("Using width with " + prop + " can sometimes make elements larger than you expect.", properties[prop].line, properties[prop].col, rule);
+                        }
+                    }
+                }
+            }        
+        }
+
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+        parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule); 
 
         parser.addListener("property", function(event){
             var name = event.property.text.toLowerCase();
             
             if (heightProperties[name] || widthProperties[name]){
                 if (!/^0\S*$/.test(event.value) && !(name == "border" && event.value == "none")){
-                    properties[name] = { line: event.property.line, col: event.property.col };
+                    properties[name] = { line: event.property.line, col: event.property.col, value: event.value };
                 }
             } else {
                 if (name == "width" || name == "height"){
@@ -9787,25 +6855,39 @@ CSSLint.addRule({
             
         });
 
-        parser.addListener("endrule", function(){
-            var prop;
-            if (properties["height"]){
-                for (prop in heightProperties){
-                    if (heightProperties.hasOwnProperty(prop) && properties[prop]){
-                        reporter.warn("Broken box model: using height with " + prop + ".", properties[prop].line, properties[prop].col, rule);
-                    }
-                }
-            }
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);
+        parser.addListener("endpage", endRule);
+        parser.addListener("endpagemargin", endRule);
+        parser.addListener("endkeyframerule", endRule);         
+    }
 
-            if (properties["width"]){
-                for (prop in widthProperties){
-                    if (widthProperties.hasOwnProperty(prop) && properties[prop]){
-                        reporter.warn("Broken box model: using width with " + prop + ".", properties[prop].line, properties[prop].col, rule);
-                    }
-                }
-            }
+});
+/*global CSSLint*/
 
-        });
+/*
+ * Rule: box-sizing doesn't work in IE6 and IE7.
+ */
+CSSLint.addRule({
+
+    //rule information
+    id: "box-sizing",
+    name: "Disallow use of box-sizing",
+    desc: "The box-sizing properties isn't supported in IE6 and IE7.",
+    browsers: "IE6, IE7",
+    tags: ["Compatibility"],
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this;
+
+        parser.addListener("property", function(event){
+            var name = event.property.text.toLowerCase();
+   
+            if (name == "box-sizing"){
+                reporter.report("The box-sizing property isn't supported in IE6 and IE7.", event.line, event.col, rule);
+            }
+        });       
     }
 
 });
@@ -9818,7 +6900,7 @@ CSSLint.addRule({
 
     //rule information
     id: "compatible-vendor-prefixes",
-    name: "Compatible Vendor Prefixes",
+    name: "Require compatible vendor prefixes",
     desc: "Include all compatible vendor prefixes to reach a wider range of users.",
     browsers: "All",
 
@@ -9837,15 +6919,15 @@ CSSLint.addRule({
 
         // See http://peter.sh/experiments/vendor-prefixed-css-property-overview/ for details
         compatiblePrefixes = {
-            "animation"                  : "webkit moz",
-            "animation-delay"            : "webkit moz",
-            "animation-direction"        : "webkit moz",
-            "animation-duration"         : "webkit moz",
-            "animation-fill-mode"        : "webkit moz",
-            "animation-iteration-count"  : "webkit moz",
-            "animation-name"             : "webkit moz",
-            "animation-play-state"       : "webkit moz",
-            "animation-timing-function"  : "webkit moz",
+            "animation"                  : "webkit moz ms",
+            "animation-delay"            : "webkit moz ms",
+            "animation-direction"        : "webkit moz ms",
+            "animation-duration"         : "webkit moz ms",
+            "animation-fill-mode"        : "webkit moz ms",
+            "animation-iteration-count"  : "webkit moz ms",
+            "animation-name"             : "webkit moz ms",
+            "animation-play-state"       : "webkit moz ms",
+            "animation-timing-function"  : "webkit moz ms",
             "appearance"                 : "webkit moz",
             "border-end"                 : "webkit moz",
             "border-end-color"           : "webkit moz",
@@ -9866,13 +6948,13 @@ CSSLint.addRule({
             "box-pack"                   : "webkit moz ms",
             "box-sizing"                 : "webkit moz",
             "box-shadow"                 : "webkit moz",
-            "column-count"               : "webkit moz",
-            "column-gap"                 : "webkit moz",
-            "column-rule"                : "webkit moz",
-            "column-rule-color"          : "webkit moz",
-            "column-rule-style"          : "webkit moz",
-            "column-rule-width"          : "webkit moz",
-            "column-width"               : "webkit moz",
+            "column-count"               : "webkit moz ms",
+            "column-gap"                 : "webkit moz ms",
+            "column-rule"                : "webkit moz ms",
+            "column-rule-color"          : "webkit moz ms",
+            "column-rule-style"          : "webkit moz ms",
+            "column-rule-width"          : "webkit moz ms",
+            "column-width"               : "webkit moz ms",
             "hyphens"                    : "epub moz",
             "line-break"                 : "webkit ms",
             "margin-end"                 : "webkit moz",
@@ -9885,16 +6967,17 @@ CSSLint.addRule({
             "text-size-adjust"           : "webkit ms",
             "transform"                  : "webkit moz ms o",
             "transform-origin"           : "webkit moz ms o",
-            "transition"                 : "webkit moz o",
-            "transition-delay"           : "webkit moz o",
-            "transition-duration"        : "webkit moz o",
-            "transition-property"        : "webkit moz o",
-            "transition-timing-function" : "webkit moz o",
+            "transition"                 : "webkit moz o ms",
+            "transition-delay"           : "webkit moz o ms",
+            "transition-duration"        : "webkit moz o ms",
+            "transition-property"        : "webkit moz o ms",
+            "transition-timing-function" : "webkit moz o ms",
             "user-modify"                : "webkit moz",
-            "user-select"                : "webkit moz",
+            "user-select"                : "webkit moz ms",
             "word-break"                 : "epub ms",
             "writing-mode"               : "epub ms"
         };
+
 
         for (prop in compatiblePrefixes) {
             if (compatiblePrefixes.hasOwnProperty(prop)) {
@@ -9912,8 +6995,8 @@ CSSLint.addRule({
         });
 
         parser.addListener("property", function (event) {
-            var name = event.property.text;
-            if (applyTo.indexOf(name) > -1) {
+            var name = event.property;
+            if (CSSLint.Util.indexOf(applyTo, name.text) > -1) {
                 properties.push(name);
             }
         });
@@ -9941,15 +7024,17 @@ CSSLint.addRule({
                 for (prop in compatiblePrefixes) {
                     if (compatiblePrefixes.hasOwnProperty(prop)) {
                         variations = compatiblePrefixes[prop];
-                        if (variations.indexOf(name) > -1) {
-                            if (propertyGroups[prop] === undefined) {
+                        if (CSSLint.Util.indexOf(variations, name.text) > -1) {
+                            if (!propertyGroups[prop]) {
                                 propertyGroups[prop] = {
                                     full : variations.slice(0),
-                                    actual : []
+                                    actual : [],
+                                    actualNodes: []
                                 };
                             }
-                            if (propertyGroups[prop].actual.indexOf(name) === -1) {
-                                propertyGroups[prop].actual.push(name);
+                            if (CSSLint.Util.indexOf(propertyGroups[prop].actual, name.text) === -1) {
+                                propertyGroups[prop].actual.push(name.text);
+                                propertyGroups[prop].actualNodes.push(name);
                             }
                         }
                     }
@@ -9965,9 +7050,9 @@ CSSLint.addRule({
                     if (full.length > actual.length) {
                         for (i = 0, len = full.length; i < len; i++) {
                             item = full[i];
-                            if (actual.indexOf(item) === -1) {
+                            if (CSSLint.Util.indexOf(actual, item) === -1) {
                                 propertiesSpecified = (actual.length === 1) ? actual[0] : (actual.length == 2) ? actual.join(" and ") : actual.join(", ");
-                                reporter.warn("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", event.selectors[0].line, event.selectors[0].col, rule); 
+                                reporter.report("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", value.actualNodes[0].line, value.actualNodes[0].col, rule); 
                             }
                         }
 
@@ -9984,11 +7069,12 @@ CSSLint.addRule({
  * - vertical-align should not be used with block
  * - margin, float should not be used with table-*
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "display-property-grouping",
-    name: "Display Property Grouping",
+    name: "Require properties appropriate for display",
     desc: "Certain properties shouldn't be used with certain display property values.",
     browsers: "All",
 
@@ -10015,19 +7101,19 @@ CSSLint.addRule({
             },
             properties;
 
-        parser.addListener("startrule", function(){
-            properties = {};
-        });
-
-        parser.addListener("property", function(event){
-            var name = event.property.text.toLowerCase();
-
-            if (propertiesToCheck[name]){
-                properties[name] = { value: event.value.text, line: event.property.line, col: event.property.col };                    
+        function reportProperty(name, display, msg){
+            if (properties[name]){
+                if (typeof propertiesToCheck[name] != "string" || properties[name].value.toLowerCase() != propertiesToCheck[name]){
+                    reporter.report(msg || name + " can't be used with display: " + display + ".", properties[name].line, properties[name].col, rule);
+                }
             }
-        });
+        }
+        
+        function startRule(){
+            properties = {};
+        }
 
-        parser.addListener("endrule", function(){
+        function endRule(){
 
             var display = properties.display ? properties.display.value : null;
             if (display){
@@ -10055,7 +7141,7 @@ CSSLint.addRule({
 
                     default:
                         //margin, float should not be used with table
-                        if (display.indexOf("table-") == 0){
+                        if (display.indexOf("table-") === 0){
                             reportProperty("margin", display);
                             reportProperty("margin-left", display);
                             reportProperty("margin-right", display);
@@ -10068,28 +7154,78 @@ CSSLint.addRule({
                 }
             }
           
+        }
+
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+        parser.addListener("startkeyframerule", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startpage", startRule);
+
+        parser.addListener("property", function(event){
+            var name = event.property.text.toLowerCase();
+
+            if (propertiesToCheck[name]){
+                properties[name] = { value: event.value.text, line: event.property.line, col: event.property.col };                    
+            }
         });
 
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);
+        parser.addListener("endkeyframerule", endRule);
+        parser.addListener("endpagemargin", endRule);
+        parser.addListener("endpage", endRule);
 
-        function reportProperty(name, display, msg){
-            if (properties[name]){
-                if (!(typeof propertiesToCheck[name] == "string") || properties[name].value.toLowerCase() != propertiesToCheck[name]){
-                    reporter.warn(msg || name + " can't be used with display: " + display + ".", properties[name].line, properties[name].col, rule);
-                }
-            }
-        }
     }
 
+});
+/*
+ * Rule: Disallow duplicate background-images (using url).
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "duplicate-background-images",
+    name: "Disallow duplicate background images",
+    desc: "Every background-image should be unique. Use a common class for e.g. sprites.",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            stack = {};
+
+        parser.addListener("property", function(event){
+            var name = event.property.text,
+                value = event.value,
+                i, len;
+
+            if (name.match(/background/i)) {
+                for (i=0, len=value.parts.length; i < len; i++) {
+                    if (value.parts[i].type == 'uri') {
+                        if (typeof stack[value.parts[i].uri] === 'undefined') {
+                            stack[value.parts[i].uri] = event;
+                        }
+                        else {
+                            reporter.report("Background image '" + value.parts[i].uri + "' was used multiple times, first declared at line " + stack[value.parts[i].uri].line + ", col " + stack[value.parts[i].uri].col + ".", event.line, event.col, rule);
+                        }
+                    }
+                }
+            }
+        });
+    }
 });
 /*
  * Rule: Duplicate properties must appear one after the other. If an already-defined
  * property appears somewhere else in the rule, then it's likely an error.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "duplicate-properties",
-    name: "Duplicate Properties",
+    name: "Disallow duplicate properties",
     desc: "Duplicate properties must appear one after the other.",
     browsers: "All",
 
@@ -10106,13 +7242,15 @@ CSSLint.addRule({
         parser.addListener("startrule", startRule);
         parser.addListener("startfontface", startRule);
         parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule);        
         
         parser.addListener("property", function(event){
             var property = event.property,
                 name = property.text.toLowerCase();
             
             if (properties[name] && (lastProperty != name || properties[name] == event.value.text)){
-                reporter.warn("Duplicate property '" + event.property + "' found.", event.line, event.col, rule);
+                reporter.report("Duplicate property '" + event.property + "' found.", event.line, event.col, rule);
             }
             
             properties[name] = event.value.text;
@@ -10127,11 +7265,12 @@ CSSLint.addRule({
 /*
  * Rule: Style rules without any properties defined should be removed.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "empty-rules",
-    name: "Empty Rules",
+    name: "Disallow empty rules",
     desc: "Rules without any properties specified should be removed.",
     browsers: "All",
 
@@ -10150,8 +7289,8 @@ CSSLint.addRule({
 
         parser.addListener("endrule", function(event){
             var selectors = event.selectors;
-            if (count == 0){
-                reporter.warn("Rule is empty.", selectors[0].line, selectors[0].col, rule);
+            if (count === 0){
+                reporter.report("Rule is empty.", selectors[0].line, selectors[0].col, rule);
             }
         });
     }
@@ -10160,6 +7299,7 @@ CSSLint.addRule({
 /*
  * Rule: There should be no syntax errors. (Duh.)
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
@@ -10179,15 +7319,83 @@ CSSLint.addRule({
     }
 
 });
+
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "fallback-colors",
+    name: "Require fallback colors",
+    desc: "For older browsers that don't support RGBA, HSL, or HSLA, provide a fallback color.",
+    browsers: "IE6,IE7,IE8",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            lastProperty,
+            propertiesToCheck = {
+                color: 1,
+                background: 1,
+                "background-color": 1                
+            },
+            properties;
+        
+        function startRule(event){
+            properties = {};    
+            lastProperty = null;    
+        }
+        
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+        parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule);        
+        
+        parser.addListener("property", function(event){
+            var property = event.property,
+                name = property.text.toLowerCase(),
+                parts = event.value.parts,
+                i = 0, 
+                colorType = "",
+                len = parts.length;                
+                        
+            if(propertiesToCheck[name]){
+                while(i < len){
+                    if (parts[i].type == "color"){
+                        if ("alpha" in parts[i] || "hue" in parts[i]){
+                            
+                            if (/([^\)]+)\(/.test(parts[i])){
+                                colorType = RegExp.$1.toUpperCase();
+                            }
+                            
+                            if (!lastProperty || (lastProperty.property.text.toLowerCase() != name || lastProperty.colorType != "compat")){
+                                reporter.report("Fallback " + name + " (hex or RGB) should precede " + colorType + " " + name + ".", event.line, event.col, rule);
+                            }
+                        } else {
+                            event.colorType = "compat";
+                        }
+                    }
+                    
+                    i++;
+                }
+            }
+
+            lastProperty = event;
+        });        
+         
+    }
+
+});
 /*
  * Rule: You shouldn't use more than 10 floats. If you do, there's probably
  * room for some abstraction.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "floats",
-    name: "Floats",
+    name: "Disallow too many floats",
     desc: "This rule tests if the float property is used too many times",
     browsers: "All",
 
@@ -10217,11 +7425,12 @@ CSSLint.addRule({
 /*
  * Rule: Avoid too many @font-face declarations in the same stylesheet.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "font-faces",
-    name: "Font Faces",
+    name: "Don't use too many web fonts",
     desc: "Too many different web fonts in the same stylesheet.",
     browsers: "All",
 
@@ -10247,11 +7456,12 @@ CSSLint.addRule({
  * Rule: You shouldn't need more than 9 font-size declarations.
  */
 
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "font-sizes",
-    name: "Font Sizes",
+    name: "Disallow too many font sizes",
     desc: "Checks the number of font-size declarations.",
     browsers: "All",
 
@@ -10280,11 +7490,12 @@ CSSLint.addRule({
 /*
  * Rule: When using a vendor-prefixed gradient, make sure to use them all.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "gradients",
-    name: "Gradients",
+    name: "Require all gradient definitions",
     desc: "When using a vendor-prefixed gradient, make sure to use them all.",
     browsers: "All",
 
@@ -10297,6 +7508,7 @@ CSSLint.addRule({
             gradients = {
                 moz: 0,
                 webkit: 0,
+                oldWebkit: 0,
                 ms: 0,
                 o: 0
             };
@@ -10304,8 +7516,10 @@ CSSLint.addRule({
 
         parser.addListener("property", function(event){
 
-            if (/\-(moz|ms|o|webkit)(?:\-(?:linear|radial))\-gradient/.test(event.value)){
+            if (/\-(moz|ms|o|webkit)(?:\-(?:linear|radial))\-gradient/i.test(event.value)){
                 gradients[RegExp.$1] = 1;
+            } else if (/\-webkit\-gradient/i.test(event.value)){
+                gradients.oldWebkit = 1;
             }
 
         });
@@ -10318,7 +7532,11 @@ CSSLint.addRule({
             }
 
             if (!gradients.webkit){
-                missing.push("Webkit (Safari, Chrome)");
+                missing.push("Webkit (Safari 5+, Chrome)");
+            }
+            
+            if (!gradients.oldWebkit){
+                missing.push("Old Webkit (Safari 4+, Chrome)");
             }
 
             if (!gradients.ms){
@@ -10329,8 +7547,8 @@ CSSLint.addRule({
                 missing.push("Opera 11.1+");
             }
 
-            if (missing.length && missing.length < 4){            
-                reporter.warn("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule); 
+            if (missing.length && missing.length < 5){            
+                reporter.report("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule); 
             }
 
         });
@@ -10341,11 +7559,12 @@ CSSLint.addRule({
 /*
  * Rule: Don't use IDs for selectors.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "ids",
-    name: "IDs",
+    name: "Disallow IDs in selectors",
     desc: "Selectors should not contain IDs.",
     browsers: "All",
 
@@ -10366,7 +7585,7 @@ CSSLint.addRule({
 
                 for (j=0; j < selector.parts.length; j++){
                     part = selector.parts[j];
-                    if (part instanceof parserlib.css.SelectorPart){
+                    if (part.type == parser.SELECTOR_PART_TYPE){
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
                             if (modifier.type == "id"){
@@ -10377,9 +7596,9 @@ CSSLint.addRule({
                 }
 
                 if (idCount == 1){
-                    reporter.warn("Don't use IDs in selectors.", selector.line, selector.col, rule);
+                    reporter.report("Don't use IDs in selectors.", selector.line, selector.col, rule);
                 } else if (idCount > 1){
-                    reporter.warn(idCount + " IDs in the selector, really?", selector.line, selector.col, rule);
+                    reporter.report(idCount + " IDs in the selector, really?", selector.line, selector.col, rule);
                 }
             }
 
@@ -10390,11 +7609,12 @@ CSSLint.addRule({
 /*
  * Rule: Don't use @import, use <link> instead.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "import",
-    name: "@import",
+    name: "Disallow @import",
     desc: "Don't use @import, use <link> instead.",
     browsers: "All",
 
@@ -10403,7 +7623,7 @@ CSSLint.addRule({
         var rule = this;
         
         parser.addListener("import", function(event){        
-            reporter.warn("@import prevents parallel downloads, use <link> instead.", event.line, event.col, rule);
+            reporter.report("@import prevents parallel downloads, use <link> instead.", event.line, event.col, rule);
         });
 
     }
@@ -10414,46 +7634,437 @@ CSSLint.addRule({
  * war. Display a warning on !important declarations, an error if it's
  * used more at least 10 times.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "important",
-    name: "Important",
+    name: "Disallow !important",
     desc: "Be careful when using !important declaration",
     browsers: "All",
 
     //initialization
     init: function(parser, reporter){
-        var rule = this;
-        var count = 0;
+        var rule = this,
+            count = 0;
 
         //warn that important is used and increment the declaration counter
         parser.addListener("property", function(event){
-            var name = event.property;
             if (event.important === true){
                 count++;
-                reporter.warn("Use of !important", name.line, name.col, rule);
+                reporter.report("Use of !important", event.line, event.col, rule);
             }
         });
 
-        //report the results
+        //if there are more than 10, show an error
         parser.addListener("endstylesheet", function(){
             reporter.stat("important", count);
             if (count >= 10){
-                reporter.rollupError("Too many !important declarations (" + count + "), be careful with rule specificity", rule);
+                reporter.rollupWarn("Too many !important declarations (" + count + "), try to use less than 10 to avoid specificity issues.", rule);
             }
         });
     }
 
 });
 /*
+ * Rule: Properties should be known (listed in CSS3 specification) or
+ * be a vendor-prefixed property.
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "known-properties",
+    name: "Require use of known properties",
+    desc: "Properties should be known (listed in CSS specification) or be a vendor-prefixed property.",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            properties = {
+
+                "alignment-adjust": 1,
+                "alignment-baseline": 1,
+                "animation": 1,
+                "animation-delay": 1,
+                "animation-direction": 1,
+                "animation-duration": 1,
+                "animation-fill-mode": 1,
+                "animation-iteration-count": 1,
+                "animation-name": 1,
+                "animation-play-state": 1,
+                "animation-timing-function": 1,
+                "appearance": 1,
+                "azimuth": 1,
+                "backface-visibility": 1,
+                "background": 1,
+                "background-attachment": 1,
+                "background-break": 1,
+                "background-clip": 1,
+                "background-color": 1,
+                "background-image": 1,
+                "background-origin": 1,
+                "background-position": 1,
+                "background-repeat": 1,
+                "background-size": 1,
+                "baseline-shift": 1,
+                "binding": 1,
+                "bleed": 1,
+                "bookmark-label": 1,
+                "bookmark-level": 1,
+                "bookmark-state": 1,
+                "bookmark-target": 1,
+                "border": 1,
+                "border-bottom": 1,
+                "border-bottom-color": 1,
+                "border-bottom-left-radius": 1,
+                "border-bottom-right-radius": 1,
+                "border-bottom-style": 1,
+                "border-bottom-width": 1,
+                "border-collapse": 1,
+                "border-color": 1,
+                "border-image": 1,
+                "border-image-outset": 1,
+                "border-image-repeat": 1,
+                "border-image-slice": 1,
+                "border-image-source": 1,
+                "border-image-width": 1,
+                "border-left": 1,
+                "border-left-color": 1,
+                "border-left-style": 1,
+                "border-left-width": 1,
+                "border-radius": 1,
+                "border-right": 1,
+                "border-right-color": 1,
+                "border-right-style": 1,
+                "border-right-width": 1,
+                "border-spacing": 1,
+                "border-style": 1,
+                "border-top": 1,
+                "border-top-color": 1,
+                "border-top-left-radius": 1,
+                "border-top-right-radius": 1,
+                "border-top-style": 1,
+                "border-top-width": 1,
+                "border-width": 1,
+                "bottom": 1, 
+                "box-align": 1,
+                "box-decoration-break": 1,
+                "box-direction": 1,
+                "box-flex": 1,
+                "box-flex-group": 1,
+                "box-lines": 1,
+                "box-ordinal-group": 1,
+                "box-orient": 1,
+                "box-pack": 1,
+                "box-shadow": 1,
+                "box-sizing": 1,
+                "break-after": 1,
+                "break-before": 1,
+                "break-inside": 1,
+                "caption-side": 1,
+                "clear": 1,
+                "clip": 1,
+                "color": 1,
+                "color-profile": 1,
+                "column-count": 1,
+                "column-fill": 1,
+                "column-gap": 1,
+                "column-rule": 1,
+                "column-rule-color": 1,
+                "column-rule-style": 1,
+                "column-rule-width": 1,
+                "column-span": 1,
+                "column-width": 1,
+                "columns": 1,
+                "content": 1,
+                "counter-increment": 1,
+                "counter-reset": 1,
+                "crop": 1,
+                "cue": 1,
+                "cue-after": 1,
+                "cue-before": 1,
+                "cursor": 1,
+                "direction": 1,
+                "display": 1,
+                "dominant-baseline": 1,
+                "drop-initial-after-adjust": 1,
+                "drop-initial-after-align": 1,
+                "drop-initial-before-adjust": 1,
+                "drop-initial-before-align": 1,
+                "drop-initial-size": 1,
+                "drop-initial-value": 1,
+                "elevation": 1,
+                "empty-cells": 1,
+                "fit": 1,
+                "fit-position": 1,
+                "float": 1,                
+                "float-offset": 1,
+                "font": 1,
+                "font-family": 1,
+                "font-size": 1,
+                "font-size-adjust": 1,
+                "font-stretch": 1,
+                "font-style": 1,
+                "font-variant": 1,
+                "font-weight": 1,
+                "grid-columns": 1,
+                "grid-rows": 1,
+                "hanging-punctuation": 1,
+                "height": 1,
+                "hyphenate-after": 1,
+                "hyphenate-before": 1,
+                "hyphenate-character": 1,
+                "hyphenate-lines": 1,
+                "hyphenate-resource": 1,
+                "hyphens": 1,
+                "icon": 1,
+                "image-orientation": 1,
+                "image-rendering": 1,
+                "image-resolution": 1,
+                "inline-box-align": 1,
+                "left": 1,
+                "letter-spacing": 1,
+                "line-height": 1,
+                "line-stacking": 1,
+                "line-stacking-ruby": 1,
+                "line-stacking-shift": 1,
+                "line-stacking-strategy": 1,
+                "list-style": 1,
+                "list-style-image": 1,
+                "list-style-position": 1,
+                "list-style-type": 1,
+                "margin": 1,
+                "margin-bottom": 1,
+                "margin-left": 1,
+                "margin-right": 1,
+                "margin-top": 1,
+                "mark": 1,
+                "mark-after": 1,
+                "mark-before": 1,
+                "marks": 1,
+                "marquee-direction": 1,
+                "marquee-play-count": 1,
+                "marquee-speed": 1,
+                "marquee-style": 1,
+                "max-height": 1,
+                "max-width": 1,
+                "min-height": 1,
+                "min-width": 1,
+                "move-to": 1,
+                "nav-down": 1,
+                "nav-index": 1,
+                "nav-left": 1,
+                "nav-right": 1,
+                "nav-up": 1,
+                "opacity": 1,
+                "orphans": 1,
+                "outline": 1,
+                "outline-color": 1,
+                "outline-offset": 1,
+                "outline-style": 1,
+                "outline-width": 1,
+                "overflow": 1,
+                "overflow-style": 1,
+                "overflow-x": 1,
+                "overflow-y": 1,
+                "padding": 1,
+                "padding-bottom": 1,
+                "padding-left": 1,
+                "padding-right": 1,
+                "padding-top": 1,
+                "page": 1,
+                "page-break-after": 1,
+                "page-break-before": 1,
+                "page-break-inside": 1,
+                "page-policy": 1,
+                "pause": 1,
+                "pause-after": 1,
+                "pause-before": 1,
+                "perspective": 1,
+                "perspective-origin": 1,
+                "phonemes": 1,
+                "pitch": 1,
+                "pitch-range": 1,
+                "play-during": 1,
+                "position": 1,
+                "presentation-level": 1,
+                "punctuation-trim": 1,
+                "quotes": 1,
+                "rendering-intent": 1,
+                "resize": 1,
+                "rest": 1,
+                "rest-after": 1,
+                "rest-before": 1,
+                "richness": 1,
+                "right": 1,
+                "rotation": 1,
+                "rotation-point": 1,
+                "ruby-align": 1,
+                "ruby-overhang": 1,
+                "ruby-position": 1,
+                "ruby-span": 1,
+                "size": 1,
+                "speak": 1,
+                "speak-header": 1,
+                "speak-numeral": 1,
+                "speak-punctuation": 1,
+                "speech-rate": 1,
+                "stress": 1,
+                "string-set": 1,
+                "table-layout": 1,
+                "target": 1,
+                "target-name": 1,
+                "target-new": 1,
+                "target-position": 1,
+                "text-align": 1,
+                "text-align-last": 1,
+                "text-decoration": 1,
+                "text-emphasis": 1,
+                "text-height": 1,
+                "text-indent": 1,
+                "text-justify": 1,
+                "text-outline": 1,
+                "text-shadow": 1,
+                "text-transform": 1,
+                "text-wrap": 1,
+                "top": 1,
+                "transform": 1,
+                "transform-origin": 1,
+                "transform-style": 1,
+                "transition": 1,
+                "transition-delay": 1,
+                "transition-duration": 1,
+                "transition-property": 1,
+                "transition-timing-function": 1,
+                "unicode-bidi": 1,
+                "user-modify": 1,
+                "user-select": 1,
+                "vertical-align": 1,
+                "visibility": 1,
+                "voice-balance": 1,
+                "voice-duration": 1,
+                "voice-family": 1,
+                "voice-pitch": 1,
+                "voice-pitch-range": 1,
+                "voice-rate": 1,
+                "voice-stress": 1,
+                "voice-volume": 1,
+                "volume": 1,
+                "white-space": 1,
+                "white-space-collapse": 1,
+                "widows": 1,
+                "width": 1,
+                "word-break": 1,
+                "word-spacing": 1,
+                "word-wrap": 1,
+                "z-index": 1,
+                
+                //IE
+                "filter": 1,
+                "zoom": 1,
+                
+                //@font-face
+                "src": 1
+            };
+
+        parser.addListener("property", function(event){
+            var name = event.property.text.toLowerCase();
+
+            if (event.invalid) {
+                reporter.report(event.invalid.message, event.line, event.col, rule);
+            }
+            //if (!properties[name] && name.charAt(0) != "-"){
+            //    reporter.error("Unknown property '" + event.property + "'.", event.line, event.col, rule);
+            //}
+
+        });
+    }
+
+});
+/*
+ * Rule: outline: none or outline: 0 should only be used in a :focus rule
+ *       and only if there are other properties in the same rule.
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "outline-none",
+    name: "Disallow outline: none",
+    desc: "Use of outline: none or outline: 0 should be limited to :focus rules.",
+    browsers: "All",
+    tags: ["Accessibility"],
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            lastRule;
+
+        function startRule(event){
+            if (event.selectors){
+                lastRule = {
+                    line: event.line,
+                    col: event.col,
+                    selectors: event.selectors,
+                    propCount: 0,
+                    outline: false
+                };
+            } else {
+                lastRule = null;
+            }
+        }
+        
+        function endRule(event){
+            if (lastRule){
+                if (lastRule.outline){
+                    if (lastRule.selectors.toString().toLowerCase().indexOf(":focus") == -1){
+                        reporter.report("Outlines should only be modified using :focus.", lastRule.line, lastRule.col, rule);
+                    } else if (lastRule.propCount == 1) {
+                        reporter.report("Outlines shouldn't be hidden unless other visual changes are made.", lastRule.line, lastRule.col, rule);                        
+                    }
+                }
+            }
+        }
+
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+        parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule); 
+
+        parser.addListener("property", function(event){
+            var name = event.property.text.toLowerCase(),
+                value = event.value;                
+                
+            if (lastRule){
+                lastRule.propCount++;
+                if (name == "outline" && (value == "none" || value == "0")){
+                    lastRule.outline = true;
+                }            
+            }
+            
+        });
+        
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);
+        parser.addListener("endpage", endRule);
+        parser.addListener("endpagemargin", endRule);
+        parser.addListener("endkeyframerule", endRule); 
+
+    }
+
+});
+/*
  * Rule: Don't use classes or IDs with elements (a.foo or a#foo).
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "overqualified-elements",
-    name: "Overqualified Elements",
+    name: "Disallow overqualified elements",
     desc: "Don't use classes or IDs with elements (a.foo or a#foo).",
     browsers: "All",
 
@@ -10474,11 +8085,11 @@ CSSLint.addRule({
 
                 for (j=0; j < selector.parts.length; j++){
                     part = selector.parts[j];
-                    if (part instanceof parserlib.css.SelectorPart){
+                    if (part.type == parser.SELECTOR_PART_TYPE){
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
                             if (part.elementName && modifier.type == "id"){
-                                reporter.warn("Element (" + part + ") is overqualified, just use " + modifier + " without element name.", part.line, part.col, rule);
+                                reporter.report("Element (" + part + ") is overqualified, just use " + modifier + " without element name.", part.line, part.col, rule);
                             } else if (modifier.type == "class"){
                                 
                                 if (!classes[modifier]){
@@ -10500,7 +8111,7 @@ CSSLint.addRule({
                 
                     //one use means that this is overqualified
                     if (classes[prop].length == 1 && classes[prop][0].part.elementName){
-                        reporter.warn("Element (" + classes[prop][0].part + ") is overqualified, just use " + classes[prop][0].modifier + " without element name.", classes[prop][0].part.line, classes[prop][0].part.col, rule);
+                        reporter.report("Element (" + classes[prop][0].part + ") is overqualified, just use " + classes[prop][0].modifier + " without element name.", classes[prop][0].part.line, classes[prop][0].part.col, rule);
                     }
                 }
             }        
@@ -10511,11 +8122,12 @@ CSSLint.addRule({
 /*
  * Rule: Headings (h1-h6) should not be qualified (namespaced).
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "qualified-headings",
-    name: "Qualified Headings",
+    name: "Disallow qualified headings",
     desc: "Headings should not be qualified (namespaced).",
     browsers: "All",
 
@@ -10534,9 +8146,9 @@ CSSLint.addRule({
 
                 for (j=0; j < selector.parts.length; j++){
                     part = selector.parts[j];
-                    if (part instanceof parserlib.css.SelectorPart){
+                    if (part.type == parser.SELECTOR_PART_TYPE){
                         if (part.elementName && /h[1-6]/.test(part.elementName.toString()) && j > 0){
-                            reporter.warn("Heading (" + part.elementName + ") should not be qualified.", part.line, part.col, rule);
+                            reporter.report("Heading (" + part.elementName + ") should not be qualified.", part.line, part.col, rule);
                         }
                     }
                 }
@@ -10548,11 +8160,12 @@ CSSLint.addRule({
 /*
  * Rule: Selectors that look like regular expressions are slow and should be avoided.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "regex-selectors",
-    name: "Regex Selectors",
+    name: "Disallow selectors that look like regexs",
     desc: "Selectors that look like regular expressions are slow and should be avoided.",
     browsers: "All",
 
@@ -10571,12 +8184,12 @@ CSSLint.addRule({
                 selector = selectors[i];
                 for (j=0; j < selector.parts.length; j++){
                     part = selector.parts[j];
-                    if (part instanceof parserlib.css.SelectorPart){
+                    if (part.type == parser.SELECTOR_PART_TYPE){
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
                             if (modifier.type == "attribute"){
                                 if (/([\~\|\^\$\*]=)/.test(modifier)){
-                                    reporter.warn("Attribute selectors with " + RegExp.$1 + " are slow!", modifier.line, modifier.col, rule);
+                                    reporter.report("Attribute selectors with " + RegExp.$1 + " are slow!", modifier.line, modifier.col, rule);
                                 }
                             }
 
@@ -10591,6 +8204,7 @@ CSSLint.addRule({
 /*
  * Rule: Total number of rules should not exceed x.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
@@ -10616,45 +8230,208 @@ CSSLint.addRule({
 
 });
 /*
- * Rule: Don't use text-indent for image replacement if you need to support rtl. 
+ * Rule: Use shorthand properties where possible.
  * 
  */
-/*
- * Should we be checking for rtl/ltr?
- */
-//Commented out due to lack of tests
-/*CSSLint.addRule({
+/*global CSSLint*/
+CSSLint.addRule({
 
     //rule information
-    id: "text-indent",
-    name: "Text Indent",
-    desc: "Checks for text indent less than -99px",
+    id: "shorthand",
+    name: "Require shorthand properties",
+    desc: "Use shorthand properties where possible.",
     browsers: "All",
     
     //initialization
     init: function(parser, reporter){
-        var rule = this;
+        var rule = this,
+            prop, i, len,
+            propertiesToCheck = {},
+            properties,
+            mapping = {
+                "margin": [
+                    "margin-top",
+                    "margin-bottom",
+                    "margin-left",
+                    "margin-right"
+                ],
+                "padding": [
+                    "padding-top",
+                    "padding-bottom",
+                    "padding-left",
+                    "padding-right"
+                ]              
+            };
+            
+        //initialize propertiesToCheck 
+        for (prop in mapping){
+            if (mapping.hasOwnProperty(prop)){
+                for (i=0, len=mapping[prop].length; i < len; i++){
+                    propertiesToCheck[mapping[prop][i]] = prop;
+                }
+            }
+        }
+            
+        function startRule(event){
+            properties = {};
+        }
+        
+        //event handler for end of rules
+        function endRule(event){
+            
+            var prop, i, len, total;
+            
+            //check which properties this rule has
+            for (prop in mapping){
+                if (mapping.hasOwnProperty(prop)){
+                    total=0;
+                    
+                    for (i=0, len=mapping[prop].length; i < len; i++){
+                        total += properties[mapping[prop][i]] ? 1 : 0;
+                    }
+                    
+                    if (total == mapping[prop].length){
+                        reporter.report("The properties " + mapping[prop].join(", ") + " can be replaced by " + prop + ".", event.line, event.col, rule);
+                    }
+                }
+            }
+        }        
+        
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
     
         //check for use of "font-size"
         parser.addListener("property", function(event){
-            var name = event.property,
-                value = event.value;
+            var name = event.property.toString().toLowerCase(),
+                value = event.value.parts[0].value;
 
-            if (name == "text-indent" && value < -99){
-                reporter.warn("Negative text-indent doesn't work well with RTL. If you use text-indent for image replacement explicitly set text-direction for that item to ltr.", name.line, name.col, rule);
+            if (propertiesToCheck[name]){
+                properties[name] = 1;
+            }
+        });
+
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);     
+
+    }
+
+});
+/*
+ * Rule: Don't use properties with a star prefix.
+ *
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "star-property-hack",
+    name: "Disallow properties with a star prefix",
+    desc: "Checks for the star property hack (targets IE6/7)",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this;
+
+        //check if property name starts with "*"
+        parser.addListener("property", function(event){
+            var property = event.property;
+
+            if (property.hack == "*") {
+                reporter.report("Property with star prefix found.", event.property.line, event.property.col, rule);
             }
         });
     }
+});
+/*
+ * Rule: Don't use text-indent for image replacement if you need to support rtl.
+ *
+ */
+/*global CSSLint*/
+CSSLint.addRule({
 
-});*/
+    //rule information
+    id: "text-indent",
+    name: "Disallow negative text-indent",
+    desc: "Checks for text indent less than -99px",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            textIndent,
+            direction;
+
+
+        function startRule(event){
+            textIndent = false;
+            direction = "inherit";
+        }
+
+        //event handler for end of rules
+        function endRule(event){
+            if (textIndent && direction != "ltr"){
+                reporter.report("Negative text-indent doesn't work well with RTL. If you use text-indent for image replacement explicitly set direction for that item to ltr.", textIndent.line, textIndent.col, rule);
+            }
+        }
+
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+
+        //check for use of "font-size"
+        parser.addListener("property", function(event){
+            var name = event.property.toString().toLowerCase(),
+                value = event.value;
+
+            if (name == "text-indent" && value.parts[0].value < -99){
+                textIndent = event.property;
+            } else if (name == "direction" && value == "ltr"){
+                direction = "ltr";
+            }
+        });
+
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);
+
+    }
+
+});
+/*
+ * Rule: Don't use properties with a underscore prefix.
+ *
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "underscore-property-hack",
+    name: "Disallow properties with an underscore prefix",
+    desc: "Checks for the underscore property hack (targets IE6)",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this;
+
+        //check if property name starts with "_"
+        parser.addListener("property", function(event){
+            var property = event.property;
+
+            if (property.hack == "_") {
+                reporter.report("Property with underscore prefix found.", event.property.line, event.property.col, rule);
+            }
+        });
+    }
+});
 /*
  * Rule: Headings (h1-h6) should be defined only once.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "unique-headings",
-    name: "Unique Headings",
+    name: "Headings should only be defined once",
     desc: "Headings should be defined only once.",
     browsers: "All",
 
@@ -10675,19 +8452,124 @@ CSSLint.addRule({
             var selectors = event.selectors,
                 selector,
                 part,
-                i;
+                pseudo,
+                i, j;
 
             for (i=0; i < selectors.length; i++){
                 selector = selectors[i];
                 part = selector.parts[selector.parts.length-1];
 
-                if (part.elementName && /(h[1-6])/.test(part.elementName.toString())){
-                    headings[RegExp.$1]++;
-                    if (headings[RegExp.$1] > 1) {
-                        reporter.warn("Heading (" + part.elementName + ") has already been defined.", part.line, part.col, rule);
+                if (part.elementName && /(h[1-6])/i.test(part.elementName.toString())){
+                    
+                    for (j=0; j < part.modifiers.length; j++){
+                        if (part.modifiers[j].type == "pseudo"){
+                            pseudo = true;
+                            break;
+                        }
+                    }
+                
+                    if (!pseudo){
+                        headings[RegExp.$1]++;
+                        if (headings[RegExp.$1] > 1) {
+                            reporter.report("Heading (" + part.elementName + ") has already been defined.", part.line, part.col, rule);
+                        }
                     }
                 }
             }
+        });
+        
+        parser.addListener("endstylesheet", function(event){
+            var prop,
+                messages = [];
+                
+            for (prop in headings){
+                if (headings.hasOwnProperty(prop)){
+                    if (headings[prop] > 1){
+                        messages.push(headings[prop] + " " + prop + "s");
+                    }
+                }
+            }
+            
+            if (messages.length){
+                reporter.rollupWarn("You have " + messages.join(", ") + " defined in this stylesheet.", rule);
+            }
+        });        
+    }
+
+});
+/*
+ * Rule: Don't use universal selector because it's slow.
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "universal-selector",
+    name: "Disallow universal selector",
+    desc: "The universal selector (*) is known to be slow.",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this;
+
+        parser.addListener("startrule", function(event){
+            var selectors = event.selectors,
+                selector,
+                part,
+                modifier,
+                i, j, k;
+
+            for (i=0; i < selectors.length; i++){
+                selector = selectors[i];
+                
+                part = selector.parts[selector.parts.length-1];
+                if (part.elementName == "*"){
+                    reporter.report(rule.desc, part.line, part.col, rule);
+                }
+            }
+        });
+    }
+
+});
+/*
+ * Rule: Don't use unqualified attribute selectors because they're just like universal selectors.
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "unqualified-attributes",
+    name: "Disallow unqualified attribute selectors",
+    desc: "Unqualified attribute selectors are known to be slow.",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this;
+
+        parser.addListener("startrule", function(event){
+            
+            var selectors = event.selectors,
+                selector,
+                part,
+                modifier,
+                i, j, k;
+
+            for (i=0; i < selectors.length; i++){
+                selector = selectors[i];
+                
+                part = selector.parts[selector.parts.length-1];
+                if (part.type == parser.SELECTOR_PART_TYPE){
+                    for (k=0; k < part.modifiers.length; k++){
+                        modifier = part.modifiers[k];
+                        if (modifier.type == "attribute" && (!part.elementName || part.elementName == "*")){
+                            reporter.report(rule.desc, part.line, part.col, rule);                               
+                        }
+                    }
+                }
+                
+            }            
         });
     }
 
@@ -10696,11 +8578,12 @@ CSSLint.addRule({
  * Rule: When using a vendor-prefixed property, make sure to
  * include the standard one.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "vendor-prefix",
-    name: "Vendor Prefix",
+    name: "Require standard property with vendor prefix",
     desc: "When using a vendor-prefixed property, make sure to include the standard one.",
     browsers: "All",
 
@@ -10710,24 +8593,67 @@ CSSLint.addRule({
             properties,
             num,
             propertiesToCheck = {
-                "-moz-border-radius": "border-radius",
                 "-webkit-border-radius": "border-radius",
                 "-webkit-border-top-left-radius": "border-top-left-radius",
                 "-webkit-border-top-right-radius": "border-top-right-radius",
                 "-webkit-border-bottom-left-radius": "border-bottom-left-radius",
                 "-webkit-border-bottom-right-radius": "border-bottom-right-radius",
+                
+                "-o-border-radius": "border-radius",
+                "-o-border-top-left-radius": "border-top-left-radius",
+                "-o-border-top-right-radius": "border-top-right-radius",
+                "-o-border-bottom-left-radius": "border-bottom-left-radius",
+                "-o-border-bottom-right-radius": "border-bottom-right-radius",
+                
+                "-moz-border-radius": "border-radius",
                 "-moz-border-radius-topleft": "border-top-left-radius",
                 "-moz-border-radius-topright": "border-top-right-radius",
                 "-moz-border-radius-bottomleft": "border-bottom-left-radius",
-                "-moz-border-radius-bottomright": "border-bottom-right-radius",
+                "-moz-border-radius-bottomright": "border-bottom-right-radius",                
+                
+                "-moz-column-count": "column-count",
+                "-webkit-column-count": "column-count",
+                
+                "-moz-column-gap": "column-gap",
+                "-webkit-column-gap": "column-gap",
+                
+                "-moz-column-rule": "column-rule",
+                "-webkit-column-rule": "column-rule",
+                
+                "-moz-column-rule-style": "column-rule-style",
+                "-webkit-column-rule-style": "column-rule-style",
+                
+                "-moz-column-rule-color": "column-rule-color",
+                "-webkit-column-rule-color": "column-rule-color",
+                
+                "-moz-column-rule-width": "column-rule-width",
+                "-webkit-column-rule-width": "column-rule-width",
+                
+                "-moz-column-width": "column-width",
+                "-webkit-column-width": "column-width",
+                
+                "-webkit-column-span": "column-span",
+                "-webkit-columns": "columns",
+                
                 "-moz-box-shadow": "box-shadow",
                 "-webkit-box-shadow": "box-shadow",
+                
                 "-moz-transform" : "transform",
                 "-webkit-transform" : "transform",
                 "-o-transform" : "transform",
                 "-ms-transform" : "transform",
+                
+                "-moz-transform-origin" : "transform-origin",
+                "-webkit-transform-origin" : "transform-origin",
+                "-o-transform-origin" : "transform-origin",
+                "-ms-transform-origin" : "transform-origin",
+                
                 "-moz-box-sizing" : "box-sizing",
-                "-webkit-box-sizing" : "box-sizing"
+                "-webkit-box-sizing" : "box-sizing",
+                
+                "-moz-user-select" : "user-select",
+                "-khtml-user-select" : "user-select",
+                "-webkit-user-select" : "user-select"                
             };
 
         //event handler for beginning of rules
@@ -10756,11 +8682,11 @@ CSSLint.addRule({
                 actual = needsStandard[i].actual;
 
                 if (!properties[needed]){               
-                    reporter.warn("Missing standard property '" + needed + "' to go along with '" + actual + "'.", event.line, event.col, rule);
+                    reporter.report("Missing standard property '" + needed + "' to go along with '" + actual + "'.", properties[actual][0].name.line, properties[actual][0].name.col, rule);
                 } else {
                     //make sure standard property is last
                     if (properties[needed][0].pos < properties[actual][0].pos){
-                        reporter.warn("Standard property '" + needed + "' should come after vendor-prefixed property '" + actual + "'.", event.line, event.col, rule);
+                        reporter.report("Standard property '" + needed + "' should come after vendor-prefixed property '" + actual + "'.", properties[actual][0].name.line, properties[actual][0].name.col, rule);
                     }
                 }
             }
@@ -10769,6 +8695,9 @@ CSSLint.addRule({
         
         parser.addListener("startrule", startRule);
         parser.addListener("startfontface", startRule);
+        parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule);         
 
         parser.addListener("property", function(event){
             var name = event.property.text.toLowerCase();
@@ -10782,60 +8711,21 @@ CSSLint.addRule({
 
         parser.addListener("endrule", endRule);
         parser.addListener("endfontface", endRule);
+        parser.addListener("endpage", endRule);
+        parser.addListener("endpagemargin", endRule);
+        parser.addListener("endkeyframerule", endRule);         
     }
 
 });
 /*
- * Rule: If an element has a width of 100%, be careful when placing within
- * an element that has padding. It may look strange.
- */
-//Commented out pending further review.
-/*CSSLint.addRule({
-
-    //rule information
-    id: "width-100",
-    name: "Width 100%",
-    desc: "Be careful when using width: 100% on elements.",
-    browsers: "All",
-
-    //initialization
-    init: function(parser, reporter){
-        var rule = this,
-            width100,
-            boxsizing;
-
-        parser.addListener("startrule", function(){
-            width100 = null;
-            boxsizing = false;
-        });
-
-        parser.addListener("property", function(event){
-            var name = event.property.text.toLowerCase(),
-                value = event.value;
-
-            if (name == "width" && value == "100%"){
-                width100 = event.property;
-            } else if (name == "box-sizing" || /\-(?:webkit|ms|moz)\-box-sizing/.test(name)){  //means you know what you're doing
-                boxsizing = true;
-            }
-        });
-        
-        parser.addListener("endrule", function(){
-            if (width100 && !boxsizing){
-                reporter.warn("Elements with a width of 100% may not appear as you expect inside of other elements.", width100.line, width100.col, rule);
-            }
-        });
-    }
-
-});*/
-/*
  * Rule: You don't need to specify units when a value is 0.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
     id: "zero-units",
-    name: "Zero Units",
+    name: "Disallow units for 0 values",
     desc: "You don't need to specify units when a value is 0.",
     browsers: "All",
 
@@ -10850,8 +8740,8 @@ CSSLint.addRule({
                 len = parts.length;
 
             while(i < len){
-                if ((parts[i].units || parts[i].type == "percentage") && parts[i].value === 0){
-                    reporter.warn("Values of 0 shouldn't have units specified.", parts[i].line, parts[i].col, rule);
+                if ((parts[i].units || parts[i].type == "percentage") && parts[i].value === 0 && parts[i].type != "time"){
+                    reporter.report("Values of 0 shouldn't have units specified.", parts[i].line, parts[i].col, rule);
                 }
                 i++;
             }
@@ -10861,49 +8751,234 @@ CSSLint.addRule({
     }
 
 });
+/*global CSSLint*/
+(function() {
+
+    /**
+     * Replace special characters before write to output.
+     *
+     * Rules:
+     *  - single quotes is the escape sequence for double-quotes
+     *  - &amp; is the escape sequence for &
+     *  - &lt; is the escape sequence for <
+     *  - &gt; is the escape sequence for >
+     *
+     * @param {String} message to escape
+     * @return escaped message as {String}
+     */
+    var xmlEscape = function(str) {
+        if (!str || str.constructor !== String) {
+            return "";
+        }
+        
+        return str.replace(/[\"&><]/g, function(match) {
+            switch (match) {
+                case "\"":
+                    return "&quot;";
+                case "&":
+                    return "&amp;";
+                case "<":
+                    return "&lt;";
+                case ">":
+                    return "&gt;";            
+            }
+        });
+    };
+
+    CSSLint.addFormatter({
+        //format information
+        id: "checkstyle-xml",
+        name: "Checkstyle XML format",
+
+        /**
+         * Return opening root XML tag.
+         * @return {String} to prepend before all results
+         */
+        startFormat: function(){
+            return "<?xml version=\"1.0\" encoding=\"utf-8\"?><checkstyle>";
+        },
+
+        /**
+         * Return closing root XML tag.
+         * @return {String} to append after all results
+         */
+        endFormat: function(){
+            return "</checkstyle>";
+        },
+        
+        /**
+         * Returns message when there is a file read error.
+         * @param {String} filename The name of the file that caused the error.
+         * @param {String} message The error message
+         * @return {String} The error message.
+         */
+        readError: function(filename, message) {
+            return "<file name=\"" + xmlEscape(filename) + "\"><error line=\"0\" column=\"0\" severty=\"error\" message=\"" + xmlEscape(message) + "\"></error></file>";
+        },
+
+        /**
+         * Given CSS Lint results for a file, return output for this format.
+         * @param results {Object} with error and warning messages
+         * @param filename {String} relative file path
+         * @param options {Object} (UNUSED for now) specifies special handling of output
+         * @return {String} output for results
+         */
+        formatResults: function(results, filename, options) {
+            var messages = results.messages,
+                output = [];
+
+            /**
+             * Generate a source string for a rule.
+             * Checkstyle source strings usually resemble Java class names e.g
+             * net.csslint.SomeRuleName
+             * @param {Object} rule
+             * @return rule source as {String}
+             */
+            var generateSource = function(rule) {
+                if (!rule || !('name' in rule)) {
+                    return "";
+                }
+                return 'net.csslint.' + rule.name.replace(/\s/g,'');
+            };
+
+
+
+            if (messages.length > 0) {
+                output.push("<file name=\""+filename+"\">");
+                CSSLint.Util.forEach(messages, function (message, i) {
+                    //ignore rollups for now
+                    if (!message.rollup) {
+                      output.push("<error line=\"" + message.line + "\" column=\"" + message.col + "\" severity=\"" + message.type + "\"" +
+                          " message=\"" + xmlEscape(message.message) + "\" source=\"" + generateSource(message.rule) +"\"/>");
+                    }
+                });
+                output.push("</file>");
+            }
+
+            return output.join("");
+        }
+    });
+
+}());
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
-    id: "lint-xml",
-    name: "Lint XML format",
-    
-    startFormat: function(){
-        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><lint>";
+    id: "compact",
+    name: "Compact, 'porcelain' format",
+
+    /**
+     * Return content to be printed before all file results.
+     * @return {String} to prepend before all results
+     */
+    startFormat: function() {
+        return "";
     },
 
-    endFormat: function(){
-        return "</lint>";
+    /**
+     * Return content to be printed after all file results.
+     * @return {String} to append after all results
+     */
+    endFormat: function() {
+        return "";
     },
+
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (Optional) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
+        var messages = results.messages,
+            output = "";
+        options = options || {};
+
+        /**
+         * Capitalize and return given string.
+         * @param str {String} to capitalize
+         * @return {String} capitalized
+         */
+        var capitalize = function(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        };
+
+        if (messages.length === 0) {
+            return options.quiet ? "" : filename + ": Lint Free!";
+        }
+
+        CSSLint.Util.forEach(messages, function(message, i) {
+            if (message.rollup) {
+                output += filename + ": " + capitalize(message.type) + " - " + message.message + "\n";
+            } else {
+                output += filename + ": " + "line " + message.line + 
+                    ", col " + message.col + ", " + capitalize(message.type) + " - " + message.message + "\n";
+            }
+        });
     
-    formatResults: function(results, filename) {
+        return output;
+    }
+});
+/*global CSSLint*/
+CSSLint.addFormatter({
+    //format information
+    id: "csslint-xml",
+    name: "CSSLint XML format",
+
+    /**
+     * Return opening root XML tag.
+     * @return {String} to prepend before all results
+     */
+    startFormat: function(){
+        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><csslint>";
+    },
+
+    /**
+     * Return closing root XML tag.
+     * @return {String} to append after all results
+     */
+    endFormat: function(){
+        return "</csslint>";
+    },
+
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (UNUSED for now) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
         var messages = results.messages,
             output = [];
 
-        var replaceDoubleQuotes = function(str) {
+        /**
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &amp; is the escape sequence for &
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         * 
+         * @param {String} message to escape
+         * @return escaped message as {String}
+         */
+        var escapeSpecialCharacters = function(str) {
             if (!str || str.constructor !== String) {
                 return "";
             }
-            return str.replace(/\"/g, "'");
+            return str.replace(/\"/g, "'").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
         if (messages.length > 0) {
-            //rollups at the bottom
-            messages.sort(function (a, b) {
-                if (a.rollup && !b.rollup) {
-                    return 1;
-                } else if (!a.rollup && b.rollup) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            });
-        
             output.push("<file name=\""+filename+"\">");
-            messages.forEach(function (message, i) {
+            CSSLint.Util.forEach(messages, function (message, i) {
                 if (message.rollup) {
-                    output.push("<issue severity=\"" + message.type + "\" reason=\"" + replaceDoubleQuotes(message.message) + "\" evidence=\"" + replaceDoubleQuotes(message.evidence) + "\"/>");
+                    output.push("<issue severity=\"" + message.type + "\" reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
                 } else {
                     output.push("<issue line=\"" + message.line + "\" char=\"" + message.col + "\" severity=\"" + message.type + "\"" +
-                        " reason=\"" + replaceDoubleQuotes(message.message) + "\" evidence=\"" + replaceDoubleQuotes(message.evidence) + "\"/>");
+                        " reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
                 }
             });
             output.push("</file>");
@@ -10912,48 +8987,125 @@ CSSLint.addFormatter({
         return output.join("");
     }
 });
+/*global CSSLint*/
+CSSLint.addFormatter({
+    //format information
+    id: "lint-xml",
+    name: "Lint XML format",
+
+    /**
+     * Return opening root XML tag.
+     * @return {String} to prepend before all results
+     */
+    startFormat: function(){
+        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><lint>";
+    },
+
+    /**
+     * Return closing root XML tag.
+     * @return {String} to append after all results
+     */
+    endFormat: function(){
+        return "</lint>";
+    },
+
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (UNUSED for now) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
+        var messages = results.messages,
+            output = [];
+
+        /**
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &amp; is the escape sequence for &
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         * 
+         * @param {String} message to escape
+         * @return escaped message as {String}
+         */
+        var escapeSpecialCharacters = function(str) {
+            if (!str || str.constructor !== String) {
+                return "";
+            }
+            return str.replace(/\"/g, "'").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        };
+
+        if (messages.length > 0) {
+        
+            output.push("<file name=\""+filename+"\">");
+            CSSLint.Util.forEach(messages, function (message, i) {
+                if (message.rollup) {
+                    output.push("<issue severity=\"" + message.type + "\" reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
+                } else {
+                    output.push("<issue line=\"" + message.line + "\" char=\"" + message.col + "\" severity=\"" + message.type + "\"" +
+                        " reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
+                }
+            });
+            output.push("</file>");
+        }
+
+        return output.join("");
+    }
+});
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "text",
     name: "Plain Text",
-    
-    startFormat: function(){
-        return "";
-    },
-    
-    endFormat: function(){
+
+    /**
+     * Return content to be printed before all file results.
+     * @return {String} to prepend before all results
+     */
+    startFormat: function() {
         return "";
     },
 
-    formatResults: function(results, filename) {
-        var messages = results.messages;
+    /**
+     * Return content to be printed after all file results.
+     * @return {String} to append after all results
+     */
+    endFormat: function() {
+        return "";
+    },
+
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (Optional) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
+        var messages = results.messages,
+            output = "";
+        options = options || {};
+
         if (messages.length === 0) {
-            return "\n\ncsslint: No errors in " + filename + ".";
+            return options.quiet ? "" : "\n\ncsslint: No errors in " + filename + ".";
         }
-        
+
         output = "\n\ncsslint: There are " + messages.length  +  " problems in " + filename + ".";
         var pos = filename.lastIndexOf("/"),
             shortFilename = filename;
 
-        if (pos == -1){
+        if (pos === -1){
             pos = filename.lastIndexOf("\\");       
         }
         if (pos > -1){
             shortFilename = filename.substring(pos+1);
         }
 
-        //rollups at the bottom
-        messages.sort(function (a, b){
-            if (a.rollup && !b.rollup){
-                return 1;
-            } else if (!a.rollup && b.rollup){
-                return -1;
-            } else {
-                return 0;
-            }
-        });
-
-        messages.forEach(function (message, i) {
+        CSSLint.Util.forEach(messages, function (message, i) {
             output = output + "\n\n" + shortFilename;
             if (message.rollup) {
                 output += "\n" + (i+1) + ": " + message.type;
@@ -10969,170 +9121,270 @@ CSSLint.addFormatter({
     }
 });
 
+
 return CSSLint;
 })();
-//print for rhino and nodejs
-if(typeof print == "undefined") {
-    var print = console.log;
-}
 
-//readFile for rhino and nodejs
-if(typeof readFile == "undefined") {
-    var readFile = function(filepath) {
-        var fs = require("fs");
-        return fs.readFileSync(filepath, "utf-8");
-    }
-}
 
-//filter messages by type
-var pluckByType = function(messages, type){
-    return messages.filter(function(message) {
-        return message.type === type;
-    });
-};
+/*
+ * Encapsulates all of the CLI functionality. The api argument simply
+ * provides environment-specific functionality.
+ */
+/*global CSSLint*/
+function cli(api){
 
-function gatherRules(options){
-    var ruleset;
+    //-------------------------------------------------------------------------
+    // Helper functions
+    //-------------------------------------------------------------------------
     
-    if (options.rules){
-        ruleset = {};
-        options.rules.split(",").forEach(function(value){
-            ruleset[value] = 1;
+    /**
+     * Returns an array of messages for a particular type.
+     * @param messages {Array} Array of CSS Lint messages.
+     * @param type {String} The type of message to filter on.
+     * @return {Array} An array of matching messages.
+     */
+    function pluckByType(messages, type){
+        return messages.filter(function(message) {
+            return message.type === type;
+        });        
+    }
+
+    /**
+     * Returns a ruleset object based on the CLI options.
+     * @param options {Object} The CLI options.
+     * @return {Object} A ruleset object.
+     */
+    function gatherRules(options){
+        var ruleset,
+            warnings = options.rules || options.warnings,
+            errors = options.errors;
+        
+        if (warnings){
+            ruleset = ruleset || {};
+            warnings.split(",").forEach(function(value){
+                ruleset[value] = 1;
+            });
+        }
+        
+        if (errors){
+            ruleset = ruleset || {};
+            errors.split(",").forEach(function(value){
+                ruleset[value] = 2;
+            });
+        }
+        
+        return ruleset;
+    }
+
+    /**
+     * Outputs all available rules to the CLI.
+     * @return {void}
+     */
+    function printRules(){
+        api.print("");
+        var rules = CSSLint.getRules();
+        rules.forEach(function(rule){
+            api.print(rule.id + "\n  " + rule.desc + "\n");
         });
     }
-    
-    return ruleset;
-}
 
-//process a list of files, return 1 if one or more error occurred
-var processFile = function(filename, options) {
-    var input = readFile(filename),
-        result = CSSLint.verify(input, gatherRules(options)),
-        formatId = options.format || "text",
-        messages = result.messages || [],
-        exitCode = 0;
+    /**
+     * Given a file name and options, run verification and print formatted output.
+     * @param {String} relativeFilePath absolute file location
+     * @param {Object} options for processing
+     * @return {Number} exit code
+     */
+    function processFile(relativeFilePath, options) {
+        var input = api.readFile(relativeFilePath),
+            result = CSSLint.verify(input, gatherRules(options)),
+            formatter = CSSLint.getFormatter(options.format || "text"),
+            messages = result.messages || [],
+            output,
+            exitCode = 0;
 
-    if (!input) {
-        print("csslint: Could not read file data in " + filename + ". Is the file empty?");
-        exitCode = 1;
-    } else {
-        print(CSSLint.getFormatter(formatId).formatResults(result, filename, formatId));
-
-        if (messages.length > 0 && pluckByType(messages, 'error').length > 0) {
+        if (!input) {
+            if (formatter.readError) {
+                api.print(formatter.readError(relativeFilePath, "Could not read file data. Is the file empty?"));
+            } else {
+                api.print("csslint: Could not read file data in " + relativeFilePath + ". Is the file empty?");
+            }
             exitCode = 1;
-        }
-    }
-    
-    return exitCode;
-};
-
-//output CLI help screen
-function outputHelp(){
-    print([
-        "\nUsage: csslint-rhino.js [options]* [file|dir]*",
-        " ",
-        "Global Options",
-        "  --help                 Displays this information.",
-        "  --rules=<rule[,rule]+> Indicate which rules to include.",
-        "  --format=<format>      Indicate which format to use for output.",
-        "  --version              Outputs the current version number."
-    ].join("\n") + "\n\n");
-}
-
-function processFiles(files, options){
-    var exitCode = 0,
-        formatId = options.format || "text",
-        formatter;
-    if (!files.length) {
-        print("No files specified.");
-        exitCode = 1;
-    } else {
-        if (!CSSLint.hasFormat(formatId)){
-            print("csslint: Unknown format '" + formatId + "'. Cannot proceed.");
-            exitCode = 1; 
         } else {
-            formatter = CSSLint.getFormatter(formatId);
-            print(formatter.startFormat());
-            exitCode = files.some(function(file){
-                processFile(file,options);
-            });
-            print(formatter.endFormat());
+            //var relativeFilePath = getRelativePath(api.getWorkingDirectory(), fullFilePath);
+            options.fullPath = api.getFullPath(relativeFilePath);
+            output = formatter.formatResults(result, relativeFilePath, options);
+            if (output){
+                api.print(output);
+            }
+            
+            if (messages.length > 0 && pluckByType(messages, "error").length > 0) {
+                exitCode = 1;
+            }
         }
+        
+        return exitCode;
     }
-    return exitCode;
+
+
+    /**
+     * Outputs the help screen to the CLI.
+     * @return {void}
+     */
+    function outputHelp(){
+        api.print([
+            "\nUsage: csslint-rhino.js [options]* [file|dir]*",
+            " ",
+            "Global Options",
+            "  --help                    Displays this information.",
+            "  --format=<format>         Indicate which format to use for output.",
+            "  --list-rules              Outputs all of the rules available.",
+            "  --quiet                   Only output when errors are present.",
+            "  --errors=<rule[,rule]+>   Indicate which rules to include as errors.",
+            "  --warnings=<rule[,rule]+> Indicate which rules to include as warnings.",
+            "  --version                 Outputs the current version number."
+        ].join("\n") + "\n");
+    }
+
+    /**
+     * Given an Array of filenames, print wrapping output and process them.
+     * @param files {Array} filenames list
+     * @param options {Object} options object
+     * @return {Number} exit code
+     */
+    function processFiles(files, options){
+        var exitCode = 0,
+            formatId = options.format || "text",
+            formatter,
+            output;
+            
+        if (!files.length) {
+            api.print("csslint: No files specified.");
+            exitCode = 1;
+        } else {
+            if (!CSSLint.hasFormat(formatId)){
+                api.print("csslint: Unknown format '" + formatId + "'. Cannot proceed.");
+                exitCode = 1; 
+            } else {
+                formatter = CSSLint.getFormatter(formatId);
+                
+                output = formatter.startFormat();
+                if (output){
+                    api.print(output);
+                }
+
+                files.forEach(function(file){
+                    if (exitCode === 0) {
+                        exitCode = processFile(file,options);
+                    } else {
+                        processFile(file,options);
+                    }
+                });
+                
+                output = formatter.endFormat();
+                if (output){
+                    api.print(output);
+                }
+            }
+        }
+        return exitCode;
+    }    
+
+    //-----------------------------------------------------------------------------
+    // Process command line
+    //-----------------------------------------------------------------------------
+
+    var args     = api.args,
+        argName,
+        parts,
+        arg      = args.shift(),
+        options  = {},
+        files    = [];
+
+    while(arg){
+        if (arg.indexOf("--") === 0){
+            argName = arg.substring(2);
+            options[argName] = true;
+            
+            if (argName.indexOf("=") > -1){
+                parts = argName.split("=");
+                options[parts[0]] = parts[1];
+            } else {
+                options[argName] = true;
+            }
+
+        } else {
+            
+            //see if it's a directory or a file
+            if (api.isDirectory(arg)){
+                files = files.concat(api.getFiles(arg));
+            } else {
+                files.push(arg);
+            }
+        }
+        arg = args.shift();
+    }
+
+    if (options.help || arguments.length === 0){
+        outputHelp();
+        api.quit(0);
+    }
+
+    if (options.version){
+        api.print("v" + CSSLint.version);
+        api.quit(0);
+    }
+
+    if (options["list-rules"]){
+        printRules();
+        api.quit(0);
+    }
+
+    api.quit(processFiles(files,options));
 }
 /*
  * CSSLint Rhino Command Line Interface
  */
+/*jshint rhino:true*/
+/*global cli, File*/
 
 importPackage(java.io);
 
-//-----------------------------------------------------------------------------
-// Helper Functions
-//-----------------------------------------------------------------------------
+cli({
+    args: arguments,
+    print: print,
+    quit: quit,
+    
+    isDirectory: function(name){
+        var dir = new File(name);
+        return dir.isDirectory();
+    },
+    
+    getFiles: function(dir){
+        var files = [];
 
-function getFiles(dir) {
-    var files = [];
-
-    var traverse = function (dir) {
-        var dirList = dir.listFiles();
-        dirList.forEach(function (file) {
-            if (/\.css$/.test(file)) {
-                files.push(file);
-            } else if (file.isDirectory()) {
-                traverse(file);
-            }
-        });
-    };
-
-    traverse(dir);
-
-    return files;
-};
-
-//-----------------------------------------------------------------------------
-// Process command line
-//-----------------------------------------------------------------------------
-
-var args     = Array.prototype.slice.call(arguments),
-    argName,
-    arg      = args.shift(),
-    options  = {},
-    files    = [];
-
-while(arg){
-    if (arg.indexOf("--") == 0){
-        argName = arg.substring(2);
-        options[argName] = true;
-        
-        if (argName.indexOf("rules=") > -1){
-            options.rules = argName.substring(argName.indexOf("=") + 1);
-        } else if (argName.indexOf("format=") > -1) {
-            options.format = argName.substring(argName.indexOf("=") + 1);
+        function traverse(dir) {
+            var dirList = dir.listFiles();
+            dirList.forEach(function (file) {
+                if (/\.css$/.test(file)) {
+                    files.push(file.toString());
+                } else if (file.isDirectory()) {
+                    traverse(file);
+                }
+            });
         }
-    } else {
-        var curFile = new File(arg);
-        
-        //see if it's a directory or a file
-        if (curFile.isDirectory()){
-            files = files.concat(getFiles(arg));
-        } else {
-            files.push(arg);
-        }
-    }
-    arg = args.shift();
-}
 
-if (options.help || arguments.length == 0){
-    outputHelp();
-    quit(0);
-}
+        traverse(new File(dir));
 
-if (options.version){
-    print("v" + CSSLint.version);
-    quit(0);
-}
+        return files;    
+    },
 
+    getWorkingDirectory: function() {
+        return (new File(".")).getCanonicalPath();
+    },
+    
+    getFullPath: function(filename){
+        return (new File(filename)).getCanonicalPath();
+    },
 
-
-quit(processFiles(files,options));
+    readFile: readFile
+});
