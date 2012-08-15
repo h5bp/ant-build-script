@@ -65,3 +65,59 @@ This means that OS X versions prior to 10.6 are no longer supported out of the b
 [soylatte]: http://landonf.bikemonkey.org/static/soylatte/
 
 Alternatively, YUI Compressor, which requires Java > 1.4, could be swapped out for Closure Compiler.
+
+## Quick Start
+
+You must wrap any scripts to concatenate in a pair of specially constructed comments. These look like this:
+
+```html
+    <!-- scripts concatenated and minified via build script -->
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+    <!-- end scripts -->
+```
+## If you're on Mac or Linux...
+
+You've got all your dependencies pre-installed, likely. You need to install ant-contrib to get the build script working.
+
+On Linux use `yum install ant-contrib`.
+
+On Mac, install [MacPorts](http://www.macports.org/install.php) and then do `sudo port install ant-contrib`. 
+
+## If you're on Windows...
+
+* Get the [[Java JDK|http://www.oracle.com/technetwork/java/javase/downloads/index.html]] (JRE isn't enough).
+* Get [[WinAnt|http://code.google.com/p/winant/]] and point the installer to `Program Files/Java/jre6/bin/`
+* For detailed information on installing Ant for Windows, see this [[step-by-step instruction by Nicholas Zakas|http://www.nczonline.net/blog/2012/04/12/how-to-install-apache-ant-on-windows/]].
+
+## Using the Build Script
+
+* 1) Mac users, open the application "Terminal".  Windows users, open command line interface by doing Start Menu > Run > `cmd.exe`.  However, Windows users, we created a friendly `runbuildscript.bat` file for you if you'd like to avoid the command line and navigate to the build directory within your project. 
+
+For those of you new to terminal or command line, use the change directory command followed by the directory path. for example...
+
+    cd sites/your-site/build/
+
+> Note: To ensure you've navigated to the correct directory, you may want to now check the files within the current directory. Mac users can type "ls" in terminal. Windows users should type "dir" in command line. If the file list returned is what you were expecting, move to step 2. Otherwise, check the directory location in Finder or Windows Explorer and start over.
+
+* 2) Next, simply type:
+
+    ant build
+
+The H5BP build script will begin to run and compress your files.  At the very end you should see "BUILD SUCCESSFUL" followed by the total time it took to build.
+
+* 3) Now, look in your H5BP project folder and see that there is a newly created "publish" directory within your project.  Inside, you will find your minified CSS, JS and along with duplicates of the files from your original directory. This new set of files within "publish" is your production code.  The site should look and function the same in browser as it did before, but only now faster!
+
+> Note: If your new pages do not render in browser the same as they did before your ran the build script, visit the Troubleshooting section below.
+
+## Going Further
+
+There are a few different build options:
+
+    ant build     # minor html optimizations (extra quotes removed). inline script/style minified (default)
+    ant buildkit  # all html whitespace retained. inline script/style minified 
+    ant basics    # same as build minus the basic html minfication
+    ant minify    # same as build plus full html minification
+    ant text      # same as build but without image (png/jpg) optimizing
+
+Your build will be added to the `publish/` folder. **BOOM!** you're done.
