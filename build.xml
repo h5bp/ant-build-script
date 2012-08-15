@@ -473,10 +473,15 @@
     </target>
     <target name="-js.scripts.concat" depends="-js.main.concat" if="build.concat.scripts">
         <echo message="Concatenating library file with main script file"/>
-        <checksum file="${dir.intermediate}/${dir.js}/scripts-concat.min.js" algorithm="sha" property="scripts.fullsha" />
-        <propertyregex property="scripts.sha" input="${scripts.fullsha}" regexp=".{${hash.length}}" select="\0" />
-        <property name="scripts.js" value="${dir.js}/${scripts.sha}.js" />
-        <copy file="${dir.intermediate}/${dir.js}/scripts-concat.min.js" tofile="${dir.publish}/${dir.js}/${scripts.sha}.js" />
+        <if>
+            <available file="${dir.intermediate}/${dir.js}/scripts-concat.min.js"/>
+            <then>
+                <checksum file="${dir.intermediate}/${dir.js}/scripts-concat.min.js" algorithm="sha" property="scripts.fullsha" />
+                <propertyregex property="scripts.sha" input="${scripts.fullsha}" regexp=".{${hash.length}}" select="\0" />
+                <property name="scripts.js" value="${dir.js}/${scripts.sha}.js" />
+                <copy file="${dir.intermediate}/${dir.js}/scripts-concat.min.js" tofile="${dir.publish}/${dir.js}/${scripts.sha}.js" />
+            </then>
+        </if>
         
         <!-- cachebust modules directory name -->
         <!-- Concatinate only to generate checksum. Concatinated file not actually published. -->
