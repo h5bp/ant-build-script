@@ -8,19 +8,18 @@ Faster page load times and happy end users :)
 
 ## What it does
 
-* Combines and minifies javascript (via yui compressor)
+* Combines and minifies javascript (via Closure Compiler)
 * Inlines stylesheets specified using `@import` in your CSS
-* Combines and minifies CSS
+* Combines and minifies CSS (using YUI Compressor)
 * Optimizes JPGs and PNGs (with jpegtran & optipng)
-* Removes development only code (any remaining console.log files, profiling, test suite)
 * Basic to aggressive html minification (via htmlcompressor)
-* Autogenerates a cache manifest file (and links from the `html` tag) when you enable a property in the project config file.
 * Revises the file names of your assets so that you can use heavy caching (1 year expires).
-* Upgrades the .htaccess to use heavier caching
 * Updates your HTML to reference these new hyper-optimized CSS + JS files
 * Updates your HTML to use the minified jQuery instead of the development version
 * Remove unneeded references from HTML (like a root folder favicon)
-* Runs your JavaScript through a code quality tool (optional)
+* Runs your JavaScript through a code quality tool like JSLint or JSHint (optional)
+* Runs your CSS through a code quality tool, CSSLint (optional)
+* Cache-busting support for a module directory
 * Optionally precompile LESS formatted CSS
 * Optionally output JSDOC3 documentation
 
