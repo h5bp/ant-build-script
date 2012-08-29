@@ -911,11 +911,16 @@
                 <os family="windows" />
                 <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
                 <then>
-                    <delete>
+                  <if>
+                    <available file="./${dir.publish}/${dir.images}/"/>
+                      <then>
+                      <delete>
                         <fileset dir="./${dir.publish}/${dir.images}/">
                             <include name="**/*.png"/>
                         </fileset>
-                    </delete>
+                      </delete>
+                    </then>
+                  </if>
                     <apply executable="${basedir}/${dir.build.tools}/optipng-0.7-win32/optipng.exe" dest="./${dir.publish}/${dir.images}/" osfamily="windows">
                         <fileset dir="./${dir.source}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
                         <arg value="-quiet"/>
