@@ -880,11 +880,16 @@
             </and>
             <then>
                 <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
-                <delete>
-                    <fileset dir="./${dir.publish}/${dir.images}/">
-                        <include name="**/*.png"/>
-                    </fileset>
-                </delete>
+                <if>
+                  <available file="./${dir.publish}/${dir.images}/" type="dir" />
+                    <then>
+                      <delete>
+                          <fileset dir="./${dir.publish}/${dir.images}/">
+                              <include name="**/*.png"/>
+                          </fileset>
+                      </delete>
+                    </then>
+                </if>
                 <apply executable="optipng" dest="./${dir.publish}/${dir.images}/" osfamily="unix">
                     <fileset dir="./${dir.source}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
                     <arg value="-quiet"/>
@@ -904,7 +909,7 @@
                 <then>
                     <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
                     <echo message="*** Install optipng to enable png optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: http://html5boilerplate.com/docs/#Build-script#dependencies" />
+                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
                 </then>
             </elseif>
             <elseif>
@@ -972,7 +977,7 @@
                 <then>
                     <echo message="*** jpegtran NOT INSTALLED. SKIPPING OPTIMIZATION OF JPEGs." />
                     <echo message="*** Install jpegtran to enable jpeg optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: http://html5boilerplate.com/docs/#Build-script#dependencies" />
+                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
                 </then>
             </elseif>
         </if>
