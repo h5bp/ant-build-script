@@ -463,12 +463,14 @@
                 <filelist refid="file.root"/>
             </first>
         </apply>
-        <filelist id="scripts.toconcat" dir="./${dir.intermediate}/" files="${scripts.ordered}">
-        </filelist>
+        <filelist id="scripts.toconcat" dir="./${dir.intermediate}/" files="${scripts.ordered}"/>
+        <pathconvert pathsep=" " property="scripts.toconcat" refid="scripts.toconcat">
+            <map from="" to="${basedir}/${dir.intermediate}"/>
+        </pathconvert>
         
         <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
         <concat destfile="./${dir.intermediate}/${dir.js}/scripts-concat.min.js" overwrite="no">
-            <filelist refid="scripts.toconcat"/>
+            <filelist files="${scripts.toconcat}"/>
         </concat>
     </target>
     <target name="-js.scripts.concat" depends="-js.main.concat" if="build.concat.scripts">
