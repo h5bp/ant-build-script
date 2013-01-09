@@ -454,7 +454,7 @@
     <!-- Alternative version of -js.main.concat target 
          uncomment this and comment out the next target to do a manual filelist
          
-         To use, add your tiles to the list of file names, e.g.
+         To use, add your files to the list of file names, e.g.
          
          <file name="plugins.js"/>
          <file name="scripts.js"/>
