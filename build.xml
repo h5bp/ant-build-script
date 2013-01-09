@@ -617,16 +617,20 @@
         <var name="matchRegex" value=""/>
         <var name="replaceRegex" value=""/>
         <if>
-            <isset property="script.require.path"/>
+          <isset property="script.require.path"/>
             <then>
                 <echo message="Updating HTML to reflect the use of RequireJS"/>
-                <var name="matchRegex" value="&lt;!-- scripts concatenated [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- end ((scripts)|(concatenated and minified scripts))\s*--&gt;"/>
+                <var name="matchRegex" value="&lt;!-- //-beg- ${jstoken} [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]**&lt;!-- //-end- ${jstoken} --&gt;"/>
                 <var name="replaceRegex" value="&lt;script data-main='\1/${scripts.sha}.js\' src='${script.require.path}'&gt;&lt;/script&gt;"/>
             </then>
             <else>
-                <echo message="Updating HTML to reflect the use of default script inclusion"/>
-                <var name="matchRegex" value="&lt;!-- scripts concatenated [\d\w\s\W]*&lt;script.*src=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- end ((scripts)|(concatenated and minified scripts))\s*--&gt;" />
-                <var name="replaceRegex" value="&lt;script src='\1/${scripts.sha}.js\'&gt;&lt;/script&gt;" />
+              <echo message="Updating HTML to reflect the use of default script inclusion"/>
+              <replaceregexp
+                match="&lt;!-- //-beg- ${jstoken} --&gt;.*&lt;!-- //-end- ${jstoken} --&gt;"
+                replace="&lt;script src=&quot;${dir.js}${scripts.sha}.js&quot;&gt;&lt;/script&gt;"
+                flags="gs">
+                <fileset dir="${dir.intermediate}" includes="${page-files}" />
+              </replaceregexp>
             </else>
         </if>
         <!-- style.css replacement handled as a replacetoken above -->
