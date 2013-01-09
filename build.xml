@@ -6,7 +6,7 @@
     <!-- the .jar file is located in the tools directory -->
     <taskdef resource="net/sf/antcontrib/antlib.xml">
         <classpath>
-            <pathelement location="${basedir}/build/tools/ant-contrib-1.0b3.jar"/>
+            <pathelement location="${basedir}${dir.build.tools}ant-contrib-1.0b3.jar"/>
         </classpath>
     </taskdef>
     
