@@ -37,10 +37,10 @@ public class ScriptsToConcat extends ParserCallback {
         }
         String scriptName = a.getAttribute(HTML.Attribute.SRC).toString();
         if(scriptName != null) {
-            if(scriptName.startsWith("/")) {
-                System.out.println(scriptName);
-            }
-            System.out.println(scriptName);
+          if(scriptName.startsWith("/")) {
+            scriptName = "." + scriptName;
+          }
+          System.out.println(scriptName);
         }
     }
 
