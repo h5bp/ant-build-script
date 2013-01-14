@@ -367,6 +367,13 @@
         <delete dir="./${dir.intermediate}/"/>
         <delete dir="./${dir.publish}/"/>
     </target>
+    <target name="compile">
+      <javac
+        fork="true"
+        srcdir="${dir.build.tools}"
+        destdir="${dir.build.tools}"
+        includeantruntime="false" />
+    </target>
     <target name="-intro" description="(PRIVATE) Kindly inform the developer about the impending magic">
         <!-- This is a private target -->
         
@@ -475,25 +482,31 @@
     </target>
    -->
    
-    <target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.js">
+<target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.js">
         <filelist id="file.root" dir="${dir.source}" files="${file.root.page}"/>
         <echo message="Concatenating Main JS scripts based on ${file.root.page}..."/>
-        <apply executable="java" parallel="false"
-          outputproperty="scripts.ordered">
-            <arg value="-cp"/>
-            <arg value="./${dir.build.tools}"/>
-            <arg value="ScriptsToConcat"/>
-            <first>
-                <filelist refid="file.root"/>
-            </first>
-        </apply>
-        <filelist id="scripts.toconcat" dir="./${dir.intermediate}/" files="${scripts.ordered}">
-        </filelist>
-        
-        <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+        <exec executable="java" outputproperty="scriptsToConcat">
+          <arg value="-classpath" />
+          <arg value="${dir.build.tools}" />
+           <arg value="FindAttribute" />
+           <arg value="${file.root.page}" />
+           <arg value="${jstoken}" />
+           <arg value="script" />
+           <arg value="src" />
+         </exec>
+    <echo message="${jstoken}" />
+    <echo message="${scriptsToConcat}" />
+
+    <!-- Concatenate scripts to intermediate/js/libs/libs.js -->
+    <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+    <!-- Filter out byte order marks (see http://stackoverflow.com/questions/2742735/get-ant-concat-to-ignore-boms) -->
         <concat destfile="./${dir.intermediate}/${dir.js}/scripts-concat.min.js" overwrite="no">
-            <filelist refid="scripts.toconcat"/>
+          <filelist dir="./${dir.intermediate}/" files="${scriptsToConcat}" />
+          <filterchain>
+            <deletecharacters chars="&#xFEFF;" />
+          </filterchain>
         </concat>
+        
     </target>
 
     <target name="-js.scripts.concat" depends="-js.main.concat" if="build.concat.scripts">
