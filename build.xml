@@ -493,9 +493,6 @@
            <arg value="${jstoken}" />
            <arg value="script" />
            <arg value="src" />
-         </exec>
-    <echo message="${jstoken}" />
-    <echo message="${scriptsToConcat}" />
 
     <!-- Concatenate scripts to intermediate/js/libs/libs.js -->
     <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
