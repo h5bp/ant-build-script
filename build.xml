@@ -753,7 +753,7 @@
         <for delimiter="${line.separator}" param="currline" list="${root}">
             <sequential>
                 <!-- does this line contain an h5bp-import? -->
-                <propertyregex property="export.name" input="@{currline}" regexp="^.*==\|== +(.*) +==+$" select="\1" casesensitive="true" override="true" />
+                <propertyregex property="export.name" input="@{currline}" regexp="^\/\*==\|== +(.*) +====\*\/+$" select="\1" casesensitive="true" override="true" />
                 <if>
                     <isset property="export.name"/>
                     <then>
