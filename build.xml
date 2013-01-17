@@ -2,19 +2,19 @@
 <!DOCTYPE project>
 <project name="Boilerplate Build" default="build" basedir="../"><!-- one back since we're in build/ -->
     
+    <!-- load property files -->
+    <property file="build/config/project.properties"/><property file="build/config/default.properties"/>
+    
     <!-- Load in Ant-Contrib to give us access to some very useful tasks! -->
     <!-- the .jar file is located in the tools directory -->
     <taskdef resource="net/sf/antcontrib/antlib.xml">
         <classpath>
-            <pathelement location="${basedir}${dir.build.tools}ant-contrib-1.0b3.jar"/>
+            <pathelement location="${basedir}/${dir.build.tools}/ant-contrib-1.0b3.jar"/>
         </classpath>
     </taskdef>
     
     <!-- load shell environment -->
     <property environment="ENV" />
-    
-    <!-- load property files -->
-    <property file="build/config/project.properties"/><property file="build/config/default.properties"/>
     
     <!-- merge the stylesheet properties -->
     <var name="stylesheet-files" value="${file.default.stylesheets}, ${file.stylesheets}"/>
@@ -206,6 +206,20 @@
             <arg value="${tool.csslint.opts}" />
         </apply>
         <echo>CSSLint Successful</echo>
+    </target>
+    
+    <!-- Validate target, run separately -->
+    <target name="validate">
+     <apply dir="${dir.source}/" executable="java" parallel="false">
+      <fileset dir="./${dir.source}/">
+        <include name="${file.root.page}"/>
+      </fileset>
+      <arg value="-jar" />
+      <arg path="./${dir.build.tools}/HTMLValidator.jar" />
+      <arg value="http://validator.nu" />
+      <srcfile/>
+      </apply>
+      <echo>HTML validator successful</echo>
     </target>
     
     <!--
