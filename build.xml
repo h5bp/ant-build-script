@@ -1018,6 +1018,7 @@
                     <arg value="-copy"/>
                     <arg value="${strip-meta-tags}"/>
                     <arg value="-optimize"/>
+                    <arg value="${img.opts.progressive}"/>
                     <arg value="-outfile"/>
                     <targetfile/>
                     <srcfile/>
@@ -1039,7 +1040,8 @@
             <fileset dir="${dir.source}/${dir.images}" includes="**/*.jpg"  excludes="${images.bypass}, ${images.default.bypass}"/>
             <arg value="-copy"/>
             <arg value="${strip-meta-tags}"/>
-            <arg value="-optimize"/>
+            <arg value="-optimize"/> 
+            <arg value="${img.opts.progressive}"/>
             <arg value="-outfile"/>
             <targetfile/>
             <srcfile/>
