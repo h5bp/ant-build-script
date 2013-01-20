@@ -383,6 +383,7 @@
     </target>
     <target name="compile">
       <javac
+        target="1.5"
         fork="true"
         srcdir="${dir.build.tools}"
         destdir="${dir.build.tools}"
