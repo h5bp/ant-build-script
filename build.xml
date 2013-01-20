@@ -650,10 +650,9 @@
                 <var name="replaceRegex" value="&lt;script data-main='\1/${scripts.sha}.js\' src='${script.require.path}'&gt;&lt;/script&gt;"/>
             </then>
             <else>
-              <echo message="Updating HTML to reflect the use of default script inclusion"/>
               <replaceregexp
-                match="&lt;!-- //-beg- ${jstoken} --&gt;.*&lt;!-- //-end- ${jstoken} --&gt;"
-                replace="&lt;script src=&quot;${dir.js}${scripts.sha}.js&quot;&gt;&lt;/script&gt;"
+                match="&lt;!-- //-beg- ${jstoken} [\d\w\s\W]*&lt;script.*src=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- //-end- ${jstoken} --&gt;"
+                replace="&lt;script src=&quot;\1/${scripts.sha}.js&quot;&gt;&lt;/script&gt;"
                 flags="gs">
                 <fileset dir="${dir.intermediate}" includes="${page-files}" />
               </replaceregexp>
