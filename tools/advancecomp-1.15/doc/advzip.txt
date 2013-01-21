@@ -1,0 +1,103 @@
+                      ===================================
+                      AdvanceCOMP ZIP Compression Utility
+                      ===================================
+
+
+1 SYNOPSIS
+==========
+
+advzip [-a, --add] [-x, --extract] [-l, --list]
+	[-z, --recompress] [-t, --test] [-0, --shrink-store]
+	[-1, --shrink-fast] [-2, --shrink-normal] [-3, --shrink-extra]
+	[-4, --shrink-insane] [-N, --not-zip] [-p, --pedantic] [-q, --quiet]
+	[-h, --help] [-V, --version] ARCHIVES... [FILES...]
+
+
+2 DESCRIPTION
+=============
+
+The main purpose of this utility is to recompress and test
+the zip archives to get the smallest possible size.
+
+For recompression the 7-Zip (www.7-zip.com) Deflate
+implementation is used. This implementation generally
+gives 5-10% more compression than the zLib Deflate
+implementation.
+
+For experimental purpose also the 7-Zip LZMA algorithm is
+available with the -N option. In this case, the generated
+zips WILL NOT BE USABLE by any other program. To make
+them usable you need to recompress them without the -N
+option. Generally this algorithm gives 10-20% more
+compression than the 7-Zip Deflate implementation.
+
+
+3 OPTIONS
+=========
+
+    -a, --add ARCHIVE FILES...
+        Create the specified archive with the specified
+        files. You must specify only one archive.
+
+    -x, --extract ARCHIVE
+        Extract all the files on the specified archive. You
+        must specify only one archive.
+
+    -l, --list ARCHIVES...
+        List the content of the specified archives.
+
+    -z, --recompress ARCHIVES...
+        Recompress the specified archives. If the -1, -2,
+        -3 options are specified, it's used the smallest file
+        choice from: the previous compressed data, the new
+        compression and the uncompressed format. If the -0
+        option is specified the archive is always rewritten
+        without any compression.
+
+    -t, --test ARCHIVES...
+        Test the specified archives. The tests may be
+        extended with the -p option.
+
+    -N, --not-zip
+        Use the LZMA algorithm when compressing. The
+        generated zips will not be readable by any other
+        application!
+
+    -p, --pedantic
+        Be pedantic on the zip tests. If this flag is
+        enabled some more extensive tests on the zip
+        integrity are done. These tests are generally not
+        done by other zip utilities.
+
+    -0, --shrink-store
+        Disable the compression. The file is
+        only stored and not compressed. This option is
+        very useful to expand the archives of .png and .mp3
+        files. These files are already compressed, trying to
+        compress them another time is really a waste of time
+        and resource.
+
+    -1, --shrink-fast
+        Set the compression level to "fast".
+
+    -2, --shrink-normal
+        Set the compression level to "normal". This is the
+        default level of compression.
+
+    -3, --shrink-extra
+        Set the compression level to "extra".
+
+    -4, --shrink-insane
+        Set the compression level to "insane".
+
+
+4 COPYRIGHT
+===========
+
+This file is Copyright (C) 2002 Andrea Mazzoleni, Filipe Estima
+
+
+5 SEE ALSO
+==========
+
+advpng(1), advmng(1), advdef(1)

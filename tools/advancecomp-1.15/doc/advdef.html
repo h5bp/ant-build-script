@@ -1,0 +1,100 @@
+<html>
+<head>
+<title>AdvanceCOMP Deflate Compression Utility</title>
+</head>
+<body>
+<center><h2>AdvanceCOMP Deflate Compression Utility</h2></center>
+<h2><a name="1">1</a> 
+Synopsis
+</h2>
+<pre>
+advdef [-z, --recompress] [-0, --shrink-store]
+&nbsp;&nbsp;&nbsp;&nbsp;[-1, --shrink-fast] [-2, --shrink-normal] [-3, --shrink-extra]
+&nbsp;&nbsp;&nbsp;&nbsp;[-4, --shrink-insane] [-f, --force] [-q, --quiet]
+&nbsp;&nbsp;&nbsp;&nbsp;[-h, --help] [-V, --version] FILES...
+</pre>
+<h2><a name="2">2</a> 
+Description
+</h2>
+The main purpose of this utility is to recompress the
+data present in the .png, .mng, .gz, .tgz and .svgz
+files.
+<p>
+The internal structure of the files isn't changed.
+Only the compressed data is modified.
+<h2><a name="3">3</a> 
+Options
+</h2>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-z, --recompress FILES...
+</strong></td></tr><tr><td>
+Recompress the specified files. If the -1, -2, -3, -4
+options are specified it's used the smallest file
+choice from the previous compressed data and the
+new compression. If the -0 option is specified the
+file is always rewritten without any compression.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-0, --shrink-store
+</strong></td></tr><tr><td>
+Disable the compression. The file is
+only stored and not compressed. The file is always
+rewritten also if it's bigger.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-1, --shrink-fast
+</strong></td></tr><tr><td>
+Set the compression level to "fast".
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-2, --shrink-normal
+</strong></td></tr><tr><td>
+Set the compression level to "normal". This is the
+default level of compression.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-3, --shrink-extra
+</strong></td></tr><tr><td>
+Set the compression level to "extra".
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-4, --shrink-insane
+</strong></td></tr><tr><td>
+Set the compression level to "insane". It's VERY
+SLOW.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-f, --force
+</strong></td></tr><tr><td>
+Force the use of the new file also if it's bigger.
+</td></tr>
+</table>
+<h2><a name="4">4</a> 
+Limitations
+</h2>
+The advdef program cannot be used to recompress huge files
+because it needs to allocate memory for both the complete
+compressed and uncompressed data.
+<h2><a name="5">5</a> 
+Copyright
+</h2>
+This file is Copyright (C) 2003, 2004 Andrea Mazzoleni
+<h2><a name="6">6</a> 
+See Also
+</h2>
+advpng(1), advmng(1), advzip(1), gzip(1), bzip2(1)
+</body>
+</html>

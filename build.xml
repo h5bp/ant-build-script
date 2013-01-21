@@ -911,7 +911,7 @@
     </target>
     
     <!-- IMAGES -->
-    <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng">
+    <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng and advpng">
         <echo message="Optimizing images..."/>
         <echo message="This part might take a while. But everything else is already done."/>
         <echo message=" "/>
@@ -992,6 +992,45 @@
                     </apply>
                 </then>
             </elseif>
+        </if>
+        <!-- Let's do ADVPNG -->
+        <!-- On *nix's and OS X, check for advpng and give a helpful message if it's not installed -->
+        
+        <echo message="Now, we run advpng on the .png files..."/>
+        <if>
+            <and>
+                <os family="unix" />
+                <available file="advpng" filepath="${ENV.PATH}" />
+            </and>
+            <then>
+                <apply executable="advpng" dest="./${dir.publish}/${dir.images}/" osfamily="unix">
+                    <fileset dir="./${dir.publish}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                    <arg line="-z"/>
+                    <arg line="-4"/>
+                    <srcfile/>
+                    <mapper type="identity"/>
+                </apply>
+            </then>
+            <elseif>
+                <os family="unix" />
+                <then>
+                    <echo message="*** advpng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                    <echo message="*** Install advpng to enable advanced png optimization." />
+                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+                </then>
+            </elseif>
+            <elseif> <os family="windows" />
+                
+               <then>
+              <apply executable="${basedir}/${dir.build.tools}/advancecomp-1.15/advpng.exe" dest="./${dir.publish}/${dir.images}/" osfamily="windows">
+                <fileset dir="./${dir.publish}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                <arg line="-z"/>
+                <arg line="-4"/>
+                <srcfile/>
+                <mapper type="identity"/>
+                </apply>
+              </then>
+              </elseif>
         </if>
     </target>
     <target name="-imagesjpg" depends="-mkdirs" description="(PRIVATE) Optimizes .jpg images using jpegtan">
