@@ -465,8 +465,8 @@
     
     <target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.js">
         <filelist id="scripts.toconcat" dir="./${dir.intermediate}/">
-          <file name="plugins.js"/>
-          <file name="scripts.js"/>
+          <file name="js/plugins.js"/>
+          <file name="js/scripts.js"/>
         </filelist>
         
         <concat destfile="./${dir.intermediate}/${dir.js}/scripts-concat.min.js" overwrite="no">
