@@ -23,8 +23,6 @@ Faster page load times and happy end users :)
 * Optionally precompile LESS formatted CSS
 * Optionally output JSDOC3 documentation
 
-<img src="http://html5boilerplate.com/img/chart.png">
-
 ## Add the build script to your project
 
 Since we split out the build scripts from the main h5bp repo, you now have more options on how to integrate a build script into your project. Beyond the choice of technology, there's also the choice of how to integrate the build script of choice into your h5bp project or local repo. There is nothing stopping you from manually dropping the build script in to your HTML5 Boilerplate project. That works.
