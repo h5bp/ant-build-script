@@ -933,6 +933,10 @@
                 <available file="optipng" filepath="${ENV.PATH}" />
             </and>
             <then>
+              <shellscript shell="bash" outputproperty="optipng.version">
+                optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
+              </shellscript>
+              <echo message="${optipng.version}"/>  
                 <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
                 <if>
                   <available file="./${dir.publish}/${dir.images}/" type="dir" />
