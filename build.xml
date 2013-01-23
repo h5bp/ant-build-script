@@ -505,7 +505,7 @@
           <arg value="${dir.build.tools}" />
            <arg value="FindAttribute" />
            <arg value="${file.root.page}" />
-           <arg value="${jstoken}" />
+           <arg value="${build.jstoken}" />
            <arg value="script" />
            <arg value="src" />
          </exec>
@@ -646,13 +646,13 @@
           <isset property="script.require.path"/>
             <then>
                 <echo message="Updating HTML to reflect the use of RequireJS"/>
-                <var name="matchRegex" value="&lt;!-- //-beg- ${jstoken} [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]**&lt;!-- //-end- ${jstoken} --&gt;"/>
+                <var name="matchRegex" value="&lt;!-- //-beg- ${build.jstoken} [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]**&lt;!-- //-end- ${build.jstoken} --&gt;"/>
                 <var name="replaceRegex" value="&lt;script data-main='\1/${scripts.sha}.js\' src='${script.require.path}'&gt;&lt;/script&gt;"/>
             </then>
             <else>
               <replaceregexp
-                match="&lt;!-- //-beg- ${jstoken} [\d\w\s\W]*&lt;script.*src=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- //-end- ${jstoken} --&gt;"
-                replace="&lt;script src=&quot;\1/${scripts.sha}.js&quot;&gt;&lt;/script&gt;"
+                match="&lt;!-- //-beg- ${build.jstoken} [\d\w\s\W]*&lt;script.*src=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- //-end- ${build.jstoken} --&gt;"
+                replace="&lt;script src=&quot;\1/${scripts.sha}.js&quot; ${scripts.async}  ${scripts.defer} &gt;&lt;/script&gt;"
                 flags="gs">
                 <fileset dir="${dir.intermediate}" includes="${page-files}" />
               </replaceregexp>
@@ -919,7 +919,7 @@
          <shellscript shell="bash" outputproperty="optipng.version">
                 optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
          </shellscript>
-         <echo message="${optipng.version}"/>
+         <echo message="Your optipng version is: ${optipng.version}"/>
         <if>
             <equals arg1="${images.strip.metadata}" arg2="true"/>
             <then>
