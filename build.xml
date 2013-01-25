@@ -917,10 +917,6 @@
         <echo message="This part might take a while. But everything else is already done."/>
         <echo message=" "/>
         <echo message="First, we run optipng on the .png files..."/>
-         <shellscript shell="bash" outputproperty="optipng.version">
-                optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
-         </shellscript>
-         <echo message="Your optipng version is: ${optipng.version}"/>
         <if>
             <equals arg1="${images.strip.metadata}" arg2="true"/>
             <then>
@@ -939,7 +935,10 @@
                 <available file="optipng" filepath="${ENV.PATH}" />
             </and>
             <then>
-               
+            <shellscript shell="bash" outputproperty="optipng.version">
+                optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
+            </shellscript>
+            <echo message="Your optipng version is: ${optipng.version}"/>   
                 <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
                 <if>
                   <available file="./${dir.publish}/${dir.images}/" type="dir" />
