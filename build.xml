@@ -577,7 +577,6 @@
             <arg value="${scripts.compilation.level}" />
             <arg line="--warning_level" />
             <arg value="${scripts.compilation.warninglevel}" />
-            <arg line="--create_source_map" />
             <arg line="--js_output_file" />
             <mapper type="glob" from="*.js" to="${basedir}/${dir.intermediate}/${dir.js}/*.js"/>
             <targetfile/>
