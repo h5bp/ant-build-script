@@ -820,7 +820,18 @@
                         
                         <!-- load the file into a variable -->
                         <loadfile property="file.contents" srcFile="${dir.source}/${dir.css}/${file.name}"/>
-                        
+
+                        <!-- Get base filename -->
+                        <basename property="base.file.name" file="${file.name}"/>
+
+                        <!-- Get relative path from file.name -->
+                        <propertyregex property="relative.path" input="${file.name}" regexp="(.*)(?=${base.file.name})" select="\0" override="true"/>
+
+                        <!--
+                          Set the relative path to images within the imported file if the path
+                          does not start with data, http, https, ftp or // -->
+                        <propertyregex property="file.contents" input="${file.contents}" override="true" regexp="(url\((?!['\u0022])|url\(['\u0022])(?!data|http:|https:|ftp:|\/\/)" replace="\0${relative.path}"/>
+
                         <!-- pop that file into the concatenated output file -->
                         <replace file="${dir.intermediate}/${dir.css}/style-concat.css" token="/* h5bp-import: ${file.name} */" value="${file.contents}"/>
                         <var name="file.contents" unset="true"/>
