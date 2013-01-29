@@ -222,6 +222,18 @@
       <echo>HTML validator successful</echo>
     </target>
     
+    <!-- qunit target Example only since this will fit very differently into different workflows -->
+    <target name="qunit" description="runs QUnit tests using PhantomJS">
+      <apply executable="${basedir}/${dir.build.tools}/${tool.phantomJS}" >
+        <fileset dir="${dir.tests}"/>
+        <arg value="${basedir}/${dir.build.tools}/${tool.qunitrunner.js}" />
+        <arg value="--qunit"/>
+        <arg path="${basedir}/${dir.build.tools}/${tool.qunit.js}" />
+        <arg value="--tests"/>
+        <arg path="${dir.tests}" />
+        <srcfile/>
+      </apply>
+    </target>
     <!--
     *************************************************
     * BUILD TARGETS                                 *
