@@ -430,7 +430,7 @@
         
         <echo message="Copying over new files..."/>
         <copy todir="./${dir.publish}" includeEmptyDirs="false">
-            <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}, ${images.exclude}">
+            <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
                 <!-- exclude files that are superseded by optimized versions with different names -->
                 <!-- this is not strictly necessary, but it avoids putting unreferenced files into your server -->
                 <exclude name="${dir.js}/**/*.js"/>
@@ -1102,157 +1102,179 @@
     <target name="-rev.image.filenames" depends="-needhtmlrefresh,-css">
         <!-- We'll store here the images that get their name revved so we
              can later on in -copy exclude them, so we don't have duplicates -->
-        <var name="images.exclude" value=""/>
 
-        <echo message="Revving image filenames inside HTML files and Main Stylesheet"/>
-        <!-- Go through every page-file -->
-        <for param="page-file">
-            <path>
-                <fileset dir="${dir.intermediate}" includes="${page-files}, ${dir.css}/style-concat.min.css"/>
-            </path>
-            <sequential>
-                <!-- Load each file -->
-                <loadfile property="page.file" srcfile="@{page-file}"/>
+        <!-- By default set to empty -->
+        <var name="rev.files" value=""/>
+        <var name="rev.message" value=""/>
 
-                <!-- Set the default orig look path -->
-                <var name="orig.look.path" value="${dir.source}"/>
+        <!-- First check if it's enabled for either .html files -->
+        <if>
+            <equals arg1="${html.rev.images}" arg2="true"/>
+            <then>
+                <var name="rev.message" value="Revving image filenames inside html files."/>
+                <var name="rev.files" value="${page-files}"/>
+            </then>
+        </if>
 
-                <!-- Set the default move path for images -->
-                <var name="move.path" value="${dir.publish}"/>
-
-                <!-- Set the default copy path for images -->
-                <var name="copy.path" value="${dir.source}"/>
-                <var name="copy.publish.path" value="${dir.publish}"/>
-
-                <!-- Set the default delimiter, we'll use > here for HTML to be more consistent.
-                     In case some markup might be on a single line. -->
-                <var name="page.delimiter" value=">"/>
-
-                <basename property="page.file.base" file="@{page-file}"/>
-
+        <!-- Check if it's enabled for css -->
+        <if>
+            <equals arg1="${css.rev.images}" arg2="true"/>
+            <then>
+                <!-- Check if rev.files has been set -->
                 <if>
-                    <equals arg1="${page.file.base}" arg2="style-concat.min.css"/>
+                    <not>
+                        <equals arg1="${rev.files}" arg2=""/>
+                    </not>
                     <then>
-                        <!-- Since we're going through the minified version,
-                             we can't use the line separator, we'll use : instead here
-                             as the separator. -->
-                        <var name="page.delimiter" value=":"/>
-                        <var name="orig.look.path" value="${dir.source}/${dir.css}"/>
-                        <var name="move.path" value="${dir.publish}/${dir.css}"/>
-                        <var name="copy.publish.path" value="${dir.publish}/${dir.css}"/>
-                        <var name="copy.path" value="${dir.source}/${dir.css}"/>
+                        <var name="rev.message" value="Revving image filenames inside html files and the main stylesheet."/>
+                        <!-- ${rev.files} is set, let's seperate the last set value with a comma -->
+                        <var name="rev.files" value="${rev.files}, ${dir.css}/style-concat.min.css"/>
                     </then>
+                    <else>
+                        <var name="rev.message" value="Revving image filenames inside the main stylesheet."/>
+                        <!-- ${rev.files} is not set, set it -->
+                        <var name="rev.files" value="${dir.css}/style-concat.min.css"/>
+                    </else>
                 </if>
+            </then>
+        </if>
 
-                <!-- Go through the file by the delimiter -->
-                <for delimiter="${page.delimiter}" param="content" list="${page.file}">
+        <if>
+            <not>
+                <equals arg1="${rev.files}" arg2=""/>
+            </not>
+            <then>
+                <echo message="${rev.message}"/>
+                <!-- Go through every page-file -->
+                <for param="page-file">
+                    <path>
+                        <fileset dir="${dir.intermediate}" includes="${rev.files}"/>
+                    </path>
                     <sequential>
-                        <!-- I set this up to support multiple backgrounds, such as:
-                            background: url(first.png), url(second.png) -->
-                        <for delimiter="," param="contentsplit" list="@{content}">
+                        <!-- Load each file -->
+                        <loadfile property="page.file" srcfile="@{page-file}"/>
+
+                        <!-- Set the default orig look path -->
+                        <var name="orig.look.path" value="${dir.source}"/>
+
+                        <!-- Set the default move path for images -->
+                        <var name="move.path" value="${dir.publish}"/>
+
+                        <!-- Set the default copy path for images -->
+                        <var name="copy.path" value="${dir.source}"/>
+                        <var name="copy.publish.path" value="${dir.publish}"/>
+
+                        <!-- Set the default delimiter, we'll use > here for HTML to be more consistent.
+                             In case some markup might be on a single line. -->
+                        <var name="page.delimiter" value=">"/>
+
+                        <basename property="page.file.base" file="@{page-file}"/>
+
+                        <if>
+                            <equals arg1="${page.file.base}" arg2="style-concat.min.css"/>
+                            <then>
+                                <!-- Since we're going through the minified version,
+                                     we can't use the line separator, we'll use : instead here
+                                     as the separator. -->
+                                <var name="page.delimiter" value=":"/>
+                                <var name="orig.look.path" value="${dir.source}/${dir.css}"/>
+                                <var name="move.path" value="${dir.publish}/${dir.css}"/>
+                                <var name="copy.publish.path" value="${dir.publish}/${dir.css}"/>
+                                <var name="copy.path" value="${dir.source}/${dir.css}"/>
+                            </then>
+                        </if>
+
+                        <!-- Go through the file by the delimiter -->
+                        <for delimiter="${page.delimiter}" param="content" list="${page.file}">
                             <sequential>
-                                <!-- Match the following: url(foo.png), href=foo.png, href="foo.png",
-                                    href='foo.png', src=foo.png, src='foo.png', src="foo.png" -->
-                                <propertyregex property="image.name" input="@{contentsplit}" regexp="(src=|href=|url\()(['\u0022])?(?!data|http:|https:|ftp:|\/\/)(.*)(?=(\.(jpeg|jpg|png|gif)))" select="\3\4" override="true"/>
-                                <propertyregex property="image.ext" input="${image.name}" regexp="(\.(jpeg|jpg|png|gif))" select="\0"/>
-                                <basename property="image.name.base" file="${image.name}"/>
-                                <if>
-                                    <isset property="image.name"/>
-                                    <then>
-                                        <available file="${orig.look.path}/${image.name}" property="image.exists"/>
-                                    </then>
-                                </if>
-
-                                <if>
-                                    <!-- Does the image exist? -->
-                                    <equals arg1="${image.exists}" arg2="true"/>
-                                    <then>
-                                        <!-- Get the checksum, we need to look in the source since the image might've already been renamed inside intermediate -->
-                                        <checksum file="${orig.look.path}/${image.name}" algorithm="sha" property="image.fullsha"/>
-
-                                        <!-- Let's shorten the string length to 20 as is. -->
-                                        <propertyregex property="image.sha" input="${image.fullsha}" regexp=".{20}" select="\0" />
-                                        <var name="image.sha" value="${image.sha}${image.ext}"/>
-
-                                        <!-- Shorten ../js/vendor/../../img to ../img -->
-                                        <property name="image.relative.path" location="${image.name}" relative="yes"/>
-
-                                        <!-- Replace backward slash with forward slash -->
-                                        <propertyregex property="image.relative.path" input="${image.relative.path}" replace="/" regexp="\\" override="true"/>
-
-                                        <!-- Simply remove the filename to know where the image is located -->
-                                        <propertyregex property="image.relative.path" input="${image.relative.path}" regexp="(.*)(?=${image.name.base})" select="\0" override="true"/>
-
-                                        <!-- Now we replace the image name with the hashed one -->
-                                        <replace file="@{page-file}" token="${image.name}" value="${image.relative.path}${image.sha}"/>
-
-                                        <!-- We need to check whether the file exists within publish/
-                                             if it does (it has been optimized), and we'll simply
-                                             rename it, if not we'll move it from the source. -->
+                                <!-- I set this up to support multiple backgrounds, such as:
+                                    background: url(first.png), url(second.png) -->
+                                <for delimiter="," param="contentsplit" list="@{content}">
+                                    <sequential>
+                                        <!-- Match the following: url(foo.png), href=foo.png, href="foo.png",
+                                            href='foo.png', src=foo.png, src='foo.png', src="foo.png" -->
+                                        <propertyregex property="image.name" input="@{contentsplit}" regexp="(src=|href=|url\()(['\u0022])?(?!data|http:|https:|ftp:|\/\/)(.*)(?=(\.(jpeg|jpg|png|gif)))" select="\3\4" override="true"/>
+                                        <propertyregex property="image.ext" input="${image.name}" regexp="(\.(jpeg|jpg|png|gif))" select="\0"/>
+                                        <basename property="image.name.base" file="${image.name}"/>
                                         <if>
-                                            <available file="${move.path}/${image.name}"/>
+                                            <isset property="image.name"/>
                                             <then>
-                                                <move file="${move.path}/${image.name}" tofile="${move.path}/${image.relative.path}${image.sha}" />
-                                            </then>
-                                            <else>
-                                                <copy file="${copy.path}/${image.name}" tofile="${move.path}/${image.relative.path}${image.sha}"/>
-                                            </else>
-                                        </if>
-
-                                        <!-- We need the full path for images.exclude -->
-                                        <property name="image.full.path" location="${image.relative.path}${image.name.base}" relative="yes"/>
-
-                                        <!-- If the platform is Windows, let's replace
-                                             backslashes with forward slashes -->
-                                        <if>
-                                            <os family="windows" />
-                                            <then>
-                                                <propertyregex property="image.full.path" input="${image.full.path}" regexp="\\" replace="/" override="true"/>
+                                                <available file="${orig.look.path}/${image.name}" property="image.exists"/>
                                             </then>
                                         </if>
 
-                                        <!-- Stylesheets within css/ refer normally to
-                                             ../img/image.jpg, even though I'm using relative with
-                                             location [property: image.full.path]
-                                             it doesn't remove the starting ../
-                                             so we'll have to do it here -->
-                                        <propertyregex property="image.full.path" input="${image.full.path}" regexp="^(\.\.\/)(.*)$" replace="\2" override="true"/>
-
-                                        <!-- We need to exclude this image file from being copied later -->
                                         <if>
-                                            <equals arg1="${images.exclude}" arg2=""/>
+                                            <!-- Does the image exist? -->
+                                            <equals arg1="${image.exists}" arg2="true"/>
                                             <then>
-                                                <var name="images.exclude" value="${image.full.path}"/>
-                                            </then>
-                                            <else>
-                                                <var name="images.exclude" value="${images.exclude}, ${image.full.path}"/>
-                                            </else>
-                                        </if>
-                                    </then>
-                                </if>
+                                                <!-- Get the checksum, we need to look in the source since the image might've already been renamed inside intermediate -->
+                                                <checksum file="${orig.look.path}/${image.name}" algorithm="sha" property="image.fullsha"/>
 
-                                <var name="image.full.path" unset="true"/>
-                                <var name="image.name" unset="true"/>
-                                <var name="image.name.base" unset="true"/>
-                                <var name="image.relative.path" unset="true"/>
-                                <var name="image.sha" unset="true"/>
-                                <var name="image.fullsha" unset="true"/>
-                                <var name="image.ext" unset="true"/>
-                                <var name="image.exists" unset="true"/>
-                                <var name="curr.img.dir" unset="true"/>
-                                <var name="img.dir" unset="true"/>
+                                                <!-- Let's shorten the string length depending
+                                                     on ${hash.length} -->
+                                                <propertyregex property="image.sha" input="${image.fullsha}" regexp=".{${hash.length}}" select="\0" />
+                                                <var name="image.sha" value="${image.sha}${image.ext}"/>
+
+                                                <!-- Shorten ../js/vendor/../../img to ../img -->
+                                                <property name="image.relative.path" location="${image.name}" relative="yes"/>
+
+                                                <!-- If the platform is Windows, let's replace
+                                                     backslashes with forward slashes -->
+                                                <if>
+                                                    <os family="windows" />
+                                                    <then>
+                                                        <propertyregex property="image.relative.path" input="${image.relative.path}" regexp="\\" replace="/" override="true"/>
+                                                    </then>
+                                                </if>
+
+                                                <!-- Simply remove the filename to know where the image is located -->
+                                                <propertyregex property="image.relative.path" input="${image.relative.path}" regexp="(.*)(?=${image.name.base})" select="\0" override="true"/>
+
+                                                <!-- Now we replace the image name with the hashed one -->
+                                                <replace file="@{page-file}" token="${image.name}" value="${image.relative.path}${image.sha}"/>
+
+                                                <!-- We need to check whether the file exists within publish/
+                                                     if it does (it has been optimized), and we'll simply
+                                                     rename it, if not we'll move it from the source. -->
+                                                <if>
+                                                    <available file="${move.path}/${image.name}"/>
+                                                    <then>
+                                                        <move file="${move.path}/${image.name}" tofile="${move.path}/${image.relative.path}${image.sha}" />
+                                                    </then>
+                                                    <else>
+                                                        <copy file="${copy.path}/${image.name}" tofile="${move.path}/${image.relative.path}${image.sha}"/>
+                                                    </else>
+                                                </if>
+                                            </then>
+                                        </if>
+
+                                        <var name="image.name" unset="true"/>
+                                        <var name="image.name.base" unset="true"/>
+                                        <var name="image.relative.path" unset="true"/>
+                                        <var name="image.sha" unset="true"/>
+                                        <var name="image.fullsha" unset="true"/>
+                                        <var name="image.ext" unset="true"/>
+                                        <var name="image.exists" unset="true"/>
+                                        <var name="curr.img.dir" unset="true"/>
+                                        <var name="img.dir" unset="true"/>
+                                    </sequential>
+                                </for> <!-- Comma seperated for loop ends-->
                             </sequential>
-                        </for> <!-- Comma seperated for loop ends-->
+                        </for> <!-- Delimiter seperated for loop ends (either : or line by line) -->
+                        <var name="page.file" unset="true"/>
+                        <var name="page.file.base" unset="true"/>
+                        <var name="move.path" unset="true"/>
+                        <var name="copy.path" unset="true"/>
+                        <var name="copy.publish.path" unset="true"/>
+                        <var name="orig.look.path" unset="true"/>
                     </sequential>
-                </for> <!-- Delimiter seperated for loop ends (either : or line by line) -->
-                <var name="page.file" unset="true"/>
-                <var name="page.file.base" unset="true"/>
-                <var name="move.path" unset="true"/>
-                <var name="copy.path" unset="true"/>
-                <var name="copy.publish.path" unset="true"/>
-                <var name="orig.look.path" unset="true"/>
-            </sequential>
-        </for> <!-- File by file loop ends -->
+                </for> <!-- File by file loop ends -->
+            </then>
+            <else>
+                <!-- Skipping image revving -->
+                <echo message="Skipping revving of image filenames.."/>
+            </else>
+        </if>
     </target>
     
     <!-- Import project.xml (put any custom build targets in this file so that they aren't overwritten when build.xml is updated) -->
