@@ -21,6 +21,9 @@
     
     <!-- merge the pages properties -->
     <var name="page-files" value="${file.pages}, ${file.pages.default.include}"/>
+
+    <!-- Merge dir.images with the additional directories -->
+    <var name="dir.images" value="${dir.images}, ${dir.images.additional}"/>
     
     <!-- Test for Ant Version Delete this task and all instances of overwrite='no' if you can't upgrade to latest-->
     <fail message="All features of the build script require Ant version 1.8.2 or greater. Please upgrade to the latest version or remove all instances of 'overwrite=no' (and this fail task) from the build script to continue">
@@ -152,7 +155,7 @@
         </if>
     </target>
     <target name="clean" depends="-clean"/>
-    
+
     <!-- JSLint target, run separately -->
     <target name="jslint">
         <apply dir="${dir.source}/${dir.js}" executable="java" parallel="false" failonerror="true">
@@ -898,22 +901,45 @@
         <echo message="This part might take a while. But everything else is already done."/>
         <echo message=" "/>
         <echo message="First, we run optipng on the .png files..."/>
+
+        <!-- By default set strip-meta-tags to empty -->
+        <var name="strip-meta-tags" value=""/>
+
         <if>
             <equals arg1="${images.strip.metadata}" arg2="true"/>
             <then>
                 <var name="strip-meta-tags" value="-strip all"/>
             </then>
-            <else>
-                <var name="strip-meta-tags" value=""/>
-            </else>
         </if>
+
+        <!-- By default set os.family to windows, and optipng as available and it's executable -->
+        <var name="os.family" value="windows"/>
+        <var name="optipng.available" value="true"/>
+        <var name="optipng.executable" value="${basedir}/${dir.build.tools}/optipng-0.7-win32/optipng.exe"/>
+
         <!-- osfamily=unix is actually true on OS X as well -->
         <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
         <if>
-            <and>
-                <os family="unix" />
-                <available file="optipng" filepath="${ENV.PATH}" />
-            </and>
+            <os family="unix"/>
+            <then>
+                <if>
+                    <!-- Then check for availability if unix -->
+                    <available file="optipng" filepath="${ENV.PATH}"/>
+                    <then>
+                        <var name="optipng.executable" value="optipng"/>
+                    </then>
+                    <else>
+                        <var name="optipng.available" value="false"/>
+                    </else>
+                </if>
+                <!-- Temporarily fixes #39 -->
+                <var name="strip-meta-tags" value=""/>
+            </then>
+        </if>
+
+        <!-- Now check for availability -->
+        <if>
+            <equals arg1="${optipng.available}" arg2="true"/>
             <then>
                 <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
                 <if>
@@ -926,109 +952,131 @@
                       </delete>
                     </then>
                 </if>
-                <apply executable="optipng" dest="./${dir.publish}/${dir.images}/" osfamily="unix">
-                    <fileset dir="./${dir.source}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
-                    <arg value="-quiet"/>
-                    <arg value="-o7"/>
-                    <!--
-                       Temporarily fixes #39
-                       <arg value="${strip-meta-tags}"/>
-                    -->
-                    <arg value="-out"/>
-                    <targetfile/>
-                    <srcfile/>
-                    <mapper type="identity"/>
-                </apply>
+
+                <!-- Run if available -->
+                <for param="image-dir">
+                    <path>
+                        <dirset dir="${dir.source}" includes="${dir.images}"/>
+                    </path>
+                    <sequential>
+                        <property name="relative.image.dir" location="@{image-dir}" relative="yes"/>
+
+                        <if>
+                            <not>
+                                <available file="${basedir}/${dir.publish}/${relative.image.dir}"/>
+                            </not>
+                            <then>
+                                <copy todir="${dir.publish}/${relative.image.dir}">
+                                    <dirset dir="${dir.source}/${relative.image.dir}"/>
+                                </copy>
+                            </then>
+                        </if>
+
+                        <apply executable="${optipng.executable}" dest="./${dir.publish}/${relative.image.dir}/" osfamily="${os.family}">
+                            <fileset dir="./${dir.source}/${relative.image.dir}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                            <arg value="-quiet"/>
+                            <arg value="-o7"/>
+                            <arg value="${strip-meta-tags}"/>
+                            <arg value="-out"/>
+                            <targetfile/>
+                            <srcfile/>
+                            <mapper type="identity"/>
+                        </apply>
+                        <var name="relative.image.dir" unset="true"/>
+                    </sequential>
+                </for>
             </then>
-            <elseif>
-                <os family="unix" />
-                <then>
-                    <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
-                    <echo message="*** Install optipng to enable png optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
-                </then>
-            </elseif>
-            <elseif>
-                <os family="windows" />
-                <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
-                <then>
-                  <if>
-                    <available file="./${dir.publish}/${dir.images}/"/>
-                      <then>
-                      <delete>
-                        <fileset dir="./${dir.publish}/${dir.images}/">
-                            <include name="**/*.png"/>
-                        </fileset>
-                      </delete>
-                    </then>
-                  </if>
-                    <apply executable="${basedir}/${dir.build.tools}/optipng-0.7-win32/optipng.exe" dest="./${dir.publish}/${dir.images}/" osfamily="windows">
-                        <fileset dir="./${dir.source}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
-                        <arg value="-quiet"/>
-                        <arg value="-o7"/>
-                        <arg value="${strip-meta-tags}"/>
-                        <arg value="-out"/>
-                        <targetfile/>
-                        <srcfile/>
-                        <mapper type="identity"/>
-                    </apply>
-                </then>
-            </elseif>
+            <else>
+                <!-- Print out message if optipng is not available -->
+                <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                <echo message="*** Install optipng to enable png optimization." />
+                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+            </else>
         </if>
     </target>
     <target name="-imagesjpg" depends="-mkdirs" description="(PRIVATE) Optimizes .jpg images using jpegtan">
         <echo message="Now, we clean up those jpgs..."/>
+
+        <!-- By default set strip-meta-tags to none -->
+        <var name="strip-meta-tags" value="none"/>
+
         <if>
             <equals arg1="${images.strip.metadata}" arg2="true"/>
             <then>
-                <var name="strip-meta-tags" value="none"/>
-            </then>
-            <else>
                 <var name="strip-meta-tags" value="all"/>
-            </else>
+            </then>
         </if>
-        
+
+        <!-- By default set jpegtran exec to windows's exe and set it to available -->
+        <var name="os.family" value="windows"/>
+        <var name="jpegtran.available" value="true"/>
+        <var name="jpegtran.executable" value="${basedir}/${dir.build.tools}/jpegtran.exe"/>
+
         <!-- On *nix's and OS X, check for jpegtran and give a helpful message if it's not installed -->
         <if>
-            <and>
-                <os family="unix" />
-                <available file="jpegtran" filepath="${ENV.PATH}" />
-            </and>
+            <os family="unix"/>
             <then>
-                <apply executable="jpegtran" dest="./${dir.publish}/${dir.images}" osfamily="unix">
-                    <fileset dir="${dir.source}/${dir.images}" includes="**/*.jpg" excludes="${images.bypass}, ${images.default.bypass}"/>
-                    <arg value="-copy"/>
-                    <arg value="${strip-meta-tags}"/>
-                    <arg value="-optimize"/>
-                    <arg value="-outfile"/>
-                    <targetfile/>
-                    <srcfile/>
-                    <mapper type="identity"/>
-                    <!-- you may want to flag optimized images. If so, do it here. Otherwise change this to type="identity" -->
-                    <!--<mapper type="glob" from="*.jpg" to="*.jpg"/>-->
-                </apply>
+                <var name="os.family" value="unix"/>
+                <!-- Change the exec for *nix systems -->
+                <var name="jpegtran.executable" value="jpegtran"/>
+                <if>
+                    <not>
+                        <available file="jpegtran" filepath="${ENV.PATH}"/>
+                    </not>
+                    <then>
+                        <!-- Set it to unavailable -->
+                        <var name="jpegtran.available" value="false"/>
+                    </then>
+                </if>
             </then>
-            <elseif>
-                <os family="unix" />
-                <then>
-                    <echo message="*** jpegtran NOT INSTALLED. SKIPPING OPTIMIZATION OF JPEGs." />
-                    <echo message="*** Install jpegtran to enable jpeg optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
-                </then>
-            </elseif>
         </if>
-        <apply executable="${basedir}/${dir.build.tools}/jpegtran.exe" dest="./${dir.publish}/${dir.images}" osfamily="windows">
-            <fileset dir="${dir.source}/${dir.images}" includes="**/*.jpg"  excludes="${images.bypass}, ${images.default.bypass}"/>
-            <arg value="-copy"/>
-            <arg value="${strip-meta-tags}"/>
-            <arg value="-optimize"/>
-            <arg value="-outfile"/>
-            <targetfile/>
-            <srcfile/>
-            <mapper type="identity"/>
-            <!-- you may want to flag optimized images. If so, do it here. Otherwise change this to type="identity" -->
-            <!--<mapper type="glob" from="*.jpg" to="*.jpg"/>-->
-        </apply>
+
+        <!-- If jpegtran is available, let's start it -->
+        <if>
+            <equals arg1="${jpegtran.available}" arg2="true"/>
+            <then>
+                <!-- Loop through every image directory, comma seperated list -->
+                <for param="image-dir">
+                    <path>
+                        <dirset dir="${dir.source}" includes="${dir.images}"/>
+                    </path>
+                    <sequential>
+                        <property name="relative.image.dir" location="@{image-dir}" relative="yes"/>
+
+                        <!-- Create the following image directory under publish if it does not exist -->
+                        <if>
+                            <not>
+                                <available file="${basedir}/${dir.publish}/${relative.image.dir}"/>
+                            </not>
+                            <then>
+                                <copy todir="${dir.publish}/${relative.image.dir}">
+                                    <dirset dir="${dir.source}/${relative.image.dir}"/>
+                                </copy>
+                            </then>
+                        </if>
+
+                        <apply executable="${jpegtran.executable}" dest="./${dir.publish}/${relative.image.dir}" osfamily="${os.family}">
+                            <fileset dir="${dir.source}/${relative.image.dir}" includes="**/*.jpg"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                            <arg value="-copy"/>
+                            <arg value="${strip-meta-tags}"/>
+                            <arg value="-optimize"/>
+                            <arg value="-outfile"/>
+                            <targetfile/>
+                            <srcfile/>
+                            <mapper type="identity"/>
+                            <!-- you may want to flag optimized images. If so, do it here. Otherwise change this to type="identity" -->
+                            <!--<mapper type="glob" from="*.jpg" to="*.jpg"/>-->
+                        </apply>
+                        <var name="relative.image.dir" unset="true"/>
+                    </sequential>
+                </for>
+            </then>
+            <else>
+                <echo message="*** jpegtran NOT INSTALLED. SKIPPING OPTIMIZATION OF JPEGs." />
+                <echo message="*** Install jpegtran to enable jpeg optimization." />
+                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+            </else>
+        </if>
     </target>
     <target name="-jsdoc3" description="(PRIVATE) Publishes documentation">
         <!-- Delete any existing docs directory -->
