@@ -270,26 +270,26 @@
                    -copyall"/>
     <target name="-buildkit.test"
           depends="-intro,
+                   -imagespng,
+                   -imagesjpg,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
                    -htmlbuildkit,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     <target name="-buildkit.production"
           depends="-intro,
+                   -imagespng,
+                   -imagesjpg,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
                    -htmlbuildkit,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     
@@ -301,26 +301,26 @@
                    -copyall"/>
     <target name="-build.test"
           depends="-intro,
+                   -imagespng,
+                   -imagesjpg,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
                    -htmlclean,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     <target name="-build.production"
           depends="-intro,
+                   -imagespng,
+                   -imagesjpg,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
                    -htmlclean,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     
@@ -332,26 +332,26 @@
                    -copyall"/>
     <target name="-minify.test"
           depends="-intro,
+                   -imagespng,
+                   -imagesjpg,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
                    -htmlcompress,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     <target name="-minify.production"
           depends="-intro,
+                   -imagespng,
+                   -imagesjpg,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
                    -htmlcompress,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     
@@ -570,25 +570,8 @@
     </target>
     
     <!-- HTML -->
-    <target name="-usemin" depends="-js.scripts.concat,-css" description="(PRIVATE) Replaces references to non-minified scripts">
+    <target name="-usemin" depends="-js.scripts.concat,-rev.image.filenames" description="(PRIVATE) Replaces references to non-minified scripts">
         <echo message="Switching to minified js files..."/>
-        
-        <!-- Changes to style.css or scripts.js mean that the html must be updated, and it will be.
-           Unfortunately, the html we want to update may not have the tags we want to replace(because it was updated before).
-           This outofdate check ensures that the html files have the markers for us to replace. -->
-        <outofdate property="needhtmlrefresh">
-            <sourcefiles>
-                <fileset dir="${dir.publish}" includes="${style.css}, ${scripts.js}"/>
-            </sourcefiles>
-            <targetfiles>
-                <fileset dir="${dir.intermediate}" includes="${page-files}"/>
-            </targetfiles>
-        </outofdate>
-        
-        <!-- force the files to be overwritten with older copies from source if needhtmlrefresh is set -->
-        <copy todir="${dir.intermediate}" overwrite="${needhtmlrefresh}">
-            <fileset dir="${dir.source}" includes="${page-files}"/>
-        </copy>
         
         <!-- switch from a regular jquery to minified -->
         <replaceregexp match="jquery-(\d|\d(\.\d)+)\.js" replace="jquery-\1.min.js" flags="g">
@@ -640,6 +623,14 @@
         replace="&lt;script src='${modules.js.dir}/\1'&gt;" flags="mg">
             <fileset dir="${dir.intermediate}" includes="${page-files}"/>
         </replaceregexp>
+
+        <!-- Save the concatenated and minified version of style.css, since we were working with it
+             earlier when revving image filenames [target: -rev.image.filenames] -->
+        <checksum file="${dir.intermediate}/${dir.css}/style-concat.min.css" algorithm="sha" property="css.fullsha" />
+        <propertyregex property="css.sha" input="${css.fullsha}" regexp=".{${hash.length}}" select="\0" />
+        <property name="style.css" value="${dir.css}/${css.sha}.css" />
+        <copy file="${dir.intermediate}/${dir.css}/style-concat.min.css" tofile="${dir.publish}/${dir.css}/${css.sha}.css" />
+
         <echo message="Updating the HTML with the new css filename: ${style.css}"/>
         <replaceregexp match="&lt;link(.+)href=['&quot;]?(.*)/${file.root.stylesheet}(?:\?.*)?['&quot;\s]?(.*/?&gt;)"
         replace="&lt;link\1href='\2/${css.sha}.css'\3" flags="m">
@@ -870,10 +861,7 @@
             <mapper type="merge" to="${basedir}/${dir.intermediate}/${dir.css}/style-concat.min.css"/>
             <targetfile/>
         </apply>
-        <checksum file="${dir.intermediate}/${dir.css}/style-concat.min.css" algorithm="sha" property="css.fullsha" />
-        <propertyregex property="css.sha" input="${css.fullsha}" regexp=".{${hash.length}}" select="\0" />
-        <property name="style.css" value="${dir.css}/${css.sha}.css" />
-        <copy file="${dir.intermediate}/${dir.css}/style-concat.min.css" tofile="${dir.publish}/${dir.css}/${css.sha}.css" />
+
         <echo message="Minifying any unconcatenated css files..."/>
         <apply executable="java" parallel="false">
             <fileset dir="${dir.source}/${dir.css}/" excludes="${concat-files}" includes="**/*.css"/>
@@ -895,7 +883,7 @@
     <!-- IMAGES -->
     <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng">
         <echo message="Optimizing images..."/>
-        <echo message="This part might take a while. But everything else is already done."/>
+        <echo message="This part might take a while."/>
         <echo message=" "/>
         <echo message="First, we run optipng on the .png files..."/>
         <if>
@@ -1090,6 +1078,204 @@
             <echo>Sass (scss): generated @{output}</echo>
         </sequential>
     </macrodef>
+
+    <target name="-needhtmlrefresh">
+        <echo message="Checking whether the HTML needs to be refreshed"/>
+        <!-- Changes to style.css or scripts.js mean that the html must be updated, and it will be.
+           Unfortunately, the html we want to update may not have the tags we want to replace(because it was updated before).
+           This outofdate check ensures that the html files have the markers for us to replace. -->
+        <outofdate property="needhtmlrefresh">
+            <sourcefiles>
+                <fileset dir="${dir.publish}" includes="${style.css}, ${scripts.js}"/>
+            </sourcefiles>
+            <targetfiles>
+                <fileset dir="${dir.intermediate}" includes="${page-files}"/>
+            </targetfiles>
+        </outofdate>
+
+        <!-- force the files to be overwritten with older copies from source if needhtmlrefresh is set -->
+        <copy todir="${dir.intermediate}" overwrite="${needhtmlrefresh}">
+            <fileset dir="${dir.source}" includes="${page-files}"/>
+        </copy>
+    </target>
+
+    <target name="-rev.image.filenames" depends="-needhtmlrefresh,-css">
+        <!-- We'll store here the images that get their name revved so we
+             can later on in -copy exclude them, so we don't have duplicates -->
+
+        <!-- By default set to empty -->
+        <var name="rev.files" value=""/>
+        <var name="rev.message" value=""/>
+
+        <!-- First check if it's enabled for either .html files -->
+        <if>
+            <equals arg1="${html.rev.images}" arg2="true"/>
+            <then>
+                <var name="rev.message" value="Revving image filenames inside html files."/>
+                <var name="rev.files" value="${page-files}"/>
+            </then>
+        </if>
+
+        <!-- Check if it's enabled for css -->
+        <if>
+            <equals arg1="${css.rev.images}" arg2="true"/>
+            <then>
+                <!-- Check if rev.files has been set -->
+                <if>
+                    <not>
+                        <equals arg1="${rev.files}" arg2=""/>
+                    </not>
+                    <then>
+                        <var name="rev.message" value="Revving image filenames inside html files and the main stylesheet."/>
+                        <!-- ${rev.files} is set, let's seperate the last set value with a comma -->
+                        <var name="rev.files" value="${rev.files}, ${dir.css}/style-concat.min.css"/>
+                    </then>
+                    <else>
+                        <var name="rev.message" value="Revving image filenames inside the main stylesheet."/>
+                        <!-- ${rev.files} is not set, set it -->
+                        <var name="rev.files" value="${dir.css}/style-concat.min.css"/>
+                    </else>
+                </if>
+            </then>
+        </if>
+
+        <if>
+            <not>
+                <equals arg1="${rev.files}" arg2=""/>
+            </not>
+            <then>
+                <echo message="${rev.message}"/>
+                <!-- Go through every page-file -->
+                <for param="page-file">
+                    <path>
+                        <fileset dir="${dir.intermediate}" includes="${rev.files}"/>
+                    </path>
+                    <sequential>
+                        <!-- Load each file -->
+                        <loadfile property="page.file" srcfile="@{page-file}"/>
+
+                        <!-- Set the default orig look path -->
+                        <var name="orig.look.path" value="${dir.source}"/>
+
+                        <!-- Set the default move path for images -->
+                        <var name="move.path" value="${dir.publish}"/>
+
+                        <!-- Set the default copy path for images -->
+                        <var name="copy.path" value="${dir.source}"/>
+                        <var name="copy.publish.path" value="${dir.publish}"/>
+
+                        <!-- Set the default delimiter, we'll use > here for HTML to be more consistent.
+                             In case some markup might be on a single line. -->
+                        <var name="page.delimiter" value=">"/>
+
+                        <basename property="page.file.base" file="@{page-file}"/>
+
+                        <if>
+                            <equals arg1="${page.file.base}" arg2="style-concat.min.css"/>
+                            <then>
+                                <!-- Since we're going through the minified version,
+                                     we can't use the line separator, we'll use : instead here
+                                     as the separator. -->
+                                <var name="page.delimiter" value=":"/>
+                                <var name="orig.look.path" value="${dir.source}/${dir.css}"/>
+                                <var name="move.path" value="${dir.publish}/${dir.css}"/>
+                                <var name="copy.publish.path" value="${dir.publish}/${dir.css}"/>
+                                <var name="copy.path" value="${dir.source}/${dir.css}"/>
+                            </then>
+                        </if>
+
+                        <!-- Go through the file by the delimiter -->
+                        <for delimiter="${page.delimiter}" param="content" list="${page.file}">
+                            <sequential>
+                                <!-- I set this up to support multiple backgrounds, such as:
+                                    background: url(first.png), url(second.png) -->
+                                <for delimiter="," param="contentsplit" list="@{content}">
+                                    <sequential>
+                                        <!-- Match the following: url(foo.png), href=foo.png, href="foo.png",
+                                            href='foo.png', src=foo.png, src='foo.png', src="foo.png" -->
+                                        <propertyregex property="image.name" input="@{contentsplit}" regexp="(src=|href=|url\()(['\u0022])?(?!data|http:|https:|ftp:|\/\/)(.*)(?=(\.(jpeg|jpg|png|gif)))" select="\3\4" override="true"/>
+                                        <propertyregex property="image.ext" input="${image.name}" regexp="(\.(jpeg|jpg|png|gif))" select="\0"/>
+                                        <basename property="image.name.base" file="${image.name}"/>
+                                        <if>
+                                            <isset property="image.name"/>
+                                            <then>
+                                                <available file="${orig.look.path}/${image.name}" property="image.exists"/>
+                                            </then>
+                                        </if>
+
+                                        <if>
+                                            <!-- Does the image exist? -->
+                                            <equals arg1="${image.exists}" arg2="true"/>
+                                            <then>
+                                                <!-- Get the checksum, we need to look in the source since the image might've already been renamed inside intermediate -->
+                                                <checksum file="${orig.look.path}/${image.name}" algorithm="sha" property="image.fullsha"/>
+
+                                                <!-- Let's shorten the string length depending
+                                                     on ${hash.length} -->
+                                                <propertyregex property="image.sha" input="${image.fullsha}" regexp=".{${hash.length}}" select="\0" />
+                                                <var name="image.sha" value="${image.sha}${image.ext}"/>
+
+                                                <!-- Shorten ../js/vendor/../../img to ../img -->
+                                                <property name="image.relative.path" location="${image.name}" relative="yes"/>
+
+                                                <!-- If the platform is Windows, let's replace
+                                                     backslashes with forward slashes -->
+                                                <if>
+                                                    <os family="windows" />
+                                                    <then>
+                                                        <propertyregex property="image.relative.path" input="${image.relative.path}" regexp="\\" replace="/" override="true"/>
+                                                    </then>
+                                                </if>
+
+                                                <!-- Simply remove the filename to know where the image is located -->
+                                                <propertyregex property="image.relative.path" input="${image.relative.path}" regexp="(.*)(?=${image.name.base})" select="\0" override="true"/>
+
+                                                <!-- Now we replace the image name with the hashed one -->
+                                                <replace file="@{page-file}" token="${image.name}" value="${image.relative.path}${image.sha}"/>
+
+                                                <!-- We need to check whether the file exists within publish/
+                                                     if it does (it has been optimized), and we'll simply
+                                                     rename it, if not we'll move it from the source. -->
+                                                <if>
+                                                    <available file="${move.path}/${image.name}"/>
+                                                    <then>
+                                                        <move file="${move.path}/${image.name}" tofile="${move.path}/${image.relative.path}${image.sha}" />
+                                                    </then>
+                                                    <else>
+                                                        <copy file="${copy.path}/${image.name}" tofile="${move.path}/${image.relative.path}${image.sha}"/>
+                                                    </else>
+                                                </if>
+                                            </then>
+                                        </if>
+
+                                        <var name="image.name" unset="true"/>
+                                        <var name="image.name.base" unset="true"/>
+                                        <var name="image.relative.path" unset="true"/>
+                                        <var name="image.sha" unset="true"/>
+                                        <var name="image.fullsha" unset="true"/>
+                                        <var name="image.ext" unset="true"/>
+                                        <var name="image.exists" unset="true"/>
+                                        <var name="curr.img.dir" unset="true"/>
+                                        <var name="img.dir" unset="true"/>
+                                    </sequential>
+                                </for> <!-- Comma seperated for loop ends-->
+                            </sequential>
+                        </for> <!-- Delimiter seperated for loop ends (either : or line by line) -->
+                        <var name="page.file" unset="true"/>
+                        <var name="page.file.base" unset="true"/>
+                        <var name="move.path" unset="true"/>
+                        <var name="copy.path" unset="true"/>
+                        <var name="copy.publish.path" unset="true"/>
+                        <var name="orig.look.path" unset="true"/>
+                    </sequential>
+                </for> <!-- File by file loop ends -->
+            </then>
+            <else>
+                <!-- Skipping image revving -->
+                <echo message="Skipping revving of image filenames.."/>
+            </else>
+        </if>
+    </target>
     
     <!-- Import project.xml (put any custom build targets in this file so that they aren't overwritten when build.xml is updated) -->
     <!-- See: https://github.com/h5bp/html5-boilerplate/issues/704 for discussion of the original pull request-->
