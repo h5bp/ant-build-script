@@ -85,7 +85,7 @@ On Mac, install [MacPorts](http://www.macports.org/install.php) and then do `sud
 
 * Get the [Java JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (JRE isn't enough).
 * Get [WinAnt](http://code.google.com/p/winant/) and point the installer to `Program Files/Java/jre6/bin/`
-* For detailed information on installing Ant for Windows, see this [step-by-step instruction by Nicholas Zakas](http://www.nczonline.net/blog/2012/04/12/how-to-install-apache-ant-on-windows/).
+* For detailed information on installing Ant for Windows, see this [step-by-step instruction by Nicholas Zakas](http://www.nczonline.net/blog/2012/04/12/how-to-install-apache-ant-on-windows/) or our own [detailed instructions](https://github.com/h5bp/ant-build-script/wiki/Detailed-Ant-Installation-Instructions)
 
 ## Using the Build Script
 
