@@ -30,7 +30,9 @@
             </not>
         </condition>
     </fail>
-    
+    <target name="version">
+      <echo message="H5BP Ant Build Script Version 1.0"/>
+    </target>
     <!--
     *************************************************
     * BASE TARGETS                                  *
@@ -242,10 +244,12 @@
     
     <!-- Target: basics -->
     <target name="-basics.dev"
-            depends="-intro,
+            depends="version,
+                     -intro,
                      -copyall"/>
     <target name="-basics.test"
-            depends="-intro,
+            depends="version,
+                     -intro,
                      -usemin,
                      -js.all.minify,
                      -js.main.concat,
@@ -254,7 +258,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-basics.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
@@ -265,10 +270,12 @@
     
     <!-- Target: text -->
     <target name="-text.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -copyall"/>
     <target name="-text.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
@@ -278,7 +285,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-text.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
@@ -290,12 +298,14 @@
     
     <!-- Target: buildkit -->
     <target name="-buildkit.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -copyall"/>
     <target name="-buildkit.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -307,7 +317,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-buildkit.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -321,12 +332,14 @@
     
     <!-- Target: build -->
     <target name="-build.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -copyall"/>
     <target name="-build.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -338,7 +351,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-build.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -352,12 +366,14 @@
     
     <!-- Target: minify -->
     <target name="-minify.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -copyall"/>
     <target name="-minify.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -369,7 +385,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-minify.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -941,22 +958,22 @@
         <!-- By default set os.family to windows, and optipng as available and it's executable -->
         <var name="os.family" value="windows"/>
         <var name="optipng.available" value="true"/>
-        <var name="optipng.executable" value="${basedir}/${dir.build.tools}/optipng-0.7-win32/optipng.exe"/>
+        <var name="optipng.executable" value="${basedir}/${dir.build.tools}/${tool.optipng}"/>
 
         <!-- osfamily=unix is actually true on OS X as well -->
         <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
         <if>
             <os family="unix"/>
             <then>
-            <shellscript shell="bash" outputproperty="optipng.version">
-                optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
-            </shellscript>
-            <echo message="Your optipng version is: ${optipng.version}"/>   
                 <if>
                     <!-- Then check for availability if unix -->
                     <available file="optipng" filepath="${ENV.PATH}"/>
                     <then>
                         <var name="optipng.executable" value="optipng"/>
+                        <shellscript shell="bash" outputproperty="optipng.version">
+                          optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
+                        </shellscript>
+                        <echo message="You have optipng installed and your version is: ${optipng.version}"/>     
                     </then>
                     <else>
                         <var name="optipng.available" value="false"/>
@@ -1037,40 +1054,67 @@
         <!-- On *nix's and OS X, check for advpng and give a helpful message if it's not installed -->
         
         <echo message="Now, we run advpng on the .png files..."/>
+        <!-- By default set os.family to windows, and optipng as available and it's executable -->
+        <var name="os.family" value="windows"/>
+        <var name="advpng.available" value="true"/>
+        <var name="advpng.executable" value="${basedir}/${dir.build.tools}/${tool.advpng}"/>
+
+        <!-- osfamily=unix is actually true on OS X as well -->
+        <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
         <if>
-            <and>
-                <os family="unix" />
-                <available file="advpng" filepath="${ENV.PATH}" />
-            </and>
+            <os family="unix"/>
             <then>
-                <apply executable="advpng" dest="./${dir.publish}/${dir.images}/" osfamily="unix">
-                    <fileset dir="./${dir.publish}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
-                    <arg line="-z"/>
-                    <arg line="-4"/>
-                    <srcfile/>
-                    <mapper type="identity"/>
-                </apply>
+                <if>
+                    <!-- Then check for availability if unix -->
+                    <available file="advpng" filepath="${ENV.PATH}"/>
+                    <then>
+                        <var name="advpng.executable" value="advpng"/>
+                        </then>
+                    <else>
+                        <var name="advpng.available" value="false"/>
+                    </else>
+                </if>
             </then>
-            <elseif>
-                <os family="unix" />
-                <then>
-                    <echo message="*** advpng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
-                    <echo message="*** Install advpng to enable advanced png optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
-                </then>
-            </elseif>
-            <elseif> <os family="windows" />
-                
-               <then>
-              <apply executable="${basedir}/${dir.build.tools}/${tool.advpng}" dest="./${dir.publish}/${dir.images}/" osfamily="windows">
-                <fileset dir="./${dir.publish}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
-                <arg line="-z"/>
-                <arg line="-4"/>
-                <srcfile/>
-                <mapper type="identity"/>
-                </apply>
-              </then>
-              </elseif>
+        </if>
+
+        <!-- Now check for availability -->
+        <if>
+            <equals arg1="${advpng.available}" arg2="true"/>
+            <then>
+              <for param="image-dir">
+                <path>
+                  <dirset dir="${dir.source}" includes="${dir.images}"/>
+                </path>
+                <sequential>
+                  <property name="relative.image.dir" location="@{image-dir}" relative="yes"/>
+                    <if>
+                      <not>
+                        <available file="${basedir}/${dir.publish}/${relative.image.dir}"/>
+                            </not>
+                            <then>
+                                <copy todir="${dir.publish}/${relative.image.dir}">
+                                    <dirset dir="${dir.source}/${relative.image.dir}"/>
+                                </copy>
+                            </then>
+                        </if>
+
+                        <apply executable="${advpng.executable}" dest="./${dir.publish}/${relative.image.dir}/" osfamily="${os.family}">
+                          <fileset dir="./${dir.publish}/${relative.image.dir}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                          <arg line="-z"/>
+                          <arg line="-4"/>
+                          <srcfile/>
+                          <mapper type="identity"/>
+                        </apply>
+                        <var name="relative.image.dir" unset="true"/>
+                    </sequential>
+                </for>
+            </then>
+            <else>
+                <!-- Print out message if advpng is not available -->
+                <echo message="*** advpng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                <echo message="*** Install advpng to enable advanced png optimization." />
+                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+            </else>
         </if>
     </target>
     <target name="-imagesjpg" depends="-mkdirs" description="(PRIVATE) Optimizes .jpg images using jpegtan">
@@ -1139,6 +1183,7 @@
                             <arg value="-copy"/>
                             <arg value="${strip-meta-tags}"/>
                             <arg value="-optimize"/>
+                            <arg value="${images.opts.progressive}"/>
                             <arg value="-outfile"/>
                             <targetfile/>
                             <srcfile/>
