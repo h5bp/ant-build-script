@@ -1,17 +1,17 @@
-# The h5bp ant build script
+The Ant Build Script is a tool that optimizes your code for production use on the web. 
 
-The build script is a tool that optimizes your code for production use on the web.
+It's designed to work with HTML5 Boilerplate with minimal configuration, but it's also here to serve as a rich source of Ant tasks you can use as the basis for your own custom build scripts.
 
 ## Why use it?
 
-Faster page load times and happy end users :)
+Faster page load times, improved workflow and happy end users :)
 
 ## What it does
 
 * Combines and minifies javascript (via Closure Compiler)
 * Inlines stylesheets specified using `@import` in your CSS
 * Combines and minifies CSS (using YUI Compressor)
-* Optimizes JPGs and PNGs (with jpegtran & optipng)
+* Optimizes JPGs and PNGs (with jpegtran, advpng & optipng)
 * Basic to aggressive html minification (via htmlcompressor)
 * Revises the file names of your assets so that you can use heavy caching (1 year expires).
 * Updates your HTML to reference these new hyper-optimized CSS + JS files
@@ -21,7 +21,11 @@ Faster page load times and happy end users :)
 * Runs your CSS through a code quality tool, CSSLint (optional)
 * Cache-busting support for a module directory
 * Optionally precompile LESS formatted CSS
+* Optionally precompile SASS formatted CSS
 * Optionally output JSDOC3 documentation
+* Optionally convert your JPGs to progressive JPGs
+* Optionally validates your HTML
+* Optionally set your script to use `async` or `defer`
 
 ## Add the build script to your project
 
