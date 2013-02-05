@@ -1,4 +1,4 @@
-### 1.0 (February 6, 2013)
+## 1.0 (February 6, 2013)
 
 - Added support for SASS (*.scss) files (#71)
 - Added optional jsdoc3 task (#70)
