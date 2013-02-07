@@ -30,7 +30,9 @@
             </not>
         </condition>
     </fail>
-    
+    <target name="version">
+      <echo message="H5BP Ant Build Script Version 1.0"/>
+    </target>
     <!--
     *************************************************
     * BASE TARGETS                                  *
@@ -208,6 +210,32 @@
         <echo>CSSLint Successful</echo>
     </target>
     
+    <!-- Validate target, run separately -->
+    <target name="validate">
+     <apply dir="${dir.source}/" executable="java" parallel="false">
+      <fileset dir="./${dir.source}/">
+        <include name="${file.root.page}"/>
+      </fileset>
+      <arg value="-jar" />
+      <arg path="./${dir.build.tools}/HTMLValidator.jar" />
+      <arg value="http://validator.nu" />
+      <srcfile/>
+      </apply>
+      <echo>HTML validator successful</echo>
+    </target>
+    
+    <!-- qunit target Example only since this will fit very differently into different workflows -->
+    <target name="qunit" description="runs QUnit tests using PhantomJS">
+      <apply executable="${basedir}/${dir.build.tools}/${tool.phantomJS}" >
+        <fileset dir="${dir.tests}"/>
+        <arg value="${basedir}/${dir.build.tools}/${tool.qunitrunner.js}" />
+        <arg value="--qunit"/>
+        <arg path="${basedir}/${dir.build.tools}/${tool.qunit.js}" />
+        <arg value="--tests"/>
+        <arg path="${dir.tests}" />
+        <srcfile/>
+      </apply>
+    </target>
     <!--
     *************************************************
     * BUILD TARGETS                                 *
@@ -216,10 +244,12 @@
     
     <!-- Target: basics -->
     <target name="-basics.dev"
-            depends="-intro,
+            depends="version,
+                     -intro,
                      -copyall"/>
     <target name="-basics.test"
-            depends="-intro,
+            depends="version,
+                     -intro,
                      -usemin,
                      -js.all.minify,
                      -js.main.concat,
@@ -228,7 +258,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-basics.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
@@ -239,10 +270,12 @@
     
     <!-- Target: text -->
     <target name="-text.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -copyall"/>
     <target name="-text.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
@@ -252,7 +285,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-text.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -usemin,
                    -js.all.minify,
                    -js.main.concat,
@@ -264,12 +298,14 @@
     
     <!-- Target: buildkit -->
     <target name="-buildkit.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -copyall"/>
     <target name="-buildkit.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -281,7 +317,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-buildkit.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -295,12 +332,14 @@
     
     <!-- Target: build -->
     <target name="-build.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -copyall"/>
     <target name="-build.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -312,7 +351,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-build.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -326,12 +366,14 @@
     
     <!-- Target: minify -->
     <target name="-minify.dev"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -copyall"/>
     <target name="-minify.test"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -343,7 +385,8 @@
                    -copy,
                    -jsdoc3"/>
     <target name="-minify.production"
-          depends="-intro,
+         depends="version,
+                     -intro,
                    -imagespng,
                    -imagesjpg,
                    -usemin,
@@ -366,6 +409,14 @@
         <echo message="Cleaning up previous build directory..."/>
         <delete dir="./${dir.intermediate}/"/>
         <delete dir="./${dir.publish}/"/>
+    </target>
+    <target name="compile">
+      <javac
+        target="1.5"
+        fork="true"
+        srcdir="${dir.build.tools}"
+        destdir="${dir.build.tools}"
+        includeantruntime="false" />
     </target>
     <target name="-intro" description="(PRIVATE) Kindly inform the developer about the impending magic">
         <!-- This is a private target -->
@@ -475,25 +526,29 @@
     </target>
    -->
    
-    <target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.js">
+<target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.js">
         <filelist id="file.root" dir="${dir.source}" files="${file.root.page}"/>
         <echo message="Concatenating Main JS scripts based on ${file.root.page}..."/>
-        <apply executable="java" parallel="false"
-          outputproperty="scripts.ordered">
-            <arg value="-cp"/>
-            <arg value="./${dir.build.tools}"/>
-            <arg value="ScriptsToConcat"/>
-            <first>
-                <filelist refid="file.root"/>
-            </first>
-        </apply>
-        <filelist id="scripts.toconcat" dir="./${dir.intermediate}/" files="${scripts.ordered}">
-        </filelist>
-        
-        <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+        <exec executable="java" outputproperty="scriptsToConcat">
+          <arg value="-classpath" />
+          <arg value="${dir.build.tools}" />
+           <arg value="FindAttribute" />
+           <arg value="${file.root.page}" />
+           <arg value="${build.jstoken}" />
+           <arg value="script" />
+           <arg value="src" />
+         </exec>
+
+    <!-- Concatenate scripts to intermediate/js/libs/libs.js -->
+    <!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+    <!-- Filter out byte order marks (see http://stackoverflow.com/questions/2742735/get-ant-concat-to-ignore-boms) -->
         <concat destfile="./${dir.intermediate}/${dir.js}/scripts-concat.min.js" overwrite="no">
-            <filelist refid="scripts.toconcat"/>
+          <filelist dir="./${dir.intermediate}/" files="${scriptsToConcat}" />
+          <filterchain>
+            <deletecharacters chars="&#xFEFF;" />
+          </filterchain>
         </concat>
+        
     </target>
 
     <target name="-js.scripts.concat" depends="-js.main.concat" if="build.concat.scripts">
@@ -544,7 +599,7 @@
                 <exclude name="${dir.js}/scripts-concat.js"/>
             </fileset>
             <arg line="-jar"/>
-            <arg path="./${dir.build.tools}/closure-compiler-v1346.jar"/>
+            <arg path="./${dir.build.tools}/${tool.compiler}"/>
             <arg line="--js"/>
             <srcfile/>
             <arg line="--compilation_level" />
@@ -559,7 +614,7 @@
         <!-- at this point all js files are minified with their original names -->
         
         <copy todir="${dir.publish}/${dir.js}">
-            <fileset dir="${dir.intermediate}/${dir.js}" includes="${file.js.bypass}, ${slug.libs}/*">
+            <fileset dir="${dir.intermediate}/${dir.js}" includes="${file.js.bypass}, ${slug.libs}/*, ${slug.modules}/*">
                 <exclude name="scripts-concat.js"/>
                 <exclude name="scripts-concat.min.js"/>
                 <exclude name="otherscripts-concat.js"/>
@@ -600,16 +655,19 @@
         <var name="matchRegex" value=""/>
         <var name="replaceRegex" value=""/>
         <if>
-            <isset property="script.require.path"/>
+          <isset property="script.require.path"/>
             <then>
                 <echo message="Updating HTML to reflect the use of RequireJS"/>
-                <var name="matchRegex" value="&lt;!-- scripts concatenated [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- end ((scripts)|(concatenated and minified scripts))\s*--&gt;"/>
+                <var name="matchRegex" value="&lt;!-- //-beg- ${build.jstoken} [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]**&lt;!-- //-end- ${build.jstoken} --&gt;"/>
                 <var name="replaceRegex" value="&lt;script data-main='\1/${scripts.sha}.js\' src='${script.require.path}'&gt;&lt;/script&gt;"/>
             </then>
             <else>
-                <echo message="Updating HTML to reflect the use of default script inclusion"/>
-                <var name="matchRegex" value="&lt;!-- scripts concatenated [\d\w\s\W]*&lt;script.*src=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- end ((scripts)|(concatenated and minified scripts))\s*--&gt;" />
-                <var name="replaceRegex" value="&lt;script src='\1/${scripts.sha}.js\'&gt;&lt;/script&gt;" />
+              <replaceregexp
+                match="&lt;!-- //-beg- ${build.jstoken} [\d\w\s\W]*&lt;script.*src=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]*&lt;!-- //-end- ${build.jstoken} --&gt;"
+                replace="&lt;script src=&quot;\1/${scripts.sha}.js&quot; ${scripts.async}  ${scripts.defer} &gt;&lt;/script&gt;"
+                flags="gs">
+                <fileset dir="${dir.intermediate}" includes="${page-files}" />
+              </replaceregexp>
             </else>
         </if>
         <!-- style.css replacement handled as a replacetoken above -->
@@ -729,7 +787,7 @@
         <for delimiter="${line.separator}" param="currline" list="${root}">
             <sequential>
                 <!-- does this line contain an h5bp-import? -->
-                <propertyregex property="export.name" input="@{currline}" regexp="^.*==\|== +(.*) +==+$" select="\1" casesensitive="true" override="true" />
+                <propertyregex property="export.name" input="@{currline}" regexp="^\/\*==\|== +(.*) +====\*\/+$" select="\1" casesensitive="true" override="true" />
                 <if>
                     <isset property="export.name"/>
                     <then>
@@ -881,7 +939,7 @@
     </target>
     
     <!-- IMAGES -->
-    <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng">
+    <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng and advpng">
         <echo message="Optimizing images..."/>
         <echo message="This part might take a while."/>
         <echo message=" "/>
@@ -900,7 +958,7 @@
         <!-- By default set os.family to windows, and optipng as available and it's executable -->
         <var name="os.family" value="windows"/>
         <var name="optipng.available" value="true"/>
-        <var name="optipng.executable" value="${basedir}/${dir.build.tools}/optipng-0.7-win32/optipng.exe"/>
+        <var name="optipng.executable" value="${basedir}/${dir.build.tools}/${tool.optipng}"/>
 
         <!-- osfamily=unix is actually true on OS X as well -->
         <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
@@ -912,11 +970,25 @@
                     <available file="optipng" filepath="${ENV.PATH}"/>
                     <then>
                         <var name="optipng.executable" value="optipng"/>
+                        <shellscript shell="bash" outputproperty="optipng.version">
+                          optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
+                        </shellscript>
+                        <echo message="You have optipng installed and your version is: ${optipng.version}"/>     
                     </then>
                     <else>
                         <var name="optipng.available" value="false"/>
                     </else>
                 </if>
+                <if> 
+                  <equals arg1="${optipng.version}" arg2="0.7"/>
+                  <then>
+                        <var name="optipng.executable" value="optipng"/>
+                    </then>
+                    <else>
+                        <var name="optipng.available" value="false"/>
+                    </else>
+                 </if>
+
                 <!-- Temporarily fixes #39 -->
                 <var name="strip-meta-tags" value=""/>
             </then>
@@ -975,6 +1047,72 @@
                 <!-- Print out message if optipng is not available -->
                 <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
                 <echo message="*** Install optipng to enable png optimization." />
+                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+            </else>
+        </if>
+        <!-- Let's do ADVPNG -->
+        <!-- On *nix's and OS X, check for advpng and give a helpful message if it's not installed -->
+        
+        <echo message="Now, we run advpng on the .png files..."/>
+        <!-- By default set os.family to windows, and optipng as available and it's executable -->
+        <var name="os.family" value="windows"/>
+        <var name="advpng.available" value="true"/>
+        <var name="advpng.executable" value="${basedir}/${dir.build.tools}/${tool.advpng}"/>
+
+        <!-- osfamily=unix is actually true on OS X as well -->
+        <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
+        <if>
+            <os family="unix"/>
+            <then>
+                <if>
+                    <!-- Then check for availability if unix -->
+                    <available file="advpng" filepath="${ENV.PATH}"/>
+                    <then>
+                        <var name="advpng.executable" value="advpng"/>
+                        </then>
+                    <else>
+                        <var name="advpng.available" value="false"/>
+                    </else>
+                </if>
+            </then>
+        </if>
+
+        <!-- Now check for availability -->
+        <if>
+            <equals arg1="${advpng.available}" arg2="true"/>
+            <then>
+              <for param="image-dir">
+                <path>
+                  <dirset dir="${dir.source}" includes="${dir.images}"/>
+                </path>
+                <sequential>
+                  <property name="relative.image.dir" location="@{image-dir}" relative="yes"/>
+                    <if>
+                      <not>
+                        <available file="${basedir}/${dir.publish}/${relative.image.dir}"/>
+                            </not>
+                            <then>
+                                <copy todir="${dir.publish}/${relative.image.dir}">
+                                    <dirset dir="${dir.source}/${relative.image.dir}"/>
+                                </copy>
+                            </then>
+                        </if>
+
+                        <apply executable="${advpng.executable}" dest="./${dir.publish}/${relative.image.dir}/" osfamily="${os.family}">
+                          <fileset dir="./${dir.publish}/${relative.image.dir}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                          <arg line="-z"/>
+                          <arg line="-4"/>
+                          <srcfile/>
+                          <mapper type="identity"/>
+                        </apply>
+                        <var name="relative.image.dir" unset="true"/>
+                    </sequential>
+                </for>
+            </then>
+            <else>
+                <!-- Print out message if advpng is not available -->
+                <echo message="*** advpng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                <echo message="*** Install advpng to enable advanced png optimization." />
                 <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
             </else>
         </if>
@@ -1045,6 +1183,7 @@
                             <arg value="-copy"/>
                             <arg value="${strip-meta-tags}"/>
                             <arg value="-optimize"/>
+                            <arg value="${images.opts.progressive}"/>
                             <arg value="-outfile"/>
                             <targetfile/>
                             <srcfile/>

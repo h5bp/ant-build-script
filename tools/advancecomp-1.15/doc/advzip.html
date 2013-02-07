@@ -1,0 +1,149 @@
+<html>
+<head>
+<title>AdvanceCOMP ZIP Compression Utility</title>
+</head>
+<body>
+<center><h2>AdvanceCOMP ZIP Compression Utility</h2></center>
+<h2><a name="1">1</a> 
+Synopsis
+</h2>
+<pre>
+advzip [-a, --add] [-x, --extract] [-l, --list]
+&nbsp;&nbsp;&nbsp;&nbsp;[-z, --recompress] [-t, --test] [-0, --shrink-store]
+&nbsp;&nbsp;&nbsp;&nbsp;[-1, --shrink-fast] [-2, --shrink-normal] [-3, --shrink-extra]
+&nbsp;&nbsp;&nbsp;&nbsp;[-4, --shrink-insane] [-N, --not-zip] [-p, --pedantic] [-q, --quiet]
+&nbsp;&nbsp;&nbsp;&nbsp;[-h, --help] [-V, --version] ARCHIVES... [FILES...]
+</pre>
+<h2><a name="2">2</a> 
+Description
+</h2>
+The main purpose of this utility is to recompress and test
+the zip archives to get the smallest possible size.
+<p>
+For recompression the 7-Zip (www.7-zip.com) Deflate
+implementation is used. This implementation generally
+gives 5-10% more compression than the zLib Deflate
+implementation.
+<p>
+For experimental purpose also the 7-Zip LZMA algorithm is
+available with the -N option. In this case, the generated
+zips WILL NOT BE USABLE by any other program. To make
+them usable you need to recompress them without the -N
+option. Generally this algorithm gives 10-20% more
+compression than the 7-Zip Deflate implementation.
+<h2><a name="3">3</a> 
+Options
+</h2>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-a, --add ARCHIVE FILES...
+</strong></td></tr><tr><td>
+Create the specified archive with the specified
+files. You must specify only one archive.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-x, --extract ARCHIVE
+</strong></td></tr><tr><td>
+Extract all the files on the specified archive. You
+must specify only one archive.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-l, --list ARCHIVES...
+</strong></td></tr><tr><td>
+List the content of the specified archives.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-z, --recompress ARCHIVES...
+</strong></td></tr><tr><td>
+Recompress the specified archives. If the -1, -2,
+-3 options are specified, it's used the smallest file
+choice from: the previous compressed data, the new
+compression and the uncompressed format. If the -0
+option is specified the archive is always rewritten
+without any compression.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-t, --test ARCHIVES...
+</strong></td></tr><tr><td>
+Test the specified archives. The tests may be
+extended with the -p option.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-N, --not-zip
+</strong></td></tr><tr><td>
+Use the LZMA algorithm when compressing. The
+generated zips will not be readable by any other
+application!
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-p, --pedantic
+</strong></td></tr><tr><td>
+Be pedantic on the zip tests. If this flag is
+enabled some more extensive tests on the zip
+integrity are done. These tests are generally not
+done by other zip utilities.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-0, --shrink-store
+</strong></td></tr><tr><td>
+Disable the compression. The file is
+only stored and not compressed. This option is
+very useful to expand the archives of .png and .mp3
+files. These files are already compressed, trying to
+compress them another time is really a waste of time
+and resource.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-1, --shrink-fast
+</strong></td></tr><tr><td>
+Set the compression level to "fast".
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-2, --shrink-normal
+</strong></td></tr><tr><td>
+Set the compression level to "normal". This is the
+default level of compression.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-3, --shrink-extra
+</strong></td></tr><tr><td>
+Set the compression level to "extra".
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-4, --shrink-insane
+</strong></td></tr><tr><td>
+Set the compression level to "insane".
+</td></tr>
+</table>
+<h2><a name="4">4</a> 
+Copyright
+</h2>
+This file is Copyright (C) 2002 Andrea Mazzoleni, Filipe Estima
+<h2><a name="5">5</a> 
+See Also
+</h2>
+advpng(1), advmng(1), advdef(1)
+</body>
+</html>

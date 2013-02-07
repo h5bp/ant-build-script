@@ -1,0 +1,76 @@
+                    =======================================
+                    AdvanceCOMP Deflate Compression Utility
+                    =======================================
+
+
+1 SYNOPSIS
+==========
+
+advdef [-z, --recompress] [-0, --shrink-store]
+	[-1, --shrink-fast] [-2, --shrink-normal] [-3, --shrink-extra]
+	[-4, --shrink-insane] [-f, --force] [-q, --quiet]
+	[-h, --help] [-V, --version] FILES...
+
+
+2 DESCRIPTION
+=============
+
+The main purpose of this utility is to recompress the
+data present in the .png, .mng, .gz, .tgz and .svgz
+files.
+
+The internal structure of the files isn't changed.
+Only the compressed data is modified.
+
+
+3 OPTIONS
+=========
+
+    -z, --recompress FILES...
+        Recompress the specified files. If the -1, -2, -3, -4
+        options are specified it's used the smallest file
+        choice from the previous compressed data and the
+        new compression. If the -0 option is specified the
+        file is always rewritten without any compression.
+
+    -0, --shrink-store
+        Disable the compression. The file is
+        only stored and not compressed. The file is always
+        rewritten also if it's bigger.
+
+    -1, --shrink-fast
+        Set the compression level to "fast".
+
+    -2, --shrink-normal
+        Set the compression level to "normal". This is the
+        default level of compression.
+
+    -3, --shrink-extra
+        Set the compression level to "extra".
+
+    -4, --shrink-insane
+        Set the compression level to "insane". It's VERY
+        SLOW.
+
+    -f, --force
+        Force the use of the new file also if it's bigger.
+
+
+4 LIMITATIONS
+=============
+
+The advdef program cannot be used to recompress huge files
+because it needs to allocate memory for both the complete
+compressed and uncompressed data.
+
+
+5 COPYRIGHT
+===========
+
+This file is Copyright (C) 2003, 2004 Andrea Mazzoleni
+
+
+6 SEE ALSO
+==========
+
+advpng(1), advmng(1), advzip(1), gzip(1), bzip2(1)

@@ -1,0 +1,250 @@
+<html>
+<head>
+<title>History For AdvanceCOMP</title>
+</head>
+<body>
+<center><h2>History For AdvanceCOMP</h2></center>
+<h2> 
+AdvanceCOMP Version 1.15 2005/10
+</h2>
+<ul>
+<li>
+Fixed the date displayed with the -l advzip command.
+</li>
+<li>
+The advdef utility now detects the file type from the file
+header instead of using the extension.
+</li>
+<li>
+Fixed a lot of bugs in the 64 bits platforms.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.14 2005/02
+</h2>
+<ul>
+<li>
+Relaxed a consistency check for the local header in zip files.
+The crc and size entries are allowed to contain the real
+value also if a data descriptor is present.
+</li>
+<li>
+Fixed the conversion of RGB images with less than 256 color
+with transparency data.
+</li>
+<li>
+Minor fixes at the documentation.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.13 2004/11
+</h2>
+<ul>
+<li>
+Added support for .svgz files at advdef [rener].
+</li>
+<li>
+Fixed the 8 bit color reduction of 32 bit png files.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.12 2004/09
+</h2>
+<ul>
+<li>
+Fixed a compilation problem with gcc 3.4.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.11 2004/07
+</h2>
+<ul>
+<li>
+Fixed a FreeBSD libc compatibility issue recompressing
+.gz files [Radim Kolar].
+</li>
+<li>
+Fixed a segmentation fault when some invalid
+compressed .zip files are tested.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.10 2004/04
+</h2>
+<ul>
+<li>
+Added support for alpha channel and the new -n option
+at advmng.
+</li>
+<li>
+Fixed the uncompressing error "Invalid compressed data in ..."
+with some GZIP files [Christian Lestrade].
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.9 2003/11
+</h2>
+<ul>
+<li>
+Added support for .tgz files at advdef.
+</li>
+<li>
+Added the -a option at advmng to create .mng files from
+a sequence of .png files.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.8 2003/10
+</h2>
+<ul>
+<li>
+Added support for .gz files at advdef.
+</li>
+<li>
+Fixed support for .png files with splitted IDATs.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.7 2003/08
+</h2>
+<ul>
+<li>
+Fixed a Segmentation Fault bug on the advmng -r option on
+the latest gcc.
+</li>
+<li>
+Better and faster (MMX) move recognition in the advmng scroll
+compression.
+</li>
+<li>
+The frame reduction of the advmng utility is now done only if possible.
+The compression process never fails.
+</li>
+<li>
+Added a new -S (--scroll-square) option at advmng.
+</li>
+<li>
+Added a new -v (--verbose) option at advmng to show the
+compression status.
+</li>
+<li>
+Changed the internal ID for the bzip2 and LZMA compression.
+The bzip2 ID is now compatible with the PKWARE specification.
+</li>
+<li>
+Added support for RGB images with alpha channel at the advpng utility.
+</li>
+<li>
+Updated with automake 1.7.6.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.6 2003/05
+</h2>
+<ul>
+<li>
+Added the `-x' option at the advmng utility to export .png files
+from a .mng clip. Useful to compress it in an MPEG file.
+</li>
+<li>
+Fixed the support for zips with additional data descriptors.
+</li>
+<li>
+Updated with autoconf 2.57 and automake 1.7.4.
+</li>
+<li>
+Some fixes for the gcc 3.3 compiler.
+</li>
+</ul>
+<h2> 
+AdvanceCOMP Version 1.5 2003/01
+</h2>
+<ul>
+<li>
+Splitted from AdvanceSCAN
+</li>
+<li>
+Added the `advdef' compression utility.
+</li>
+</ul>
+<h2> 
+AdvanceSCAN Version 1.4 2002/12
+</h2>
+<ul>
+<li>
+Fixed a bug in the advmng utility when it was called with
+more than one file in the command line. The program
+was incorrectly adding a PLTE chunk at rgb images.
+</li>
+</ul>
+<h2> 
+AdvanceSCAN Version 1.3 2002/11
+</h2>
+<ul>
+<li>
+Added the support for the transparency tRNS chunk at the
+advpng utility.
+</li>
+<li>
+Upgraded at the latest Advance Library.
+</li>
+<li>
+Fixes at the docs. [Filipe Estima]
+</li>
+<li>
+Minor changes at the autoconf/automake scripts.
+</li>
+</ul>
+<h2> 
+AdvanceSCAN Version 1.2 2002/08
+</h2>
+<ul>
+<li>
+Added the advpng utility to compress the PNG files.
+</li>
+<li>
+Added the advmng utility to compress the MNG files.
+</li>
+<li>
+Added a Windows version.
+</li>
+<li>
+Other minor fixes.
+</li>
+</ul>
+<h2> 
+AdvanceSCAN Version 1.1 2002/06
+</h2>
+<ul>
+<li>
+Fixed an infinite loop bug testing some small damaged zips.
+</li>
+<li>
+Removed some warning compiling with gcc 3.1.
+</li>
+</ul>
+<h2> 
+AdvanceSCAN Version 1.0 2002/05
+</h2>
+<ul>
+<li>
+First public release.
+</li>
+<li>
+Fixed the compression percentage computation on big files.
+</li>
+<li>
+Added the --pedantic option at the advzip utility. These
+tests are only done if requested.
+</li>
+</ul>
+<h2> 
+AdvanceSCAN Version 0.6-beta 2002/05
+</h2>
+<ul>
+<li>
+Added the AdvanceZIP utility.
+</li>
+</ul>
+</body>
+</html>

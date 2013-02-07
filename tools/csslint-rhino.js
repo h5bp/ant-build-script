@@ -1,4 +1,4 @@
-/*! 
+/*!
 CSSLint
 Copyright (c) 2011 Nicole Sullivan and Nicholas C. Zakas. All rights reserved.
 
@@ -21,9 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 14-May-2012 10:24:48 */
+/* Build time: 17-January-2013 10:55:01 */
 var CSSLint = (function(){
-
 /*!
 Parser-Lib
 Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
@@ -47,7 +46,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.1.7, Build time: 4-May-2012 03:57:04 */
+/* Version v0.2.2, Build time: 17-January-2013 10:26:34 */
 var parserlib = {};
 (function(){
 
@@ -934,7 +933,7 @@ TokenStreamBase : TokenStreamBase
 })();
 
 
-/* 
+/*
 Parser-Lib
 Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
 
@@ -957,7 +956,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.1.7, Build time: 4-May-2012 03:57:04 */
+/* Version v0.2.2, Build time: 17-January-2013 10:26:34 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1106,7 +1105,36 @@ var Colors = {
     white           :"#ffffff",
     whitesmoke      :"#f5f5f5",
     yellow          :"#ffff00",
-    yellowgreen     :"#9acd32"
+    yellowgreen     :"#9acd32",
+    //CSS2 system colors http://www.w3.org/TR/css3-color/#css2-system
+    activeBorder        :"Active window border.",
+    activecaption       :"Active window caption.",
+    appworkspace        :"Background color of multiple document interface.",
+    background          :"Desktop background.",
+    buttonface          :"The face background color for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttonhighlight     :"The color of the border facing the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttonshadow        :"The color of the border away from the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttontext          :"Text on push buttons.",
+    captiontext         :"Text in caption, size box, and scrollbar arrow box.",
+    graytext            :"Grayed (disabled) text. This color is set to #000 if the current display driver does not support a solid gray color.",
+    highlight           :"Item(s) selected in a control.",
+    highlighttext       :"Text of item(s) selected in a control.",
+    inactiveborder      :"Inactive window border.",
+    inactivecaption     :"Inactive window caption.",
+    inactivecaptiontext :"Color of text in an inactive caption.",
+    infobackground      :"Background color for tooltip controls.",
+    infotext            :"Text color for tooltip controls.",
+    menu                :"Menu background.",
+    menutext            :"Text in menus.",
+    scrollbar           :"Scroll bar gray area.",
+    threeddarkshadow    :"The color of the darker (generally outer) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedface          :"The face background color for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedhighlight     :"The color of the lighter (generally outer) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedlightshadow   :"The color of the darker (generally inner) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedshadow        :"The color of the lighter (generally inner) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    window              :"Window background.",
+    windowframe         :"Window frame.",
+    windowtext          :"Text in windows."
 };
 /*global SyntaxUnit, Parser*/
 /**
@@ -1195,7 +1223,7 @@ MediaFeature.prototype.constructor = MediaFeature;
  */
 function MediaQuery(modifier, mediaType, features, line, col){
     
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE); 
 
     /**
      * The media modifier ("not" or "only")
@@ -1934,18 +1962,21 @@ Parser.prototype = function(){
                 });              
             },
 
-            _operator: function(){
+            _operator: function(inFunction){
             
                 /*
-                 * operator
+                 * operator (outside function)
                  *  : '/' S* | ',' S* | /( empty )/
+                 * operator (inside function)
+                 *  : '/' S* | '+' S* | '*' S* | '-' S* /( empty )/
                  *  ;
                  */    
                  
                 var tokenStream = this._tokenStream,
                     token       = null;
                 
-                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA])){
+                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA]) ||
+                    (inFunction && tokenStream.match([Tokens.PLUS, Tokens.STAR, Tokens.MINUS]))){
                     token =  tokenStream.token();
                     this._readWhitespace();
                 } 
@@ -2171,7 +2202,7 @@ Parser.prototype = function(){
                         
                         //there must be a next selector
                         if (nextSelector === null){
-                            this._unexpectedToken(this.LT(1));
+                            this._unexpectedToken(tokenStream.LT(1));
                         } else {
                         
                             //nextSelector is an instance of SelectorPart
@@ -2556,7 +2587,7 @@ Parser.prototype = function(){
                 while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
                         Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
                         Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
-                        Tokens.RESOLUTION])){
+                        Tokens.RESOLUTION, Tokens.SLASH])){
                     
                     value += tokenStream.token().value;
                     value += this._readWhitespace();                        
@@ -2732,7 +2763,7 @@ Parser.prototype = function(){
                 return result;
             },
             
-            _expr: function(){
+            _expr: function(inFunction){
                 /*
                  * expr
                  *   : term [ operator term ]*
@@ -2751,8 +2782,8 @@ Parser.prototype = function(){
                     values.push(value);
                     
                     do {
-                        operator = this._operator();
-        
+                        operator = this._operator(inFunction);
+
                         //if there's an operator, keep building up the value parts
                         if (operator){
                             values.push(operator);
@@ -2888,7 +2919,7 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.FUNCTION)){
                     functionText = tokenStream.token().value;
                     this._readWhitespace();
-                    expr = this._expr();
+                    expr = this._expr(true);
                     functionText += expr;
                     
                     //START: Horrible hack in case it's an IE filter
@@ -3025,9 +3056,15 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     token,
                     tt,
-                    name;            
+                    name,
+                    prefix = "";            
                     
                 tokenStream.mustMatch(Tokens.KEYFRAMES_SYM);
+                token = tokenStream.token();
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
+                    prefix = RegExp.$1;
+                }
+                
                 this._readWhitespace();
                 name = this._keyframe_name();
                 
@@ -3037,8 +3074,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "startkeyframes",
                     name:   name,
-                    line:   name.line,
-                    col:    name.col
+                    prefix: prefix,
+                    line:   token.startLine,
+                    col:    token.startCol
                 });                
                 
                 this._readWhitespace();
@@ -3054,8 +3092,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "endkeyframes",
                     name:   name,
-                    line:   name.line,
-                    col:    name.col
+                    prefix: prefix,
+                    line:   token.startLine,
+                    col:    token.startCol
                 });                      
                     
                 this._readWhitespace();
@@ -3494,7 +3533,7 @@ var Properties = {
     "-o-animation-name"                : { multi: "none | <ident>", comma: true },
     "-o-animation-play-state"          : { multi: "running | paused", comma: true },        
     
-    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | inherit",
+    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | none | inherit",
     "azimuth"                       : function (expression) {
         var simple      = "<angle> | leftwards | rightwards | inherit",
             direction   = "left-side | far-left | left | center-left | center | center-right | right | far-right | right-side",
@@ -3615,7 +3654,7 @@ var Properties = {
             valid = ValidationTypes.isAny(expression, numeric);
             if (!valid) {
             
-                if (expression.peek() == "/" && count > 1 && !slash) {
+                if (expression.peek() == "/" && count > 0 && !slash) {
                     slash = true;
                     max = count + 5;
                     expression.next();
@@ -3703,7 +3742,7 @@ var Properties = {
     
     //D
     "direction"                     : "ltr | rtl | inherit",
-    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker",
     "dominant-baseline"             : 1,
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
@@ -3837,6 +3876,7 @@ var Properties = {
     "pitch"                         : 1,
     "pitch-range"                   : 1,
     "play-during"                   : 1,
+    "pointer-events"                : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit",
     "position"                      : "static | relative | absolute | fixed | inherit",
     "presentation-level"            : 1,
     "punctuation-trim"              : 1,
@@ -3905,7 +3945,7 @@ var Properties = {
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
     
     //V
-    "vertical-align"                : "<percentage> | <length> | baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit",
+    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
     "visibility"                    : "visible | hidden | collapse | inherit",
     "voice-balance"                 : 1,
     "voice-duration"                : 1,
@@ -3918,7 +3958,7 @@ var Properties = {
     "volume"                        : 1,
     
     //W
-    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit",
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap", //http://perishablepress.com/wrapping-content/
     "white-space-collapse"          : 1,
     "widows"                        : "<integer> | inherit",
     "width"                         : "<length> | <percentage> | auto | inherit" ,
@@ -5581,7 +5621,7 @@ var Tokens  = [
     //{ name: "ATKEYWORD"},
     
     //CSS3 animations
-    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-ms-keyframes" ] },
+    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-o-keyframes" ] },
 
     //important symbol
     { name: "IMPORTANT_SYM"},
@@ -5997,7 +6037,7 @@ var ValidationTypes = {
     },
     
     /**
-     * Determines if the next part(s) of the given expresion
+     * Determines if the next part(s) of the given expression
      * are one of a group.
      */
     isAnyOfGroup: function(expression, types) {
@@ -6078,7 +6118,11 @@ var ValidationTypes = {
         },
         
         "<length>": function(part){
-            return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+            if (part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
+                return true;
+            }else{
+                return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+            }
         },
         
         "<color>": function(part){
@@ -6144,10 +6188,16 @@ var ValidationTypes = {
             var types   = this,
                 result  = false,
                 numeric = "<percentage> | <length>",
-                xDir    = "left | center | right",
-                yDir    = "top | center | bottom",
-                part,
-                i, len;
+                xDir    = "left | right",
+                yDir    = "top | bottom",
+                count = 0,
+                hasNext = function() {
+                    return expression.hasNext() && expression.peek() != ",";
+                };
+
+            while (expression.peek(count) && expression.peek(count) != ",") {
+                count++;
+            }
             
 /*
 <position> = [
@@ -6159,40 +6209,48 @@ var ValidationTypes = {
   [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
   [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
 ]
+*/
 
-*/            
-                
-            if (ValidationTypes.isAny(expression, "top | bottom")) {
-                result = true;
+            if (count < 3) {
+                if (ValidationTypes.isAny(expression, xDir + " | center | " + numeric)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, yDir + " | center | " + numeric);
+                } else if (ValidationTypes.isAny(expression, yDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, xDir + " | center");
+                }
             } else {
-                
-                //must be two-part
-                if (ValidationTypes.isAny(expression, numeric)){
-                    if (expression.hasNext()){
-                        result = ValidationTypes.isAny(expression, numeric + " | " + yDir);
-                    }
-                } else if (ValidationTypes.isAny(expression, xDir)){
-                    if (expression.hasNext()){
-                        
-                        //two- or three-part
-                        if (ValidationTypes.isAny(expression, yDir)){
+                if (ValidationTypes.isAny(expression, xDir)) {
+                    if (ValidationTypes.isAny(expression, yDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, numeric);
+                    } else if (ValidationTypes.isAny(expression, numeric)) {
+                        if (ValidationTypes.isAny(expression, yDir)) {
                             result = true;
-                      
                             ValidationTypes.isAny(expression, numeric);
-                            
-                        } else if (ValidationTypes.isAny(expression, numeric)){
-                        
-                            //could also be two-part, so check the next part
-                            if (ValidationTypes.isAny(expression, yDir)){                                    
-                                ValidationTypes.isAny(expression, numeric);                               
-                            }
-                            
+                        } else if (ValidationTypes.isAny(expression, "center")) {
                             result = true;
                         }
                     }
-                }                                 
-            }            
-
+                } else if (ValidationTypes.isAny(expression, yDir)) {
+                    if (ValidationTypes.isAny(expression, xDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, numeric);
+                    } else if (ValidationTypes.isAny(expression, numeric)) {
+                        if (ValidationTypes.isAny(expression, xDir)) {
+                                result = true;
+                                ValidationTypes.isAny(expression, numeric);
+                        } else if (ValidationTypes.isAny(expression, "center")) {
+                            result = true;
+                        }
+                    }
+                } else if (ValidationTypes.isAny(expression, "center")) {
+                    if (ValidationTypes.isAny(expression, xDir + " | " + yDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, numeric);
+                    }
+                }
+            }
             
             return result;
         },
@@ -6299,9 +6357,10 @@ var ValidationTypes = {
 };
 
 
+
 parserlib.css = {
-Colors              :Colors,    
-Combinator          :Combinator,                
+Colors              :Colors,
+Combinator          :Combinator,
 Parser              :Parser,
 PropertyName        :PropertyName,
 PropertyValue       :PropertyValue,
@@ -6319,7 +6378,6 @@ ValidationError     :ValidationError
 })();
 
 
-
 /**
  * Main CSSLint object.
  * @class CSSLint
@@ -6329,11 +6387,12 @@ ValidationError     :ValidationError
 /*global parserlib, Reporter*/
 var CSSLint = (function(){
 
-    var rules      = [],
-        formatters = [],
-        api        = new parserlib.util.EventTarget();
-        
-    api.version = "0.9.8";
+    var rules           = [],
+        formatters      = [],
+        embeddedRuleset = /\/\*csslint([^\*]*)\*\//,
+        api             = new parserlib.util.EventTarget();
+
+    api.version = "0.9.10";
 
     //-------------------------------------------------------------------------
     // Rule Management
@@ -6356,17 +6415,69 @@ var CSSLint = (function(){
     api.clearRules = function(){
         rules = [];
     };
-    
+
     /**
      * Returns the rule objects.
      * @return An array of rule objects.
      * @method getRules
      */
     api.getRules = function(){
-        return [].concat(rules).sort(function(a,b){ 
+        return [].concat(rules).sort(function(a,b){
             return a.id > b.id ? 1 : 0;
         });
     };
+
+    /**
+     * Returns a ruleset configuration object with all current rules.
+     * @return A ruleset object.
+     * @method getRuleset
+     */
+    api.getRuleset = function() {
+        var ruleset = {},
+            i = 0,
+            len = rules.length;
+
+        while (i < len){
+            ruleset[rules[i++].id] = 1;    //by default, everything is a warning
+        }
+
+        return ruleset;
+    };
+
+    /**
+     * Returns a ruleset object based on embedded rules.
+     * @param {String} text A string of css containing embedded rules.
+     * @param {Object} ruleset A ruleset object to modify.
+     * @return {Object} A ruleset object.
+     * @method getEmbeddedRuleset
+     */
+    function applyEmbeddedRuleset(text, ruleset){
+        var valueMap,
+            embedded = text && text.match(embeddedRuleset),
+            rules = embedded && embedded[1];
+
+        if (rules) {
+            valueMap = {
+                "true": 2,  // true is error
+                "": 1,      // blank is warning
+                "false": 0, // false is ignore
+
+                "2": 2,     // explicit error
+                "1": 1,     // explicit warning
+                "0": 0      // explicit ignore
+            };
+
+            rules.toLowerCase().split(",").forEach(function(rule){
+                var pair = rule.split(":"),
+                    property = pair[0] || "",
+                    value = pair[1] || "";
+
+                ruleset[property.trim()] = valueMap[value.trim()];
+            });
+        }
+
+        return ruleset;
+    }
 
     //-------------------------------------------------------------------------
     // Formatters
@@ -6381,7 +6492,7 @@ var CSSLint = (function(){
         // formatters.push(formatter);
         formatters[formatter.id] = formatter;
     };
-    
+
     /**
      * Retrieves a formatter for use.
      * @param {String} formatId The name of the format to retrieve.
@@ -6391,7 +6502,7 @@ var CSSLint = (function(){
     api.getFormatter = function(formatId){
         return formatters[formatId];
     };
-    
+
     /**
      * Formats the results in a particular format for a single file.
      * @param {Object} result The results returned from CSSLint.verify().
@@ -6404,16 +6515,16 @@ var CSSLint = (function(){
     api.format = function(results, filename, formatId, options) {
         var formatter = this.getFormatter(formatId),
             result = null;
-            
+
         if (formatter){
             result = formatter.startFormat();
             result += formatter.formatResults(results, filename, options || {});
             result += formatter.endFormat();
         }
-        
+
         return result;
     };
-    
+
     /**
      * Indicates if the given format is supported.
      * @param {String} formatId The ID of the format to check.
@@ -6447,20 +6558,22 @@ var CSSLint = (function(){
             parser = new parserlib.css.Parser({ starHack: true, ieFilters: true,
                                                 underscoreHack: true, strict: false });
 
+        // normalize line endings
         lines = text.replace(/\n\r?/g, "$split$").split('$split$');
-        
+
         if (!ruleset){
-            ruleset = {};
-            while (i < len){
-                ruleset[rules[i++].id] = 1;    //by default, everything is a warning
-            }
+            ruleset = this.getRuleset();
         }
-        
+
+        if (embeddedRuleset.test(text)){
+            ruleset = applyEmbeddedRuleset(text, ruleset);
+        }
+
         reporter = new Reporter(lines, ruleset);
-        
+
         ruleset.errors = 2;       //always report parsing errors as errors
         for (i in ruleset){
-            if(ruleset.hasOwnProperty(i)){
+            if(ruleset.hasOwnProperty(i) && ruleset[i]){
                 if (rules[i]){
                     rules[i].init(parser, reporter);
                 }
@@ -6477,9 +6590,10 @@ var CSSLint = (function(){
 
         report = {
             messages    : reporter.messages,
-            stats       : reporter.stats
+            stats       : reporter.stats,
+            ruleset     : reporter.ruleset
         };
-        
+
         //sort by line numbers, rollups at the bottom
         report.messages.sort(function (a, b){
             if (a.rollup && !b.rollup){
@@ -6489,8 +6603,8 @@ var CSSLint = (function(){
             } else {
                 return a.line - b.line;
             }
-        });        
-        
+        });
+
         return report;
     };
 
@@ -6501,7 +6615,6 @@ var CSSLint = (function(){
     return api;
 
 })();
-
 /*global CSSLint*/
 /**
  * An instance of Report is used to report results of the
@@ -6802,36 +6915,42 @@ CSSLint.addRule({
                 "padding-bottom": 1,
                 "padding-top": 1
             },
-            properties;
+            properties,
+            boxSizing = false;
 
         function startRule(){
             properties = {};
+            boxSizing = false;
         }
 
         function endRule(){
-            var prop;
-            if (properties.height){
-                for (prop in heightProperties){
-                    if (heightProperties.hasOwnProperty(prop) && properties[prop]){
-                    
-                        //special case for padding
-                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[0].value === 0)){
-                            reporter.report("Using height with " + prop + " can sometimes make elements larger than you expect.", properties[prop].line, properties[prop].col, rule);
+            var prop, value;
+            
+            if (!boxSizing) {
+                if (properties.height){
+                    for (prop in heightProperties){
+                        if (heightProperties.hasOwnProperty(prop) && properties[prop]){
+                            value = properties[prop].value;
+                            //special case for padding
+                            if (!(prop == "padding" && value.parts.length === 2 && value.parts[0].value === 0)){
+                                reporter.report("Using height with " + prop + " can sometimes make elements larger than you expect.", properties[prop].line, properties[prop].col, rule);
+                            }
                         }
                     }
                 }
-            }
 
-            if (properties.width){
-                for (prop in widthProperties){
-                    if (widthProperties.hasOwnProperty(prop) && properties[prop]){
-
-                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[1].value === 0)){
-                            reporter.report("Using width with " + prop + " can sometimes make elements larger than you expect.", properties[prop].line, properties[prop].col, rule);
+                if (properties.width){
+                    for (prop in widthProperties){
+                        if (widthProperties.hasOwnProperty(prop) && properties[prop]){
+                            value = properties[prop].value;
+                            
+                            if (!(prop == "padding" && value.parts.length === 2 && value.parts[1].value === 0)){
+                                reporter.report("Using width with " + prop + " can sometimes make elements larger than you expect.", properties[prop].line, properties[prop].col, rule);
+                            }
                         }
                     }
-                }
-            }        
+                }   
+            }     
         }
 
         parser.addListener("startrule", startRule);
@@ -6848,8 +6967,10 @@ CSSLint.addRule({
                     properties[name] = { line: event.property.line, col: event.property.col, value: event.value };
                 }
             } else {
-                if (name == "width" || name == "height"){
+                if (/^(width|height)/i.test(name) && /^(length|percentage)/.test(event.value.parts[0].type)){
                     properties[name] = 1;
+                } else if (name == "box-sizing") {
+                    boxSizing = true;
                 }
             }
             
@@ -6892,6 +7013,72 @@ CSSLint.addRule({
 
 });
 /*
+ * Rule: Use the bulletproof @font-face syntax to avoid 404's in old IE
+ * (http://www.fontspring.com/blog/the-new-bulletproof-font-face-syntax)
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "bulletproof-font-face",
+    name: "Use the bulletproof @font-face syntax",
+    desc: "Use the bulletproof @font-face syntax to avoid 404's in old IE (http://www.fontspring.com/blog/the-new-bulletproof-font-face-syntax).",
+    browsers: "All",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            count = 0,
+            fontFaceRule = false,
+            firstSrc     = true,
+            ruleFailed    = false,
+            line, col;
+
+        // Mark the start of a @font-face declaration so we only test properties inside it
+        parser.addListener("startfontface", function(event){
+            fontFaceRule = true;
+        });
+
+        parser.addListener("property", function(event){
+            // If we aren't inside an @font-face declaration then just return
+            if (!fontFaceRule) {
+                return;
+            }
+
+            var propertyName = event.property.toString().toLowerCase(),
+                value        = event.value.toString();
+
+            // Set the line and col numbers for use in the endfontface listener
+            line = event.line;
+            col  = event.col;
+
+            // This is the property that we care about, we can ignore the rest
+            if (propertyName === 'src') {
+                var regex = /^\s?url\(['"].+\.eot\?.*['"]\)\s*format\(['"]embedded-opentype['"]\).*$/i;
+
+                // We need to handle the advanced syntax with two src properties
+                if (!value.match(regex) && firstSrc) {
+                    ruleFailed = true;
+                    firstSrc = false;
+                } else if (value.match(regex) && !firstSrc) {
+                    ruleFailed = false;
+                }
+            }
+
+
+        });
+
+        // Back to normal rules that we don't need to test
+        parser.addListener("endfontface", function(event){
+            fontFaceRule = false;
+
+            if (ruleFailed) {
+                reporter.report("@font-face declaration doesn't follow the fontspring bulletproof syntax.", line, col, rule);
+            }
+        });
+    }
+});
+/*
  * Rule: Include all compatible vendor prefixes to reach a wider
  * range of users.
  */
@@ -6914,27 +7101,28 @@ CSSLint.addRule({
             prefixed,
             i,
             len,
+            inKeyFrame = false,
             arrayPush = Array.prototype.push,
             applyTo = [];
 
         // See http://peter.sh/experiments/vendor-prefixed-css-property-overview/ for details
         compatiblePrefixes = {
-            "animation"                  : "webkit moz ms",
-            "animation-delay"            : "webkit moz ms",
-            "animation-direction"        : "webkit moz ms",
-            "animation-duration"         : "webkit moz ms",
-            "animation-fill-mode"        : "webkit moz ms",
-            "animation-iteration-count"  : "webkit moz ms",
-            "animation-name"             : "webkit moz ms",
-            "animation-play-state"       : "webkit moz ms",
-            "animation-timing-function"  : "webkit moz ms",
+            "animation"                  : "webkit moz",
+            "animation-delay"            : "webkit moz",
+            "animation-direction"        : "webkit moz",
+            "animation-duration"         : "webkit moz",
+            "animation-fill-mode"        : "webkit moz",
+            "animation-iteration-count"  : "webkit moz",
+            "animation-name"             : "webkit moz",
+            "animation-play-state"       : "webkit moz",
+            "animation-timing-function"  : "webkit moz",
             "appearance"                 : "webkit moz",
             "border-end"                 : "webkit moz",
             "border-end-color"           : "webkit moz",
             "border-end-style"           : "webkit moz",
             "border-end-width"           : "webkit moz",
             "border-image"               : "webkit moz o",
-            "border-radius"              : "webkit moz",
+            "border-radius"              : "webkit",
             "border-start"               : "webkit moz",
             "border-start-color"         : "webkit moz",
             "border-start-style"         : "webkit moz",
@@ -6967,11 +7155,11 @@ CSSLint.addRule({
             "text-size-adjust"           : "webkit ms",
             "transform"                  : "webkit moz ms o",
             "transform-origin"           : "webkit moz ms o",
-            "transition"                 : "webkit moz o ms",
-            "transition-delay"           : "webkit moz o ms",
-            "transition-duration"        : "webkit moz o ms",
-            "transition-property"        : "webkit moz o ms",
-            "transition-timing-function" : "webkit moz o ms",
+            "transition"                 : "webkit moz o",
+            "transition-delay"           : "webkit moz o",
+            "transition-duration"        : "webkit moz o",
+            "transition-property"        : "webkit moz o",
+            "transition-timing-function" : "webkit moz o",
             "user-modify"                : "webkit moz",
             "user-select"                : "webkit moz ms",
             "word-break"                 : "epub ms",
@@ -6990,14 +7178,28 @@ CSSLint.addRule({
                 arrayPush.apply(applyTo, variations);
             }
         }
+                
         parser.addListener("startrule", function () {
             properties = [];
+        });
+
+        parser.addListener("startkeyframes", function (event) {
+            inKeyFrame = event.prefix || true;
+        });
+
+        parser.addListener("endkeyframes", function (event) {
+            inKeyFrame = false;
         });
 
         parser.addListener("property", function (event) {
             var name = event.property;
             if (CSSLint.Util.indexOf(applyTo, name.text) > -1) {
-                properties.push(name);
+            
+                // e.g., -moz-transform is okay to be alone in @-moz-keyframes
+                if (!inKeyFrame || typeof inKeyFrame != "string" || 
+                        name.text.indexOf("-" + inKeyFrame + "-") !== 0) {
+                    properties.push(name);
+                }
             }
         });
 
@@ -7336,7 +7538,17 @@ CSSLint.addRule({
             propertiesToCheck = {
                 color: 1,
                 background: 1,
-                "background-color": 1                
+                "border-color": 1,
+                "border-top-color": 1,
+                "border-right-color": 1,
+                "border-bottom-color": 1,
+                "border-left-color": 1,
+                border: 1,
+                "border-top": 1,
+                "border-right": 1,
+                "border-bottom": 1,
+                "border-left": 1,
+                "background-color": 1
             },
             properties;
         
@@ -7509,14 +7721,13 @@ CSSLint.addRule({
                 moz: 0,
                 webkit: 0,
                 oldWebkit: 0,
-                ms: 0,
                 o: 0
             };
         });
 
         parser.addListener("property", function(event){
 
-            if (/\-(moz|ms|o|webkit)(?:\-(?:linear|radial))\-gradient/i.test(event.value)){
+            if (/\-(moz|o|webkit)(?:\-(?:linear|radial))\-gradient/i.test(event.value)){
                 gradients[RegExp.$1] = 1;
             } else if (/\-webkit\-gradient/i.test(event.value)){
                 gradients.oldWebkit = 1;
@@ -7539,15 +7750,11 @@ CSSLint.addRule({
                 missing.push("Old Webkit (Safari 4+, Chrome)");
             }
 
-            if (!gradients.ms){
-                missing.push("Internet Explorer 10+");
-            }
-
             if (!gradients.o){
                 missing.push("Opera 11.1+");
             }
 
-            if (missing.length && missing.length < 5){            
+            if (missing.length && missing.length < 4){            
                 reporter.report("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule); 
             }
 
@@ -7676,308 +7883,20 @@ CSSLint.addRule({
     //rule information
     id: "known-properties",
     name: "Require use of known properties",
-    desc: "Properties should be known (listed in CSS specification) or be a vendor-prefixed property.",
+    desc: "Properties should be known (listed in CSS3 specification) or be a vendor-prefixed property.",
     browsers: "All",
 
     //initialization
     init: function(parser, reporter){
-        var rule = this,
-            properties = {
-
-                "alignment-adjust": 1,
-                "alignment-baseline": 1,
-                "animation": 1,
-                "animation-delay": 1,
-                "animation-direction": 1,
-                "animation-duration": 1,
-                "animation-fill-mode": 1,
-                "animation-iteration-count": 1,
-                "animation-name": 1,
-                "animation-play-state": 1,
-                "animation-timing-function": 1,
-                "appearance": 1,
-                "azimuth": 1,
-                "backface-visibility": 1,
-                "background": 1,
-                "background-attachment": 1,
-                "background-break": 1,
-                "background-clip": 1,
-                "background-color": 1,
-                "background-image": 1,
-                "background-origin": 1,
-                "background-position": 1,
-                "background-repeat": 1,
-                "background-size": 1,
-                "baseline-shift": 1,
-                "binding": 1,
-                "bleed": 1,
-                "bookmark-label": 1,
-                "bookmark-level": 1,
-                "bookmark-state": 1,
-                "bookmark-target": 1,
-                "border": 1,
-                "border-bottom": 1,
-                "border-bottom-color": 1,
-                "border-bottom-left-radius": 1,
-                "border-bottom-right-radius": 1,
-                "border-bottom-style": 1,
-                "border-bottom-width": 1,
-                "border-collapse": 1,
-                "border-color": 1,
-                "border-image": 1,
-                "border-image-outset": 1,
-                "border-image-repeat": 1,
-                "border-image-slice": 1,
-                "border-image-source": 1,
-                "border-image-width": 1,
-                "border-left": 1,
-                "border-left-color": 1,
-                "border-left-style": 1,
-                "border-left-width": 1,
-                "border-radius": 1,
-                "border-right": 1,
-                "border-right-color": 1,
-                "border-right-style": 1,
-                "border-right-width": 1,
-                "border-spacing": 1,
-                "border-style": 1,
-                "border-top": 1,
-                "border-top-color": 1,
-                "border-top-left-radius": 1,
-                "border-top-right-radius": 1,
-                "border-top-style": 1,
-                "border-top-width": 1,
-                "border-width": 1,
-                "bottom": 1, 
-                "box-align": 1,
-                "box-decoration-break": 1,
-                "box-direction": 1,
-                "box-flex": 1,
-                "box-flex-group": 1,
-                "box-lines": 1,
-                "box-ordinal-group": 1,
-                "box-orient": 1,
-                "box-pack": 1,
-                "box-shadow": 1,
-                "box-sizing": 1,
-                "break-after": 1,
-                "break-before": 1,
-                "break-inside": 1,
-                "caption-side": 1,
-                "clear": 1,
-                "clip": 1,
-                "color": 1,
-                "color-profile": 1,
-                "column-count": 1,
-                "column-fill": 1,
-                "column-gap": 1,
-                "column-rule": 1,
-                "column-rule-color": 1,
-                "column-rule-style": 1,
-                "column-rule-width": 1,
-                "column-span": 1,
-                "column-width": 1,
-                "columns": 1,
-                "content": 1,
-                "counter-increment": 1,
-                "counter-reset": 1,
-                "crop": 1,
-                "cue": 1,
-                "cue-after": 1,
-                "cue-before": 1,
-                "cursor": 1,
-                "direction": 1,
-                "display": 1,
-                "dominant-baseline": 1,
-                "drop-initial-after-adjust": 1,
-                "drop-initial-after-align": 1,
-                "drop-initial-before-adjust": 1,
-                "drop-initial-before-align": 1,
-                "drop-initial-size": 1,
-                "drop-initial-value": 1,
-                "elevation": 1,
-                "empty-cells": 1,
-                "fit": 1,
-                "fit-position": 1,
-                "float": 1,                
-                "float-offset": 1,
-                "font": 1,
-                "font-family": 1,
-                "font-size": 1,
-                "font-size-adjust": 1,
-                "font-stretch": 1,
-                "font-style": 1,
-                "font-variant": 1,
-                "font-weight": 1,
-                "grid-columns": 1,
-                "grid-rows": 1,
-                "hanging-punctuation": 1,
-                "height": 1,
-                "hyphenate-after": 1,
-                "hyphenate-before": 1,
-                "hyphenate-character": 1,
-                "hyphenate-lines": 1,
-                "hyphenate-resource": 1,
-                "hyphens": 1,
-                "icon": 1,
-                "image-orientation": 1,
-                "image-rendering": 1,
-                "image-resolution": 1,
-                "inline-box-align": 1,
-                "left": 1,
-                "letter-spacing": 1,
-                "line-height": 1,
-                "line-stacking": 1,
-                "line-stacking-ruby": 1,
-                "line-stacking-shift": 1,
-                "line-stacking-strategy": 1,
-                "list-style": 1,
-                "list-style-image": 1,
-                "list-style-position": 1,
-                "list-style-type": 1,
-                "margin": 1,
-                "margin-bottom": 1,
-                "margin-left": 1,
-                "margin-right": 1,
-                "margin-top": 1,
-                "mark": 1,
-                "mark-after": 1,
-                "mark-before": 1,
-                "marks": 1,
-                "marquee-direction": 1,
-                "marquee-play-count": 1,
-                "marquee-speed": 1,
-                "marquee-style": 1,
-                "max-height": 1,
-                "max-width": 1,
-                "min-height": 1,
-                "min-width": 1,
-                "move-to": 1,
-                "nav-down": 1,
-                "nav-index": 1,
-                "nav-left": 1,
-                "nav-right": 1,
-                "nav-up": 1,
-                "opacity": 1,
-                "orphans": 1,
-                "outline": 1,
-                "outline-color": 1,
-                "outline-offset": 1,
-                "outline-style": 1,
-                "outline-width": 1,
-                "overflow": 1,
-                "overflow-style": 1,
-                "overflow-x": 1,
-                "overflow-y": 1,
-                "padding": 1,
-                "padding-bottom": 1,
-                "padding-left": 1,
-                "padding-right": 1,
-                "padding-top": 1,
-                "page": 1,
-                "page-break-after": 1,
-                "page-break-before": 1,
-                "page-break-inside": 1,
-                "page-policy": 1,
-                "pause": 1,
-                "pause-after": 1,
-                "pause-before": 1,
-                "perspective": 1,
-                "perspective-origin": 1,
-                "phonemes": 1,
-                "pitch": 1,
-                "pitch-range": 1,
-                "play-during": 1,
-                "position": 1,
-                "presentation-level": 1,
-                "punctuation-trim": 1,
-                "quotes": 1,
-                "rendering-intent": 1,
-                "resize": 1,
-                "rest": 1,
-                "rest-after": 1,
-                "rest-before": 1,
-                "richness": 1,
-                "right": 1,
-                "rotation": 1,
-                "rotation-point": 1,
-                "ruby-align": 1,
-                "ruby-overhang": 1,
-                "ruby-position": 1,
-                "ruby-span": 1,
-                "size": 1,
-                "speak": 1,
-                "speak-header": 1,
-                "speak-numeral": 1,
-                "speak-punctuation": 1,
-                "speech-rate": 1,
-                "stress": 1,
-                "string-set": 1,
-                "table-layout": 1,
-                "target": 1,
-                "target-name": 1,
-                "target-new": 1,
-                "target-position": 1,
-                "text-align": 1,
-                "text-align-last": 1,
-                "text-decoration": 1,
-                "text-emphasis": 1,
-                "text-height": 1,
-                "text-indent": 1,
-                "text-justify": 1,
-                "text-outline": 1,
-                "text-shadow": 1,
-                "text-transform": 1,
-                "text-wrap": 1,
-                "top": 1,
-                "transform": 1,
-                "transform-origin": 1,
-                "transform-style": 1,
-                "transition": 1,
-                "transition-delay": 1,
-                "transition-duration": 1,
-                "transition-property": 1,
-                "transition-timing-function": 1,
-                "unicode-bidi": 1,
-                "user-modify": 1,
-                "user-select": 1,
-                "vertical-align": 1,
-                "visibility": 1,
-                "voice-balance": 1,
-                "voice-duration": 1,
-                "voice-family": 1,
-                "voice-pitch": 1,
-                "voice-pitch-range": 1,
-                "voice-rate": 1,
-                "voice-stress": 1,
-                "voice-volume": 1,
-                "volume": 1,
-                "white-space": 1,
-                "white-space-collapse": 1,
-                "widows": 1,
-                "width": 1,
-                "word-break": 1,
-                "word-spacing": 1,
-                "word-wrap": 1,
-                "z-index": 1,
-                
-                //IE
-                "filter": 1,
-                "zoom": 1,
-                
-                //@font-face
-                "src": 1
-            };
+        var rule = this;
 
         parser.addListener("property", function(event){
             var name = event.property.text.toLowerCase();
 
+            // the check is handled entirely by the parser-lib (https://github.com/nzakas/parser-lib)
             if (event.invalid) {
                 reporter.report(event.invalid.message, event.line, event.col, rule);
             }
-            //if (!properties[name] && name.charAt(0) != "-"){
-            //    reporter.error("Unknown property '" + event.property + "'.", event.line, event.col, rule);
-            //}
 
         });
     }
@@ -8225,6 +8144,62 @@ CSSLint.addRule({
 
         parser.addListener("endstylesheet", function(){
             reporter.stat("rule-count", count);
+        });
+    }
+
+});
+/*
+ * Rule: Warn people with approaching the IE 4095 limit 
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "selector-max-approaching",
+    name: "Warn when approaching the 4095 selector limit for IE",
+    desc: "Will warn when selector count is >= 3800 selectors.",
+    browsers: "IE",
+
+    //initialization
+    init: function(parser, reporter) {
+        var rule = this, count = 0;
+
+        parser.addListener('startrule', function(event) {
+            count += event.selectors.length;
+        });
+
+        parser.addListener("endstylesheet", function() {
+            if (count >= 3800) {
+                reporter.report("You have " + count + " selectors. Internet Explorer supports a maximum of 4095 selectors per stylesheet. Consider refactoring.",0,0,rule); 
+            }
+        });
+    }
+
+});
+/*
+ * Rule: Warn people past the IE 4095 limit 
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "selector-max",
+    name: "Error when past the 4095 selector limit for IE",
+    desc: "Will error when selector count is > 4095.",
+    browsers: "IE",
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this, count = 0;
+
+        parser.addListener('startrule',function(event) {
+            count += event.selectors.length;
+        });
+
+        parser.addListener("endstylesheet", function() {
+            if (count > 4095) {
+                reporter.report("You have " + count + " selectors. Internet Explorer supports a maximum of 4095 selectors per stylesheet. Consider refactoring.",0,0,rule); 
+            }
         });
     }
 
@@ -8990,6 +8965,111 @@ CSSLint.addFormatter({
 /*global CSSLint*/
 CSSLint.addFormatter({
     //format information
+    id: "junit-xml",
+    name: "JUNIT XML format",
+
+    /**
+     * Return opening root XML tag.
+     * @return {String} to prepend before all results
+     */
+    startFormat: function(){
+        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites>";
+    },
+
+    /**
+     * Return closing root XML tag.
+     * @return {String} to append after all results
+     */
+    endFormat: function() {
+        return "</testsuites>";
+    },
+
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (UNUSED for now) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
+
+        var messages = results.messages,
+            output = [],
+            tests = {
+                'error': 0,
+                'failure': 0
+            };
+
+        /**
+         * Generate a source string for a rule.
+         * JUNIT source strings usually resemble Java class names e.g
+         * net.csslint.SomeRuleName
+         * @param {Object} rule
+         * @return rule source as {String}
+         */
+        var generateSource = function(rule) {
+            if (!rule || !('name' in rule)) {
+                return "";
+            }
+            return 'net.csslint.' + rule.name.replace(/\s/g,'');
+        };
+
+        /**
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         *
+         * @param {String} message to escape
+         * @return escaped message as {String}
+         */
+        var escapeSpecialCharacters = function(str) {
+
+            if (!str || str.constructor !== String) {
+                return "";
+            }
+
+            return str.replace(/\"/g, "'").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        };
+
+        if (messages.length > 0) {
+
+            messages.forEach(function (message, i) {
+
+                // since junit has no warning class
+                // all issues as errors
+                var type = message.type === 'warning' ? 'error' : message.type;
+
+                //ignore rollups for now
+                if (!message.rollup) {
+
+                    // build the test case seperately, once joined
+                    // we'll add it to a custom array filtered by type
+                    output.push("<testcase time=\"0\" name=\"" + generateSource(message.rule) + "\">");
+                    output.push("<" + type + " message=\"" + escapeSpecialCharacters(message.message) + "\"><![CDATA[" + message.line + ':' + message.col + ':' + escapeSpecialCharacters(message.evidence)  + "]]></" + type + ">");
+                    output.push("</testcase>");
+
+                    tests[type] += 1;
+
+                }
+
+            });
+
+            output.unshift("<testsuite time=\"0\" tests=\"" + messages.length + "\" skipped=\"0\" errors=\"" + tests.error + "\" failures=\"" + tests.failure + "\" package=\"net.csslint\" name=\"" + filename + "\">");
+            output.push("</testsuite>");
+
+        }
+
+        return output.join("");
+
+    }
+});
+/*global CSSLint*/
+CSSLint.addFormatter({
+    //format information
     id: "lint-xml",
     name: "Lint XML format",
 
@@ -9121,11 +9201,8 @@ CSSLint.addFormatter({
     }
 });
 
-
 return CSSLint;
 })();
-
-
 /*
  * Encapsulates all of the CLI functionality. The api argument simply
  * provides environment-specific functionality.
@@ -9136,7 +9213,7 @@ function cli(api){
     //-------------------------------------------------------------------------
     // Helper functions
     //-------------------------------------------------------------------------
-    
+
     /**
      * Returns an array of messages for a particular type.
      * @param messages {Array} Array of CSS Lint messages.
@@ -9146,7 +9223,7 @@ function cli(api){
     function pluckByType(messages, type){
         return messages.filter(function(message) {
             return message.type === type;
-        });        
+        });
     }
 
     /**
@@ -9154,26 +9231,78 @@ function cli(api){
      * @param options {Object} The CLI options.
      * @return {Object} A ruleset object.
      */
-    function gatherRules(options){
-        var ruleset,
-            warnings = options.rules || options.warnings,
+    function gatherRules(options, ruleset){
+        var warnings = options.rules || options.warnings,
             errors = options.errors;
-        
+
         if (warnings){
             ruleset = ruleset || {};
             warnings.split(",").forEach(function(value){
                 ruleset[value] = 1;
             });
         }
-        
+
         if (errors){
             ruleset = ruleset || {};
             errors.split(",").forEach(function(value){
                 ruleset[value] = 2;
             });
         }
-        
+
         return ruleset;
+    }
+
+    /**
+     * Filters out rules using the ignore command line option.
+     * @param options {Object} the CLI options
+     * @return {Object} A ruleset object.
+     */
+    function filterRules(options) {
+        var ignore = options.ignore,
+            ruleset = null;
+
+        if (ignore) {
+            ruleset = CSSLint.getRuleset();
+            ignore.split(",").forEach(function(value){
+                ruleset[value] = 0;
+            });
+        }
+
+        return ruleset;
+    }
+
+
+    /**
+     * Filters out files using the exclude-list command line option.
+     * @param files   {Array}  the list of files to check for exclusions
+     * @param options {Object} the CLI options
+     * @return {Array} A list of files
+     */
+    function filterFiles(files, options) {
+        var excludeList = options["exclude-list"],
+            excludeFiles = [],
+            filesToLint = files;
+
+
+        if (excludeList) {
+            // Build up the exclude list, expanding any directory exclusions that were passed in
+            excludeList.split(",").forEach(function(value){
+                if (api.isDirectory(value)) {
+                    excludeFiles = excludeFiles.concat(api.getFiles(value));
+                } else {
+                    excludeFiles.push(value);
+                }
+            });
+
+            // Remove the excluded files from the list of files to lint
+            excludeFiles.forEach(function(value){
+                if (filesToLint.indexOf(value) > -1) {
+                    filesToLint.splice(filesToLint.indexOf(value),1);
+                }
+            });
+        }
+
+        return filesToLint;
     }
 
     /**
@@ -9196,7 +9325,8 @@ function cli(api){
      */
     function processFile(relativeFilePath, options) {
         var input = api.readFile(relativeFilePath),
-            result = CSSLint.verify(input, gatherRules(options)),
+            ruleset = filterRules(options),
+            result = CSSLint.verify(input, gatherRules(options, ruleset)),
             formatter = CSSLint.getFormatter(options.format || "text"),
             messages = result.messages || [],
             output,
@@ -9216,12 +9346,12 @@ function cli(api){
             if (output){
                 api.print(output);
             }
-            
+
             if (messages.length > 0 && pluckByType(messages, "error").length > 0) {
                 exitCode = 1;
             }
         }
-        
+
         return exitCode;
     }
 
@@ -9235,13 +9365,15 @@ function cli(api){
             "\nUsage: csslint-rhino.js [options]* [file|dir]*",
             " ",
             "Global Options",
-            "  --help                    Displays this information.",
-            "  --format=<format>         Indicate which format to use for output.",
-            "  --list-rules              Outputs all of the rules available.",
-            "  --quiet                   Only output when errors are present.",
-            "  --errors=<rule[,rule]+>   Indicate which rules to include as errors.",
-            "  --warnings=<rule[,rule]+> Indicate which rules to include as warnings.",
-            "  --version                 Outputs the current version number."
+            "  --help                                Displays this information.",
+            "  --format=<format>                     Indicate which format to use for output.",
+            "  --list-rules                          Outputs all of the rules available.",
+            "  --quiet                               Only output when errors are present.",
+            "  --errors=<rule[,rule]+>               Indicate which rules to include as errors.",
+            "  --warnings=<rule[,rule]+>             Indicate which rules to include as warnings.",
+            "  --ignore=<rule[,rule]+>               Indicate which rules to ignore completely.",
+            "  --exclude-list=<file|dir[,file|dir]+> Indicate which files/directories to exclude from being linted.",
+            "  --version                             Outputs the current version number."
         ].join("\n") + "\n");
     }
 
@@ -9251,26 +9383,28 @@ function cli(api){
      * @param options {Object} options object
      * @return {Number} exit code
      */
-    function processFiles(files, options){
+    function processFiles(fileArray, options){
         var exitCode = 0,
             formatId = options.format || "text",
             formatter,
+            files = filterFiles(fileArray,options),
             output;
-            
+
         if (!files.length) {
             api.print("csslint: No files specified.");
             exitCode = 1;
         } else {
             if (!CSSLint.hasFormat(formatId)){
                 api.print("csslint: Unknown format '" + formatId + "'. Cannot proceed.");
-                exitCode = 1; 
+                exitCode = 1;
             } else {
                 formatter = CSSLint.getFormatter(formatId);
-                
+
                 output = formatter.startFormat();
                 if (output){
                     api.print(output);
                 }
+
 
                 files.forEach(function(file){
                     if (exitCode === 0) {
@@ -9279,7 +9413,7 @@ function cli(api){
                         processFile(file,options);
                     }
                 });
-                
+
                 output = formatter.endFormat();
                 if (output){
                     api.print(output);
@@ -9287,44 +9421,69 @@ function cli(api){
             }
         }
         return exitCode;
-    }    
+    }
+
+
+    function processArguments(args, options) {
+        var arg = args.shift(),
+            argName,
+            parts,
+            files = [];
+
+        while(arg){
+            if (arg.indexOf("--") === 0){
+                argName = arg.substring(2);
+                options[argName] = true;
+
+                if (argName.indexOf("=") > -1){
+                    parts = argName.split("=");
+                    options[parts[0]] = parts[1];
+                } else {
+                    options[argName] = true;
+                }
+
+            } else {
+
+                //see if it's a directory or a file
+                if (api.isDirectory(arg)){
+                    files = files.concat(api.getFiles(arg));
+                } else {
+                    files.push(arg);
+                }
+            }
+            arg = args.shift();
+        }
+
+        options.files = files;
+        return options;
+    }
+
+    function readConfigFile(options) {
+        var data = api.readFile(api.getFullPath(".csslintrc"));
+        if (data) {
+            options = processArguments(data.split(/[\s\n\r]+/m), options);
+        }
+
+        return options;
+    }
+
+
 
     //-----------------------------------------------------------------------------
     // Process command line
     //-----------------------------------------------------------------------------
 
     var args     = api.args,
-        argName,
-        parts,
-        arg      = args.shift(),
-        options  = {},
-        files    = [];
+        argCount = args.length,
+        options  = {};
 
-    while(arg){
-        if (arg.indexOf("--") === 0){
-            argName = arg.substring(2);
-            options[argName] = true;
-            
-            if (argName.indexOf("=") > -1){
-                parts = argName.split("=");
-                options[parts[0]] = parts[1];
-            } else {
-                options[argName] = true;
-            }
+    // first look for config file .csslintrc
+    options = readConfigFile(options);
 
-        } else {
-            
-            //see if it's a directory or a file
-            if (api.isDirectory(arg)){
-                files = files.concat(api.getFiles(arg));
-            } else {
-                files.push(arg);
-            }
-        }
-        arg = args.shift();
-    }
+    // Command line arguments override config file
+    options = processArguments(args, options);
 
-    if (options.help || arguments.length === 0){
+    if (options.help || argCount === 0){
         outputHelp();
         api.quit(0);
     }
@@ -9339,7 +9498,7 @@ function cli(api){
         api.quit(0);
     }
 
-    api.quit(processFiles(files,options));
+    api.quit(processFiles(options.files,options));
 }
 /*
  * CSSLint Rhino Command Line Interface
@@ -9350,7 +9509,7 @@ function cli(api){
 importPackage(java.io);
 
 cli({
-    args: arguments,
+    args: Array.prototype.concat.call(arguments),
     print: print,
     quit: quit,
     
@@ -9386,5 +9545,11 @@ cli({
         return (new File(filename)).getCanonicalPath();
     },
 
-    readFile: readFile
+    readFile: function(filename) {
+        try {
+            return readFile(filename);
+        } catch (ex) {
+            return "";
+        }
+    }
 });
