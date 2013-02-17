@@ -980,7 +980,7 @@
                     <then>
                         <var name="optipng.executable" value="optipng"/>
                         <shellscript shell="bash" outputproperty="optipng.version">
-                          optipng -version | grep -Po 'OptiPNG\s\d\.\d' | grep -Po '\d\.\d'
+                          optipng -version | grep -Po 'OptiPNG\s(version\s)?\d\.\d' | grep -Po '\d\.\d'
                         </shellscript>
                         <echo message="You have optipng installed and your version is: ${optipng.version}"/>     
                     </then>
