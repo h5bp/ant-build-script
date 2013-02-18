@@ -711,27 +711,65 @@
         </if>
         <foreach list="${file.stylesheets}" param="css_file" target="-css-remove-concatenated-stylesheets" />
     </target>
-    <target name="-htmlclean" depends="-usemin">
+    <target name="-preparehtmlcompressoropts">
+        <if>
+            <and>
+                <isset property="tool.htmlcompressor.opts.preserve"/>
+                <not>
+                    <isset property="tool.htmlcompressor.opts.preserveAbsolutePath"/>
+                </not>
+            </and>
+            <then>
+                <property name="tool.htmlcompressor.opts.preserveAbsolutePath" location="${tool.htmlcompressor.opts.preserve}"/>
+            </then>
+        </if>
+        <if>
+            <isset property="tool.htmlcompressor.opts.preserveAbsolutePath"/>
+            <then>
+                <property name="tool.htmlcompressor.opts.preserveArg" value="--preserve &quot;${tool.htmlcompressor.opts.preserveAbsolutePath}&quot;"/>
+            </then>
+            <else>
+                <property name="tool.htmlcompressor.opts.preserveArg" value=""/>
+            </else>
+        </if>
+    </target>
+    <target name="-htmlclean" depends="-usemin,-preparehtmlcompressoropts">
         <echo message="Run htmlcompressor on the HTML"/>
         <echo message=" - maintaining whitespace"/>
         <echo message=" - removing html comments"/>
         <echo message=" - compressing inline style/script tag contents"/>
+        <if>
+            <not>
+                <equals arg1="${tool.htmlcompressor.opts.preserveArg}" arg2=""/>
+            </not>
+            <then>
+                <echo message=" - using ${tool.htmlcompressor.opts.preserveArg}"/>
+            </then>
+        </if>
         <apply executable="java" parallel="false">
             <fileset dir="${dir.intermediate}/" includes="${page-files}"/>
             <arg value="-jar"/>
             <arg path="${dir.build.tools}/${tool.htmlcompressor}"/>
-            <arg line="${tool.htmlcompressor.opts} ${tool.htmlcompressor.javascript} ${tool.htmlcompressor.opts.extra}"/>
+            <arg line="${tool.htmlcompressor.opts} ${tool.htmlcompressor.javascript} ${tool.htmlcompressor.opts.extra} ${tool.htmlcompressor.opts.preserveArg}"/>
             <srcfile/>
             <arg value="-o"/>
             <mapper type="glob" from="*" to="${basedir}/${dir.publish}/*"/>
             <targetfile/>
         </apply>
     </target>
-    <target name="-htmlbuildkit" depends="-usemin">
+    <target name="-htmlbuildkit" depends="-usemin,-preparehtmlcompressoropts">
         <echo message="Run htmlcompressor on the HTML"/>
         <echo message=" - maintaining whitespace"/>
         <echo message=" - retain html comments"/>
         <echo message=" - compressing inline style/script tag contents"/>
+        <if>
+            <not>
+                <equals arg1="${tool.htmlcompressor.opts.preserveArg}" arg2=""/>
+            </not>
+            <then>
+                <echo message=" - using ${tool.htmlcompressor.opts.preserveArg}"/>
+            </then>
+        </if>
         <apply executable="java" parallel="false">
             <fileset dir="${dir.intermediate}/" includes="${page-files}"/>
             <arg value="-jar"/>
@@ -742,17 +780,26 @@
             <arg line="--compress-css"/>
             <arg line="--preserve-php"/>
             <arg line="--preserve-ssi"/>
+            <arg line="${tool.htmlcompressor.opts.preserveArg}"/>
             <srcfile/>
             <arg value="-o"/>
             <mapper type="glob" from="*" to="${basedir}/${dir.publish}/*"/>
             <targetfile/>
         </apply>
     </target>
-    <target name="-htmlcompress" depends="-usemin">
+    <target name="-htmlcompress" depends="-usemin,-preparehtmlcompressoropts">
         <echo message="Run htmlcompressor on the HTML"/>
         <echo message=" - removing unnecessary whitespace"/>
         <echo message=" - removing html comments"/>
         <echo message=" - compressing inline style/script tag contents"/>
+        <if>
+            <not>
+                <equals arg1="${tool.htmlcompressor.opts.preserveArg}" arg2=""/>
+            </not>
+            <then>
+                <echo message=" - using ${tool.htmlcompressor.opts.preserveArg}"/>
+            </then>
+        </if>
         <apply executable="java" parallel="false">
             <fileset dir="${dir.intermediate}/" includes="${page-files}"/>
             <arg value="-jar"/>
@@ -762,6 +809,7 @@
             <arg line="--compress-css"/>
             <arg line="--preserve-php"/>
             <arg line="--preserve-ssi"/>
+            <arg line="${tool.htmlcompressor.opts.preserveArg}"/>
             <srcfile/>
             <arg value="-o"/>
             <mapper type="glob" from="*" to="${basedir}/${dir.publish}/*"/>
