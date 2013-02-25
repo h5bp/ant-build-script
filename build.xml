@@ -893,6 +893,15 @@
             <then>
                 <echo message="Processing LESS CSS..."/>
                 <lessjs input="${dir.intermediate}/${dir.css}/style-concat.css" output="${dir.intermediate}/${dir.css}/style-concat.css" />
+                <!-- load the generated LESS file and check if it contains errors -->
+                <loadfile property="generatedLESS" srcfile="${dir.intermediate}/${dir.css}/style-concat.css" />
+                <propertyregex property="errorLESS" input="${generatedLESS}" regexp="Error :" select="\1" casesensitive="true" />
+                <if>
+                    <equals arg1="${errorLESS}" arg2="\1" />
+                    <then>
+                        <fail message="LESS Compilation Error: ${generatedLESS}" />
+                    </then>
+                </if>
             </then>
             <else>
                 <echo message="NOT Processing LESS CSS"/>
