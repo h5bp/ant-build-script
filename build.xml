@@ -720,7 +720,7 @@
                 </not>
             </and>
             <then>
-                <property name="tool.htmlcompressor.opts.preserveAbsolutePath" location="${tool.htmlcompressor.opts.preserve}"/>
+                <property name="tool.htmlcompressor.opts.preserveAbsolutePath" location="${basedir}/${dir.build}/${tool.htmlcompressor.opts.preserve}"/>
             </then>
         </if>
         <if>
