@@ -974,6 +974,7 @@
         <if>
             <os family="unix"/>
             <then>
+                <var name="os.family" value="unix"/>
                 <if>
                     <!-- Then check for availability if unix -->
                     <available file="optipng" filepath="${ENV.PATH}"/>
@@ -997,9 +998,6 @@
                         <var name="optipng.available" value="false"/>
                     </else>
                  </if>
-
-                <!-- Temporarily fixes #39 -->
-                <var name="strip-meta-tags" value=""/>
             </then>
         </if>
 
@@ -1035,6 +1033,14 @@
                                 <copy todir="${dir.publish}/${relative.image.dir}">
                                     <dirset dir="${dir.source}/${relative.image.dir}"/>
                                 </copy>
+                            </then>
+                        </if>
+
+                        <!-- fix for #39/#46 as proposed in #147 -->
+                        <if>
+                            <equals arg1="${strip-meta-tags}" arg2="" />
+                            <then>
+                                <var name="strip-meta-tags" value="-quiet"/>
                             </then>
                         </if>
 
