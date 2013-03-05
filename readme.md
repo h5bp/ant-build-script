@@ -68,14 +68,22 @@ This means that OS X versions prior to 10.6 are no longer supported out of the b
 Alternatively, YUI Compressor, which requires Java > 1.4, could be swapped out for Closure Compiler.
 
 ## Quick Start
+**You must wrap any scripts to concatenate in a pair of specially constructed comments. These look like this:**
 
-You must wrap any scripts to concatenate in a pair of specially constructed comments. These look like this:
-
+*legacy version (pre 1.0)* (https://github.com/h5bp/ant-build-script/wiki/What-version-are-you-running%3F)
 ```html
     <!-- scripts concatenated and minified via build script -->
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
     <!-- end scripts -->
+```
+
+*1.0 and greater*
+```html
+  <!-- //-beg- concat_js -->
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+  <!-- //-end- concat_js -->
 ```
 ## If you're on Mac or Linux...
 
