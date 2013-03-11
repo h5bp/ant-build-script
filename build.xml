@@ -1129,13 +1129,13 @@
     <target name="-imagesjpg" depends="-mkdirs" description="(PRIVATE) Optimizes .jpg images using jpegtan">
         <echo message="Now, we clean up those jpgs..."/>
 
-        <!-- By default set strip-meta-tags to none -->
-        <var name="strip-meta-tags" value="none"/>
+        <!-- By default set retain-meta-tags to all -->
+        <var name="retain-meta-tags" value="all"/>
 
         <if>
             <equals arg1="${images.strip.metadata}" arg2="true"/>
             <then>
-                <var name="strip-meta-tags" value="all"/>
+                <var name="retain-meta-tags" value="none"/>
             </then>
         </if>
 
@@ -1190,7 +1190,7 @@
                         <apply executable="${jpegtran.executable}" dest="./${dir.publish}/${relative.image.dir}" osfamily="${os.family}">
                             <fileset dir="${dir.source}/${relative.image.dir}" includes="**/*.jpg"  excludes="${images.bypass}, ${images.default.bypass}"/>
                             <arg value="-copy"/>
-                            <arg value="${strip-meta-tags}"/>
+                            <arg value="${retain-meta-tags}"/>
                             <arg value="-optimize"/>
                             <arg value="${images.opts.progressive}"/>
                             <arg value="-outfile"/>
