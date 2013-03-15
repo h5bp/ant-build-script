@@ -690,8 +690,8 @@
         <copy file="${dir.intermediate}/${dir.css}/style-concat.min.css" tofile="${dir.publish}/${dir.css}/${css.sha}.css" />
 
         <echo message="Updating the HTML with the new css filename: ${style.css}"/>
-        <replaceregexp match="&lt;link(.+)href=['&quot;]?(.*)/${file.root.stylesheet}(?:\?.*)?['&quot;\s]?(.*/?&gt;)"
-        replace="&lt;link\1href='\2/${css.sha}.css'\3" flags="m">
+        <replaceregexp match="&lt;link(.+)href=(['&quot;]?.*/)${file.root.stylesheet}((?:\?.*)?['&quot;\s]?(.*/?&gt;))"
+                       replace="&lt;link\1href=\1/${css.sha}.css\2" flags="m">
             <fileset dir="${dir.intermediate}" includes="${page-files}"/>
         </replaceregexp>
         
