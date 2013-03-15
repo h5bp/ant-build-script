@@ -658,8 +658,8 @@
           <isset property="script.require.path"/>
             <then>
                 <echo message="Updating HTML to reflect the use of RequireJS"/>
-                <var name="matchRegex" value="&lt;!-- //-beg- ${build.jstoken} [\d\w\s\W]*&lt;script.*data-main=['&quot;]?(.*)/${file.root.script}(?:\?.*)?['&quot;] src=['&quot;]?(.*)${script.require.path}(?:\?.*)?['&quot;]?\s*&gt;\s*&lt;/script&gt;[\d\w\s\W]**&lt;!-- //-end- ${build.jstoken} --&gt;"/>
-                <var name="replaceRegex" value="&lt;script data-main='\1/${scripts.sha}.js\' src='${script.require.path}'&gt;&lt;/script&gt;"/>
+                <var name="matchRegex" value="&lt;!-- //-beg- ${build.jstoken} [\d\w\s\W]*&lt;script.*data-main=(['&quot;]?.*?/)${file.root.script}((?:\?.*)?['&quot;]?.*?) src=(['&quot;]?.*?)${script.require.path}((?:\?.*)?['&quot;]?\s*)&gt;\s*&lt;/script&gt;[\d\w\s\W]**&lt;!-- //-end- ${build.jstoken} --&gt;"/>
+                <var name="replaceRegex" value="&lt;script data-main=\1${scripts.sha}.js\2 src=\3${script.require.path}.js\4&gt;&lt;/script&gt;"/>
             </then>
             <else>
               <replaceregexp
