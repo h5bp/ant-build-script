@@ -1173,7 +1173,7 @@
                         <dirset dir="${dir.source}" includes="${dir.images}"/>
                     </path>
                     <sequential>
-                        <property name="relative.image.dir" location="@{image-dir}" relative="yes"/>
+                        <property name="relative.image.dir" location="@{image-dir}" basedir="${dir.source}" relative="yes"/>
 
                         <!-- Create the following image directory under publish if it does not exist -->
                         <if>
