@@ -2,6 +2,9 @@ The Ant Build Script is a tool that optimizes your code for production use on th
 
 It's designed to work with HTML5 Boilerplate with minimal configuration, but it's also here to serve as a rich source of Ant tasks you can use as the basis for your own custom build scripts.
 
+##Compatibility
+While it should work with any version of HTML5 Boilerplate (with varying degrees of intervention) v1.0 of the Build Script was developed and tested against v4.0 of HTML5 Boilerplate. 
+
 ## Why use it?
 
 Faster page load times, improved workflow and happy end users :)
@@ -29,9 +32,12 @@ Faster page load times, improved workflow and happy end users :)
 
 ## Add the build script to your project
 
-Since we split out the build scripts from the main h5bp repo, you now have more options on how to integrate a build script into your project. Beyond the choice of technology, there's also the choice of how to integrate the build script of choice into your h5bp project or local repo. There is nothing stopping you from manually dropping the build script in to your HTML5 Boilerplate project. That works.
+For most people, you can just drop the contents of the build script repo into your HTML5 Boilerplate project in a `build` folder. That's the easiest way to get up and running.
 
-However, if you'd like to merge it into your main repository and preserve the build script commit history, please follow this workflow:
+###Add the build script to your project (Advanced version)
+Since we split out the build scripts from the main h5bp repo, you now have more options on how to integrate a build script into your project.As was mentioned you can simply drop the contents of the build script repo into a `build` folder and you're good to go. 
+
+If you'd like to merge it into your main HTML5 Boilerplate repository and preserve the build script commit history (and the ability to update from Github), alongside the H5BP commit history, please follow this workflow:
 
 ```
 # Move into your project's git repository
