@@ -31,7 +31,7 @@
         </condition>
     </fail>
     <target name="version">
-      <echo message="H5BP Ant Build Script Version 1.0"/>
+      <echo message="H5BP Ant Build Script Version ${project.version}"/>
     </target>
     <!--
     *************************************************
