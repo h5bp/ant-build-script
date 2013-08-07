@@ -974,17 +974,25 @@
               <else>
                 <if>
                   <!-- Then check for availability if unix -->
-                <available file="optipng" filepath="${ENV.PATH}"/>    
+                  <available file="optipng" filepath="${ENV.PATH}"/>    
                   <var name="optipng.executable" value="optipng"/>
                   <if>
                     <equals arg1="${images.optipng.newer}" arg2="true"/>
                     <var name="optipng.available" value="true"/>
                   </if> 
+                  <else>
+                    <var name="optipng.available.older" value="true"/>
+                  </else>
                 </if>
+                <else>
+                <!-- Print out message if optipng is not available -->
+                <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+                <echo message="*** Install optipng to enable png optimization." />
+                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+            </else>
             </else>    
           </if>  
-                   
-        <!-- Now check for availability -->
+                  
         <if>
             <equals arg1="${optipng.available}" arg2="true"/>
             <then>
@@ -1018,7 +1026,7 @@
                             </then>
                         </if>
 
-                        <apply executable="${optipng.executable}" dest="./${dir.publish}/${relative.image.dir}/" osfamily="${os.family}">
+                        <apply executable="${optipng.executable}" dest="./${dir.publish}/${relative.image.dir}/">
                             <fileset dir="./${dir.source}/${relative.image.dir}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
                             <arg value="-quiet"/>
                             <arg value="-o7"/>
@@ -1033,11 +1041,55 @@
                 </for>
             </then>
             <else>
-                <!-- Print out message if optipng is not available -->
-                <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
-                <echo message="*** Install optipng to enable png optimization." />
-                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+                <if>
+                <equals arg1="optipng.available.older" arg2="true"/>
+                <then>
+                <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
+                <if>
+                  <available file="./${dir.publish}/${dir.images}/" type="dir" />
+                    <then>
+                      <delete>
+                          <fileset dir="./${dir.publish}/${dir.images}/">
+                              <include name="**/*.png"/>
+                          </fileset>
+                      </delete>
+                    </then>
+                </if>
+                <!-- Run if available -->
+                <for param="image-dir">
+                    <path>
+                        <dirset dir="${dir.source}" includes="${dir.images}"/>
+                    </path>
+                    <sequential>
+                        <property name="relative.image.dir" location="@{image-dir}" relative="yes"/>
+
+                        <if>
+                            <not>
+                                <available file="${basedir}/${dir.publish}/${relative.image.dir}"/>
+                            </not>
+                            <then>
+                                <copy todir="${dir.publish}/${relative.image.dir}">
+                                    <dirset dir="${dir.source}/${relative.image.dir}"/>
+                                </copy>
+                            </then>
+                        </if>
+
+                        <apply executable="${optipng.executable}" dest="./${dir.publish}/${relative.image.dir}/">
+                            <fileset dir="./${dir.source}/${relative.image.dir}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
+                            <arg value="-quiet"/>
+                            <arg value="-o7"/>
+                            <arg value="-out"/>
+                            <targetfile/>
+                            <srcfile/>
+                            <mapper type="identity"/>
+                        </apply>
+                        <var name="relative.image.dir" unset="true"/>
+                    </sequential>
+                  </for>
+               </then>
+              </if>
             </else>
+
         </if>
         <!-- Let's do ADVPNG -->
         <!-- On *nix's and OS X, check for advpng and give a helpful message if it's not installed -->
@@ -1086,7 +1138,7 @@
                             </then>
                         </if>
 
-                        <apply executable="${advpng.executable}" dest="./${dir.publish}/${relative.image.dir}/" osfamily="${os.family}">
+                        <apply executable="${advpng.executable}" dest="./${dir.publish}/${relative.image.dir}/">
                           <fileset dir="./${dir.publish}/${relative.image.dir}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
                           <arg line="-z"/>
                           <arg line="-4"/>
@@ -1161,7 +1213,7 @@
                             </then>
                         </if>
 
-                        <apply executable="${jpegtran.executable}" dest="./${dir.publish}/${relative.image.dir}" osfamily="${os.family}">
+                        <apply executable="${jpegtran.executable}" dest="./${dir.publish}/${relative.image.dir}">
                             <fileset dir="${dir.source}/${relative.image.dir}" includes="**/*.jpg"  excludes="${images.bypass}, ${images.default.bypass}"/>
                             <arg value="-copy"/>
                             <arg value="${retain-meta-tags}"/>
