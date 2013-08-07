@@ -1105,31 +1105,25 @@
             </else>
         </if>
     </target>
-    
+
     <target name="-imagesjpg" depends="-mkdirs" description="(PRIVATE) Optimizes .jpg images using jpegtan">
         <echo message="Now, we clean up those jpgs..."/>
-
-        <!-- By default set retain-meta-tags to all -->
-        <var name="retain-meta-tags" value="all"/>
-
-        <if>
+         <if>
             <equals arg1="${images.strip.metadata}" arg2="true"/>
             <then>
                 <var name="retain-meta-tags" value="none"/>
             </then>
+            <else>
+              <var name="retain-meta-tags" value="all"/>
+            </else>  
         </if>
-
-        <!-- By default set jpegtran exec to windows's exe and set it to available -->
-        <var name="os.family" value="windows"/>
-        <var name="jpegtran.available" value="true"/>
-        <var name="jpegtran.executable" value="${basedir}/${dir.build.tools}/jpegtran.exe"/>
-
-        <!-- On *nix's and OS X, check for jpegtran and give a helpful message if it's not installed -->
         <if>
-            <os family="unix"/>
-            <then>
-                <var name="os.family" value="unix"/>
-                <!-- Change the exec for *nix systems -->
+            <os family="windows"/>
+              <then>
+                 <var name="jpegtran.available" value="true"/>
+                 <var name="jpegtran.executable" value="${basedir}/${dir.build.tools}/${tool.jpegtran}"/>
+              </then>
+              <else>
                 <var name="jpegtran.executable" value="jpegtran"/>
                 <if>
                     <not>
@@ -1140,8 +1134,8 @@
                         <var name="jpegtran.available" value="false"/>
                     </then>
                 </if>
-            </then>
-        </if>
+            </else>    
+          </if>  
 
         <!-- If jpegtran is available, let's start it -->
         <if>
