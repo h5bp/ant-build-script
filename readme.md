@@ -99,6 +99,8 @@ On Linux use `yum install ant-contrib`.
 
 On Mac, install [MacPorts](http://www.macports.org/install.php) and then do `sudo port install ant-contrib`. 
 
+You should test what version of optipng you have. IF it's less than 0.7.0 then you need to uncomment [line 189 of project.properties](config/project.properties#L189). 
+
 ## If you're on Windows...
 
 * Get the [Java JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (JRE isn't enough).
