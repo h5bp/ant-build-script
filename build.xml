@@ -1212,6 +1212,9 @@
           <then>
             <var name="jpegtran.available" value="false"/>
           </then>
+          <else>
+            <var name="jpegtran.available" value="true"/>
+          </else>  
         </if>
         
         <!-- If jpegtran is available, let's start it -->
