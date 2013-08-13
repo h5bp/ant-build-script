@@ -1061,8 +1061,8 @@
             </then>
             <else>
                 <if>
-                <equals arg1="optipng.available.older" arg2="true"/>
                 <and>
+                  <equals arg1="optipng.available.older" arg2="true"/>
                   <equals arg1="${optipng.inpath}" arg2="true"/>
                 </and>
                 <then>
