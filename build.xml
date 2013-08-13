@@ -971,27 +971,46 @@
                 <var name="optipng.available" value="true"/>
                 <var name="optipng.executable" value="${basedir}/${dir.build.tools}/${tool.optipng}"/>
               </then>
-              <else>
-                <if>
-                  <!-- Then check for availability if unix -->
-                  <available file="optipng" filepath="${ENV.PATH}"/>    
-                  <var name="optipng.executable" value="optipng"/>
-                  <if>
-                    <equals arg1="${images.optipng.newer}" arg2="true"/>
-                    <var name="optipng.available" value="true"/>
-                  </if> 
-                  <else>
-                    <var name="optipng.available.older" value="true"/>
-                  </else>
-                </if>
-                <else>
-                <!-- Print out message if optipng is not available -->
-                <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
-                <echo message="*** Install optipng to enable png optimization." />
-                <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+         </if>
+         <if>
+          <os family="unix"/>      
+            <then>
+              <var name="optipng.executable" value="optipng"/>
+            </then>
+          </if>    
+          <if>
+            <not>
+              <available file="optipng" filepath="${ENV.PATH}"/>
+            </not>     
+            <then>
+              <var name="optipng.inpath" value="false"/>
+            </then>
+            <else>
+              <var name="optipng.inpath" value="true"/>
             </else>
-            </else>    
-          </if>  
+          </if>
+          <if>
+            <and>
+              <equals arg1="${images.optipng.newer}" arg2="true"/>
+              <os family="unix"/>
+              <equals arg1="${optipng.inpath}" arg2="true"/>
+            </and>  
+              <then>
+                <var name="optipng.available" value="true"/>
+              </then>
+              <else>
+                <var name="optipng.available.older" value="true"/>
+              </else>
+            </if>
+        <if>
+          <equals arg1="${optipng.available}" arg2="false"/>
+          <then>
+            <!-- Print out message if optipng is not available -->
+            <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
+            <echo message="*** Install optipng to enable png optimization." />
+            <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
+          </then>
+        </if>  
                   
         <if>
             <equals arg1="${optipng.available}" arg2="true"/>
@@ -1043,6 +1062,9 @@
             <else>
                 <if>
                 <equals arg1="optipng.available.older" arg2="true"/>
+                <and>
+                  <equals arg1="${optipng.inpath}" arg2="true"/>
+                </and>
                 <then>
                 <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
                 <if>
@@ -1102,22 +1124,22 @@
                  <var name="advpng.available" value="true"/>
                  <var name="advpng.executable" value="${basedir}/${dir.build.tools}/${tool.advpng}"/>
               </then>
-              <else>
-                <if>
-                    <!-- Then check for availability if unix -->
-                    <available file="advpng" filepath="${ENV.PATH}"/>
-                    <then>
-                        <var name="advpng.executable" value="advpng"/>
-                        </then>
-                    <else>
-                        <var name="advpng.available" value="false"/>
-                    </else>
-                </if>
-            </else>    
-          </if>  
-                   
-       
-        <!-- Now check for availability -->
+        </if>      
+        <if>
+          <os family="unix"/>      
+            <then>
+              <var name="advpng.executable" value="advpng"/>
+            </then>
+        </if>    
+        <if>
+          <not>
+             <available file="advpng" filepath="${ENV.PATH}"/>
+          </not>
+          <then>
+            <var name="advpng.available" value="false"/>
+          </then>
+        </if>
+        
         <if>
             <equals arg1="${advpng.available}" arg2="true"/>
             <then>
@@ -1175,20 +1197,23 @@
                  <var name="jpegtran.available" value="true"/>
                  <var name="jpegtran.executable" value="${basedir}/${dir.build.tools}/${tool.jpegtran}"/>
               </then>
-              <else>
-                <var name="jpegtran.executable" value="jpegtran"/>
-                <if>
-                    <not>
-                        <available file="jpegtran" filepath="${ENV.PATH}"/>
-                    </not>
-                    <then>
-                        <!-- Set it to unavailable -->
-                        <var name="jpegtran.available" value="false"/>
-                    </then>
-                </if>
-            </else>    
-          </if>  
-
+        </if>
+        <if>
+          <os family="unix"/>      
+            <then>
+              <var name="jpegtran.executable" value="jpegtran"/>
+            </then>
+        </if>    
+        <if>
+          <not>
+            <available file="jpegtran" filepath="${ENV.PATH}"/>
+          </not>
+           
+          <then>
+            <var name="jpegtran.available" value="false"/>
+          </then>
+        </if>
+        
         <!-- If jpegtran is available, let's start it -->
         <if>
             <equals arg1="${jpegtran.available}" arg2="true"/>
