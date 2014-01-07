@@ -8,7 +8,8 @@
 
 advpng [-l, --list] [-z, --recompress] [-0, --shrink-0]
 	[-1, --shrink-fast] [-2, --shrink-normal [-3, --shrink-extra]
-	[-4, --shrink-insane] [-f, --force] [-q, --quiet]
+	[-4, --shrink-insane] [-i, --iter N]
+	[-f, --force] [-q, --quiet]
 	[-h, --help] [-V, --version] FILES...
 
 
@@ -49,17 +50,32 @@ strategies:
         rewritten also if it's bigger.
 
     -1, --shrink-fast
-        Set the compression level to "fast".
+        Set the compression level to "fast" using the zlib
+        compressor.
 
     -2, --shrink-normal
-        Set the compression level to "normal". This is the
-        default level of compression.
+        Set the compression level to "normal" using the 7z
+        compressor.
+        This is the default level of compression.
 
     -3, --shrink-extra
-        Set the compression level to "extra".
+        Set the compression level to "extra" using the 7z
+        compressor.
+        You can define the compressor iterations with
+        the -i, --iter option.
 
     -4, --shrink-insane
-        Set the compression level to "insane".
+        Set the compression level to "insane" using the zopfli
+        compressor.
+        You can define the compressor iterations with
+        the -i, --iter option.
+
+    -i, --iter N
+        Define an additional numer of iterations for the 7z and zopfli
+        compressors for modes -3 and -4.
+        More iterations usually give a better compression, but may
+        require a lot more time.
+        Try for example with 10, 15, 20, and so on.
 
     -f, --force
         Force the use of the new file also if it's bigger.

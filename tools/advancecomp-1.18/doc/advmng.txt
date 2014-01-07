@@ -9,7 +9,7 @@
 advmng [-l, --list] [-z, --recompress]
 	[-x, --extract] [-a, --add RATE MNG_FILE PNG_FILES...]
 	[-0, --shrink-store] [-1, --shrink-fast] [-2, --shrink-normal]
-	[-3, --shrink-extra] [-4, --shrink-insane]
+	[-3, --shrink-extra] [-4, --shrink-insane] [-i, --iter N]
 	[-s, --scroll HxV] [-S, --scroll-square]
 	[-e, --expand] [-r, --reduce]
 	[-c, --lc] [-C, --vlc] [-f, --force] [-q, --quiet] [-v, --verbose]
@@ -75,18 +75,32 @@ strategies:
         rewritten also if it's bigger.
 
     -1, --shrink-fast
-        Set the compression level to "fast".
+        Set the compression level to "fast" using the zlib
+        compressor.
 
     -2, --shrink-normal
-        Set the compression level to "normal". This is the
-        default level of compression.
+        Set the compression level to "normal" using the 7z
+        compressor.
+        This is the default level of compression.
 
     -3, --shrink-extra
-        Set the compression level to "extra".
+        Set the compression level to "extra" using the 7z
+        compressor.
+        You can define the compressor iterations with
+        the -i, --iter option.
 
     -4, --shrink-insane
-        Set the compression level to "insane". It's VERY
-        SLOW.
+        Set the compression level to "insane" using the zopfli
+        compressor.
+        You can define the compressor iterations with
+        the -i, --iter option.
+
+    -i, --iter N
+        Define an additional numer of iterations for the 7z and zopfli
+        compressors for modes -3 and -4.
+        More iterations usually give a better compression, but may
+        require a lot more time.
+        Try for example with 10, 15, 20, and so on.
 
     -s, --scroll HxV
         The "-s HxV" option specifies the size of the pattern
