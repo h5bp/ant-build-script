@@ -387,7 +387,7 @@
         <concat destfile="./${dir.intermediate}/${dir.js}/scripts-concat.min.js" overwrite="no">
             <filelist dir="./${dir.intermediate}/" files="${scriptsToConcat}" />
             <filterchain>
-                <deletecharacters chars="&#xFEFF" />
+                <deletecharacters chars="&#xFEFF;" />
             </filterchain>
         </concat>
     </target>
@@ -756,7 +756,7 @@
                 <var name="strip-meta-tags" value="-strip all" />
             </then>
             <else>
-                <var name="strip-meta-tags" value="-strip all" />
+                <var name="strip-meta-tags" value="" />
             </else>
         </if>
         <if>
