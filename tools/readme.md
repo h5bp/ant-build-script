@@ -6,7 +6,7 @@ Here's a list of the amazing tools that make this script possible
 
 https://github.com/madr/HTMLvalidator
 
-##JSDod3
+##JSDoc3
 
 https://github.com/jsdoc3/jsdoc
 
