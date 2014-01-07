@@ -3,6 +3,31 @@
                             =======================
 
 
+ADVANCECOMP VERSION 1.18 2013/11
+================================
+
+* Added build support for new powerpc architectures.
+* Fixed build with BZIP.
+
+
+ADVANCECOMP VERSION 1.17 2013/03
+================================
+
+* Changed to GPL3.
+* Added zopfli support. It's enabled using -4, --shrink-insane.
+  You can control the number of iterations with the
+  new -i, --iter option.
+  Thanks to Darik Horn for the patches.
+
+
+ADVANCECOMP VERSION 1.16 2013/03
+================================
+
+* Allowed recompression with files with zero length.
+* Some other minor bugfixes.
+* Now in git repository.
+
+
 ADVANCECOMP VERSION 1.15 2005/10
 ================================
 

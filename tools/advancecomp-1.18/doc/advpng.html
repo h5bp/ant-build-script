@@ -10,7 +10,8 @@ Synopsis
 <pre>
 advpng [-l, --list] [-z, --recompress] [-0, --shrink-0]
 &nbsp;&nbsp;&nbsp;&nbsp;[-1, --shrink-fast] [-2, --shrink-normal [-3, --shrink-extra]
-&nbsp;&nbsp;&nbsp;&nbsp;[-4, --shrink-insane] [-f, --force] [-q, --quiet]
+&nbsp;&nbsp;&nbsp;&nbsp;[-4, --shrink-insane] [-i, --iter N]
+&nbsp;&nbsp;&nbsp;&nbsp;[-f, --force] [-q, --quiet]
 &nbsp;&nbsp;&nbsp;&nbsp;[-h, --help] [-V, --version] FILES...
 </pre>
 <h2><a name="2">2</a> 
@@ -70,29 +71,48 @@ rewritten also if it's bigger.
 <tr valign="top" align="left"><td><strong>
 -1, --shrink-fast
 </strong></td></tr><tr><td>
-Set the compression level to "fast".
+Set the compression level to "fast" using the zlib
+compressor.
 </td></tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr valign="top" align="left"><td><strong>
 -2, --shrink-normal
 </strong></td></tr><tr><td>
-Set the compression level to "normal". This is the
-default level of compression.
+Set the compression level to "normal" using the 7z
+compressor.
+This is the default level of compression.
 </td></tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr valign="top" align="left"><td><strong>
 -3, --shrink-extra
 </strong></td></tr><tr><td>
-Set the compression level to "extra".
+Set the compression level to "extra" using the 7z
+compressor.
+You can define the compressor iterations with
+the -i, --iter option.
 </td></tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr valign="top" align="left"><td><strong>
 -4, --shrink-insane
 </strong></td></tr><tr><td>
-Set the compression level to "insane".
+Set the compression level to "insane" using the zopfli
+compressor.
+You can define the compressor iterations with
+the -i, --iter option.
+</td></tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr valign="top" align="left"><td><strong>
+-i, --iter N
+</strong></td></tr><tr><td>
+Define an additional numer of iterations for the 7z and zopfli
+compressors for modes -3 and -4.
+More iterations usually give a better compression, but may
+require a lot more time.
+Try for example with 10, 15, 20, and so on.
 </td></tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="2">

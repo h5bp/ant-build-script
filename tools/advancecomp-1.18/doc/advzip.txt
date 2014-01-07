@@ -9,7 +9,8 @@
 advzip [-a, --add] [-x, --extract] [-l, --list]
 	[-z, --recompress] [-t, --test] [-0, --shrink-store]
 	[-1, --shrink-fast] [-2, --shrink-normal] [-3, --shrink-extra]
-	[-4, --shrink-insane] [-N, --not-zip] [-p, --pedantic] [-q, --quiet]
+	[-4, --shrink-insane] [-i, --iter N]
+	[-N, --not-zip] [-p, --pedantic] [-q, --quiet]
 	[-h, --help] [-V, --version] ARCHIVES... [FILES...]
 
 
@@ -78,17 +79,32 @@ compression than the 7-Zip Deflate implementation.
         and resource.
 
     -1, --shrink-fast
-        Set the compression level to "fast".
+        Set the compression level to "fast" using the zlib
+        compressor.
 
     -2, --shrink-normal
-        Set the compression level to "normal". This is the
-        default level of compression.
+        Set the compression level to "normal" using the 7z
+        compressor.
+        This is the default level of compression.
 
     -3, --shrink-extra
-        Set the compression level to "extra".
+        Set the compression level to "extra" using the 7z
+        compressor.
+        You can define the compressor iterations with
+        the -i, --iter option.
 
     -4, --shrink-insane
-        Set the compression level to "insane".
+        Set the compression level to "insane" using the zopfli
+        compressor.
+        You can define the compressor iterations with
+        the -i, --iter option.
+
+    -i, --iter N
+        Define an additional numer of iterations for the 7z and zopfli
+        compressors for modes -3 and -4.
+        More iterations usually give a better compression, but may
+        require a lot more time.
+        Try for example with 10, 15, 20, and so on.
 
 
 4 COPYRIGHT
