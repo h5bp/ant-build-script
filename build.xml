@@ -626,6 +626,9 @@
     
     <!-- HTML -->
     <target name="-usemin" depends="-js.scripts.concat,-rev.image.filenames" description="(PRIVATE) Replaces references to non-minified scripts">
+        <copy todir="${dir.intermediate}">
+            <fileset dir="${dir.source}" includes="${page-files}"/>
+        </copy>
         <echo message="Switching to minified js files..."/>
         
         <!-- switch from a regular jquery to minified -->
@@ -1373,28 +1376,7 @@
             <echo>Sass (scss): generated @{output}</echo>
         </sequential>
     </macrodef>
-
-    <target name="-needhtmlrefresh">
-        <echo message="Checking whether the HTML needs to be refreshed"/>
-        <!-- Changes to style.css or scripts.js mean that the html must be updated, and it will be.
-           Unfortunately, the html we want to update may not have the tags we want to replace(because it was updated before).
-           This outofdate check ensures that the html files have the markers for us to replace. -->
-        <outofdate property="needhtmlrefresh">
-            <sourcefiles>
-                <fileset dir="${dir.publish}" includes="${style.css}, ${scripts.js}"/>
-            </sourcefiles>
-            <targetfiles>
-                <fileset dir="${dir.intermediate}" includes="${page-files}"/>
-            </targetfiles>
-        </outofdate>
-
-        <!-- force the files to be overwritten with older copies from source if needhtmlrefresh is set -->
-        <copy todir="${dir.intermediate}" overwrite="${needhtmlrefresh}">
-            <fileset dir="${dir.source}" includes="${page-files}"/>
-        </copy>
-    </target>
-
-    <target name="-rev.image.filenames" depends="-needhtmlrefresh,-css">
+    <target name="-rev.image.filenames" depends="-css">
         <!-- We'll store here the images that get their name revved so we
              can later on in -copy exclude them, so we don't have duplicates -->
 
