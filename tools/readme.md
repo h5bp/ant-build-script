@@ -2,42 +2,42 @@
 
 Here's a list of the amazing tools that make this script possible
 
-##HTML Validator
+## HTML Validator
 
 https://github.com/madr/HTMLvalidator
 
-##JSDoc3
+## JSDoc3
 
 https://github.com/jsdoc3/jsdoc
 
-##CSSLint
+## CSSLint
 
 https://github.com/stubbornella/csslint
 
-##Closure Compiler
+## Closure Compiler
 
 https://developers.google.com/closure/compiler/
 
-##JSHint
+## JSHint
 
 http://www.jshint.com/
 
-##JSLint
+## JSLint
 
 http://www.jslint.com/
 
-##SASS
+## SASS
 
 http://sass-lang.com/
 
-##HTMLCompressor
+## HTMLCompressor
 
 http://code.google.com/p/htmlcompressor/
 
-##LESS
+## LESS
 
 http://lesscss.org/
 
-##Rhino
+## Rhino
 
 https://developer.mozilla.org/en-US/docs/Rhino
