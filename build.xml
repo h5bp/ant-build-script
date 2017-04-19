@@ -1132,9 +1132,14 @@
             </then>
         </if>    
         <if>
-          <not>
-             <available file="advpng" filepath="${ENV.PATH}"/>
-          </not>
+            <and>
+                <not>
+                    <available file="advpng" filepath="${ENV.PATH}"/>
+                </not>
+                <not>
+                    <available file="${advpng.executable}"/>
+                </not>
+            </and>
           <then>
             <var name="advpng.available" value="false"/>
           </then>
@@ -1205,10 +1210,14 @@
             </then>
         </if>    
         <if>
-          <not>
-            <available file="jpegtran" filepath="${ENV.PATH}"/>
-          </not>
-           
+            <and>
+                <not>
+                    <available file="jpegtran" filepath="${ENV.PATH}"/>
+                </not>
+                <not>
+                    <available file="${jpegtran.executable}"/>
+                </not>
+            </and>
           <then>
             <var name="jpegtran.available" value="false"/>
           </then>
