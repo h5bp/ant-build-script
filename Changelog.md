@@ -1,6 +1,7 @@
 ## 1.0.1 (in progress)
 
 - Set default h5bp markdown files to be ignored.
+- Added option to use HtmlCompressor --preserve
 
 ## 1.0 (February 6, 2013)
 
